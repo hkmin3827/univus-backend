@@ -23,7 +23,7 @@ public class AuthController {
     public ResponseEntity<Boolean> userExists(@PathVariable String email) {
         log.info("email: {}", email);
         boolean isTrue = authService.isUser(email);
-        return ResponseEntity.ok(!isTrue);
+        return ResponseEntity.ok(isTrue);
     }
 
     @PostMapping("/signup")
