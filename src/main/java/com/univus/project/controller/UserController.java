@@ -32,10 +32,10 @@ public class UserController {
     }
 
     // 회원 정보 수정
-    @PutMapping("/update")
-    public ResponseEntity<Boolean> updateMember(@RequestBody UserModifyReqDto userModifyReqDto) {
-        return ResponseEntity.ok(userService.updateUser(userModifyReqDto));
-    }
+//    @PutMapping("/update")
+//    public ResponseEntity<Boolean> updateMember(@RequestBody UserModifyReqDto userModifyReqDto) {
+//        return ResponseEntity.ok(userService.updateUser(userModifyReqDto));
+//    }
 
     // 유저 탈퇴
     @DeleteMapping("/users/withdraw")
