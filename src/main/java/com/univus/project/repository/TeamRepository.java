@@ -1,4 +1,7 @@
 package com.univus.project.repository;
 
-public interface TeamRepository {
+import com.univus.project.entity.Team;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TeamRepository extends JpaRepository<Team, String> {
 }
