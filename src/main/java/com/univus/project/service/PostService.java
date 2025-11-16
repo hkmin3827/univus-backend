@@ -37,16 +37,19 @@ public class PostService {
             post.setContent(dto.getContent());
             post.setBoard(board);
             post.setUser(user);
+            post.setFileUrl(fileUrl);
             if (fileUrl != null && !fileUrl.isBlank()) {
                 post.setFileUrl(fileUrl);
+            }
+            if (user == null || user.getId() == null) {
+                throw new RuntimeException("로그인한 유저가 존재하지 않습니다.");
             }
 
             postRepository.save(post);
             return post.getId();
         } catch (Exception e){
-            log.error("게시물 생성 실패 : {}", e.getMessage());
-            return null;
-
+            log.error("게시물 생성 실패", e);
+            throw e;
         }
     }
 
@@ -67,13 +70,16 @@ public class PostService {
             if (fileUrl != null && !fileUrl.isBlank()) {
                 post.setFileUrl(fileUrl);
             }
+            if (user == null || user.getId() == null) {
+                throw new RuntimeException("로그인한 유저가 존재하지 않습니다.");
+            }
 
             postRepository.save(post);
             return post.getId();
 
-        } catch (Exception e) {
-            log.error("게시물 수정 실패 : {}", e.getMessage());
-            return null;
+        }  catch (Exception e){
+            log.error("게시물 수정 실패", e);
+            throw e;
         }
     }
 
