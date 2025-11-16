@@ -26,11 +26,7 @@ public class Post {
 
     @Lob
     private String content;
-    private String imagePath;
-    /**
-     * 실제 서버에 저장되는 파일 경로 (예: /uploads/2025/11/abc.jpg)
-     * DB에는 경로만 저장하고, 클라이언트에서는 URL 형태로 제공
-     */
+    private String fileUrl;
 
 
     private LocalDateTime createTime;

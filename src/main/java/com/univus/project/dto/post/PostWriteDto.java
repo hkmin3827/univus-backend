@@ -12,7 +12,7 @@ public class PostWriteDto {
     private String email;
     private String name;   // 작성자 이름
     private String title;
-    private String imagePath;
+    private String fileUrl;
     private String content;
     private Board board;
 }

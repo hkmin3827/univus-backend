@@ -48,8 +48,14 @@ public class BoardService {
     public Boolean modifyBoard(Long id, BoardReqDto dto){
         try{
             Board board = boardRepository.findById(id).orElseThrow(()->new RuntimeException("해당 게시판 id가 존재하지 않습니다."));
-            board.setName(dto.getName());
-            board.setDescription(dto.getDescription());
+            if (dto.getName() != null) {
+                board.setName(dto.getName());
+            }
+
+            if (dto.getDescription() != null) {
+                board.setDescription(dto.getDescription());
+            }
+
             return true;
         } catch (Exception e) {
             log.error("게시판 수정 실패 : {}", e.getMessage());

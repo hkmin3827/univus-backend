@@ -17,7 +17,7 @@ public class PostDetailDto {
     private Long id;
     private String title;
     private String content;
-    private String imagePath;
+    private String fileUrl;
     private String userName;
     private LocalDateTime createTime;
 
@@ -27,7 +27,7 @@ public class PostDetailDto {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.imagePath = post.getImagePath();
+        this.fileUrl = post.getFileUrl();
         this.userName = post.getUser().getName();
         this.createTime = post.getCreateTime();
 

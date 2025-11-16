@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +26,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
-    private final FileService fileService;
 
-    public Long createPost(PostReqDto dto, MultipartFile image, User user) {
+    public Long createPost(PostReqDto dto, String fileUrl, User user) {
         try{
             Board board = boardRepository.findById(dto.getBoardId())
                     .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
@@ -36,16 +37,42 @@ public class PostService {
             post.setContent(dto.getContent());
             post.setBoard(board);
             post.setUser(user);
-
-            if (image != null && !image.isEmpty()) {
-                String savedPath = fileService.saveImage(image);
-                post.setImagePath(savedPath);
+            if (fileUrl != null && !fileUrl.isBlank()) {
+                post.setFileUrl(fileUrl);
             }
 
             postRepository.save(post);
             return post.getId();
         } catch (Exception e){
             log.error("게시물 생성 실패 : {}", e.getMessage());
+            return null;
+
+        }
+    }
+
+    public Long updatePost(Long postId, PostReqDto dto, String fileUrl, User user) {
+        try {
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+
+            // 권한 체크(본인만 수정하도록)
+            if (!post.getUser().getId().equals(user.getId())) {
+                throw new RuntimeException("수정 권한이 없습니다.");
+            }
+
+            post.setTitle(dto.getTitle());
+            post.setContent(dto.getContent());
+
+            // Firebase 이미지 URL 새로 전달되면 업데이트
+            if (fileUrl != null && !fileUrl.isBlank()) {
+                post.setFileUrl(fileUrl);
+            }
+
+            postRepository.save(post);
+            return post.getId();
+
+        } catch (Exception e) {
+            log.error("게시물 수정 실패 : {}", e.getMessage());
             return null;
         }
     }
@@ -62,11 +89,35 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
+    public List<PostResDto> getPostsByTitle(String title) {
+        List<Post> posts = postRepository.findByTitleContaining(title);
+        List<PostResDto> postResDtos =new ArrayList<>();
+        for(Post post:posts){
+            postResDtos.add(convertToDto(post));
+        }
+        return postResDtos;
+
+    }
+
+    @Transactional(readOnly = true)
     public PostDetailDto getPostDetail(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
         return new PostDetailDto(post);
+    }
+
+
+    private PostResDto convertToDto(Post post){
+        PostResDto postResDto = new PostResDto();   // 비어있는 객체 생성
+        postResDto.setPostId(post.getId());
+        postResDto.setName(post.getUser().getName());
+        postResDto.setTitle(post.getTitle());
+        postResDto.setContent(post.getContent());
+        postResDto.setFileUrl(post.getFileUrl());
+        postResDto.setCreateTime(post.getCreateTime());
+        return postResDto;
+
     }
 
 

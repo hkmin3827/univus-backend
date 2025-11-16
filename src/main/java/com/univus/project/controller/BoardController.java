@@ -39,7 +39,7 @@ public class BoardController {
     }
 
     // 게시판 수정
-    @PutMapping("/modify/id}")
+    @PutMapping("/modify/{id}")
     public ResponseEntity<Boolean> modifyBoard(@PathVariable Long id, @RequestBody BoardReqDto dto){
         return ResponseEntity.ok(boardService.modifyBoard(id, dto));
     }
