@@ -2,6 +2,7 @@ package com.univus.project.repository;
 
 import com.univus.project.entity.Board;
 import com.univus.project.entity.Post;
+import com.univus.project.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAll(Pageable pageable);
 
     List<Post> findByBoardOrderByCreateTimeDesc(Board board);
+
+    int countByUserAndBoard(User user, Board board);
 }

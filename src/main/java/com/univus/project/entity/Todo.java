@@ -25,6 +25,10 @@ public class Todo {
     private boolean done = false;       // TodoList 완료 여부
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;                  // todolist를 작성한 작성자 식별
+
+    @ManyToOne
     @JoinColumn(name="board_id")
     private Board board;                // todolist가 속한 프로젝트 식별
 

@@ -20,11 +20,11 @@ public class Attendance {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User user;          // 사용자 식별
+    private User user;          // 출석한 사용자
 
     @ManyToOne
     @JoinColumn(name="board_id")
-    private Board board;        // 어느 게시판 출석인지 식별
+    private Board board;        // 출석한 게시판
 
     private LocalDate date;     // 출석 날짜
 
