@@ -41,4 +41,42 @@ public class AuthController {
         boolean isTrue = authService.login(loginReqDto);
         return ResponseEntity.ok(isTrue);
     }
+
+
+
+
+//    Security 추가시 작성 변경?
+
+//    private final AuthenticationManager authenticationManager;
+//    private final UserService userService;
+//
+//    @PostMapping("/login")
+//    public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto dto, HttpServletRequest request) {
+//        UsernamePasswordAuthenticationToken token =
+//                new UsernamePasswordAuthenticationToken(dto.getLoginId(), dto.getPassword());
+//
+//        Authentication authentication = authenticationManager.authenticate(token);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        // 세션 생성(기본)
+//        HttpSession session = request.getSession(true);
+//        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+//
+//        User user = ((com.univus.project.config.CustomUserDetails) authentication.getPrincipal()).getUser();
+//
+//        return ResponseEntity.ok(new AuthResponseDto(user.getId(), user.getLoginId(), user.getName()));
+//    }
+//
+//    @PostMapping("/register")
+//    public ResponseEntity<Long> register(@RequestBody AuthRequestDto dto) {
+//        Long id = userService.register(dto.getLoginId(), dto.getPassword(), dto.getName());
+//        return ResponseEntity.ok(id);
+//    }
+//
+//    @PostMapping("/logout")
+//    public ResponseEntity<Void> logout(HttpServletRequest request) {
+//        request.getSession(false).invalidate();
+//        SecurityContextHolder.clearContext();
+//        return ResponseEntity.ok().build();
+//    }
 }
