@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    // 이메일 조회
-    Optional<Todo> findByEmail(String email);
     // 작성자 조회
-    List<Todo> findByName(String name);
+    List<Todo> findByUser_Email(String email);
     // 완료 여부 기준 조회
     List<Todo> findByDone(boolean done);
     // 최신 할일 순 조회

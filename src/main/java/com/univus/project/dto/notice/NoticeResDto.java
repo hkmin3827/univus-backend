@@ -13,14 +13,14 @@ public class NoticeResDto {
     private Long id;        // 공지 Id
     private String title;   // 공지 제목
     private String content; // 공지 내용
-    private String name;    // 작성자 이름
+    private String email;    // 작성자 이메일
     private LocalDateTime createTime;
 
     public NoticeResDto(Notice notice) {
         this.id = notice.getId();
         this.title = notice.getTitle();
         this.content = notice.getContent();
-        this.name = notice.getUser().getName();
+        this.email = notice.getUser().getEmail();
         this.createTime = notice.getCreateTime();
     }
 }

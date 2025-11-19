@@ -3,10 +3,12 @@ package com.univus.project.controller;
 import com.univus.project.dto.todo.TodoModifyDto;
 import com.univus.project.dto.todo.TodoResDto;
 import com.univus.project.dto.todo.TodoWriteDto;
+import com.univus.project.entity.User;
 import com.univus.project.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public class TodoController {
 
     // 1) TodoList 생성
     @PostMapping("/create")
-    public ResponseEntity<TodoResDto> createTodo(@RequestBody TodoWriteDto dto) {
-        TodoResDto todo = todoService.createTodo(dto);
+    public ResponseEntity<TodoResDto> createTodo(@RequestBody TodoWriteDto dto, @AuthenticationPrincipal User user) {
+        TodoResDto todo = todoService.createTodo(dto, user);
         return ResponseEntity.ok(todo);
     }
 
@@ -40,14 +42,16 @@ public class TodoController {
 
     // 4) TodoList 수정
     @PutMapping("/modify/{id}")
-    public ResponseEntity<Boolean> modifyTodo(@PathVariable Long id, @RequestBody TodoModifyDto dto) {
-        return ResponseEntity.ok(todoService.modifyTodo(id, dto));
+    public ResponseEntity<Boolean> modifyTodo(@PathVariable Long id, @RequestBody TodoModifyDto dto, @AuthenticationPrincipal User user) {
+        Boolean result = todoService.modifyTodo(id, dto, user);
+        return ResponseEntity.ok(result);
     }
 
     // 5) TodoList 삭제
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deleteTodo(@PathVariable Long id) {
-        return ResponseEntity.ok(todoService.deleteTodo(id));
+    public ResponseEntity<Boolean> deleteTodo(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        Boolean result = todoService.deleteTodo(id, user);
+        return ResponseEntity.ok(result);
     }
 
     // 6) 최신순 TodoList 목록 조회

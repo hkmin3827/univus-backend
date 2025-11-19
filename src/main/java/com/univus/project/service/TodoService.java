@@ -4,6 +4,7 @@ import com.univus.project.dto.todo.TodoModifyDto;
 import com.univus.project.dto.todo.TodoResDto;
 import com.univus.project.dto.todo.TodoWriteDto;
 import com.univus.project.entity.Todo;
+import com.univus.project.entity.User;
 import com.univus.project.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,12 @@ import java.util.stream.Collectors;
 public class TodoService {
     private final TodoRepository todoRepository;
 
-    // 1) TodoList 생성
-    public TodoResDto createTodo(TodoWriteDto dto) {
+    // 1) TodoList 생성 (작성한 User 확인)
+    public TodoResDto createTodo(TodoWriteDto dto, User user) {
         try {
             Todo todo = new Todo();
             todo.setContent(dto.getContent());
-            todo.setName(dto.getName());
+            todo.setUser(user);
             todo.setDone(false);
 
             todoRepository.save(todo);
@@ -48,7 +49,20 @@ public class TodoService {
         }
     }
 
-    // 3) 완료 여부 조회
+    // 3) 작성자 이메일로 TodoList 조회
+    public List<TodoResDto> getTodoByUserEmail(String email) {
+        try {
+            return todoRepository.findByUser_Email(email)
+                    .stream()
+                    .map(TodoResDto::new)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("{} 이메일로 Todo 조회 실패: {}", email, e.getMessage());
+            return List.of();
+        }
+    }
+
+    // 4) 완료 여부 조회
     public List<TodoResDto> getTodoByDone(boolean done) {
         try {
             return todoRepository.findByDone(done)
@@ -57,15 +71,18 @@ public class TodoService {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("TodoList 완료 여부 조회 실패: {}", e.getMessage());
-            return null;
+            return List.of();
         }
     }
 
-    // 4) TodoList 수정
-    public Boolean modifyTodo(Long id, TodoModifyDto dto) {
+    // 5) TodoList 수정 (작성자 권한 체크)
+    public Boolean modifyTodo(Long id, TodoModifyDto dto, User user) {
         try{
             Todo todo = todoRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
+            if (!todo.getUser().getId().equals(user.getId())){
+                throw new RuntimeException("수정 권한이 없습니다.");
+            }
             todo.setContent(dto.getContent());
             todo.setDone(dto.isDone());
             return true;
@@ -75,11 +92,14 @@ public class TodoService {
         }
     }
 
-    // 5) TodoList 삭제
-    public Boolean deleteTodo(Long id) {
+    // 6) TodoList 삭제 (작성자 권한 체크)
+    public Boolean deleteTodo(Long id, User user) {
         try {
             Todo todo = todoRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
+            if (!todo.getUser().getId().equals(user.getId())){
+                throw new RuntimeException("삭제 권한이 없습니다.");
+            }
             todoRepository.delete(todo);
             return true;
         } catch (Exception e) {
