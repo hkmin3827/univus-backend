@@ -3,6 +3,7 @@ package com.univus.project.controller;
 import com.univus.project.dto.comment.CommentReqDto;
 import com.univus.project.dto.comment.CommentResDto;
 import com.univus.project.entity.User;
+import com.univus.project.repository.UserRepository;
 import com.univus.project.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +18,12 @@ import java.util.List;
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
 public class CommentController {
+    private final UserRepository userRepository;
 
     private final CommentService commentService;
 
     // 댓글 작성
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Long> createComment(@RequestBody CommentReqDto dto) {
         User user = getLoggedInMember(); // 로그인한 회원
         Long commentId = commentService.createComment(dto, user);
@@ -36,7 +38,7 @@ public class CommentController {
     }
 
     private User getLoggedInMember() {
-        // 실제 Spring Security 로그인 로직에 따라 구현
-        return new User(); // 임시
+        return userRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("유저 없음"));
     }
 }
