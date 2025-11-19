@@ -1,9 +1,11 @@
 package com.univus.project.service;
 
+import com.univus.project.constant.Role;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
 import com.univus.project.entity.Notice;
+import com.univus.project.entity.User;
 import com.univus.project.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +22,14 @@ import java.util.stream.Collectors;
 public class NoticeService {
     private final NoticeRepository noticeRepository;
 
-    // 1) 공지 생성
-    public NoticeResDto createNotice(NoticeWriteDto dto) {
+    // 1) 공지 생성 (교수 권한 체크 진행)
+    public NoticeResDto createNotice(NoticeWriteDto dto, User user) {
         try {
+            if (user.getRole() != Role.PROFESSOR) { throw new RuntimeException("공지 작성 권한이 없습니다!");}
             Notice notice = new Notice();
             notice.setTitle(dto.getTitle());
             notice.setContent(dto.getContent());
-            notice.setName(dto.getName());
+            notice.setUser(user);
             noticeRepository.save(notice);
             return new NoticeResDto(notice);
         } catch (Exception e) {
@@ -48,10 +51,13 @@ public class NoticeService {
     }
 
     // 3) 공지 수정
-    public Boolean modifyNotice(Long id, NoticeModifyDto dto) {
+    public Boolean modifyNotice(Long id, NoticeModifyDto dto, User user) {
         try {
             Notice notice = noticeRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("공지가 없습니다!"));
+            if (!notice.getUser().getId().equals(user.getId())) {
+                throw new RuntimeException("수정 권한이 없습니다.");
+            }
             notice.setTitle(dto.getTitle());
             notice.setContent(dto.getContent());
             return true;
@@ -62,10 +68,11 @@ public class NoticeService {
     }
 
     // 4) 공지 삭제
-    public Boolean deleteNotice(Long id) {
+    public Boolean deleteNotice(Long id, User user) {
         try {
             Notice notice = noticeRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("공지가 없습니다!"));
+            if (!notice.getUser().getId().equals(user.getId())) { throw new RuntimeException("삭제 권한이 없습니다!"); }
             noticeRepository.delete(notice);
             return true;
         } catch (Exception e) {

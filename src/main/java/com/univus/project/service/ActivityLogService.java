@@ -12,8 +12,11 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +27,7 @@ public class ActivityLogService {
     private final ActiveLogRepository activeLogRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-//    private final ReactionRepository reactionRepository;
+    //private final ReactionRepository reactionRepository;
     private final TodoRepository todoRepository;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
@@ -40,12 +43,7 @@ public class ActivityLogService {
                     .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
 
             ActivityLog log = activeLogRepository.findByUserAndBoard(user, board)
-                    .orElseGet(() -> {
-                        ActivityLog n = new ActivityLog();
-                        n.setUser(user);
-                        n.setBoard(board);
-                        return n;
-                    });
+                    .orElseGet(() -> createNewLog(user, board));
             // 게시글, 댓글, 공감 부분
             int postCount = postRepository.countByUserAndBoard(user, board);
             int commentCount = commentRepository.countByUserAndBoard(user, board);
@@ -62,8 +60,8 @@ public class ActivityLogService {
                     .toList();
 
             int total = attendanceDates.size();
-//            int streak = calcStreak(attendanceDates);      // ⭐ 여기서 사용
-//            int monthCount = calcMonth(attendanceDates);
+            int streak = calcStreak(attendanceDates);
+            int monthCount = calcMonth(attendanceDates);
 
             // 저장
             log.setPostCount(postCount);
@@ -74,8 +72,8 @@ public class ActivityLogService {
             log.setTodoUncompleted(todoNotDone);
 
             log.setAttendanceTotal(total);
-//            log.setAttendanceStreak(streak);
-//            log.setAttendanceThisMonth(monthCount);
+            log.setAttendanceStreak(streak);
+            log.setAttendanceThisMonth(monthCount);
 
             log.setLastUpdated(LocalDateTime.now());
 
@@ -88,20 +86,63 @@ public class ActivityLogService {
     }
 
     // 2) 활동로그가 없으면 새로운 활동로그 객체 생성
-    private ActivityLog createnewLog(User user, Board board) {
+    private ActivityLog createNewLog(User user, Board board) {
         ActivityLog log = new ActivityLog();
         log.setUser(user);
         log.setBoard(board);
         return log;
     }
 
-
-
 //    //3) 게시판 전체 로그 조회
 //    private int calcDateStreak(List<LocalDate> list) {
 //        try {
 //            Board board = boardRepository.findById()
-//                    .orElseThrow()
+//                    .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
+//
+//            return activeLogRepository.findByBoard(board);
+//        } catch (Exception e) {
+//            log.error("게시판 로그 조회 실패 (boardId: {}) : {}", boardId, e.getMessage());
+//            return List.of();
 //        }
-//    }
+//    } BoardRepository 생성 확인 후 맞춰서 다시 작성 예정 (일단 제 마음대로 작성했습니다.)
+
+    // 4) 연속 출석일 계산
+    private int calcStreak(List<LocalDate> dates) {
+        try {
+            if(dates == null || dates.isEmpty()) return 0;
+
+            Set<LocalDate> set = new HashSet<>(dates);
+            List<LocalDate> sorted = set.stream()
+                    .sorted(Comparator.reverseOrder())
+                    .toList();
+            LocalDate today = LocalDate.now();
+            LocalDate cursor = set.contains(today) ? today : sorted.get(0);
+
+            int streak = 0;
+            while (set.contains(cursor)) {
+                streak ++;
+                cursor = cursor.minusDays(1);
+            }
+            return streak;
+        } catch (Exception e) {
+            log.error("연속 출석일 계산 실패: {}", e.getMessage());
+            return 0;
+        }
+    }
+
+    // 5) 이번달 출석 획수
+    private int calcMonth(List<LocalDate> dates) {
+        try {
+            if (dates == null || dates.isEmpty()) return 0;
+
+            YearMonth now = YearMonth.now();
+            return (int) dates.stream()
+                    .filter(d -> YearMonth.from(d).equals(now))
+                    .distinct()
+                    .count();
+        } catch (Exception e) {
+            log.error("이번 달 출석 수 계산 실패: {}", e.getMessage());
+            return 0;
+        }
+    }
 }
