@@ -46,6 +46,11 @@ public class BoardService {
     public Long modifyBoard(Long id, BoardReqDto dto, User loginUser){
         try{
             Board board = boardRepository.findById(id).orElseThrow(()->new RuntimeException("해당 게시판 id가 존재하지 않습니다."));
+
+            if (!board.getCreator().getId().equals(loginUser.getId())) {
+                throw new RuntimeException("생성자만 수정할 수 있습니다.");
+            }
+
             if (dto.getName() != null) {
                 board.setName(dto.getName());
             }
@@ -53,14 +58,12 @@ public class BoardService {
             if (dto.getDescription() != null) {
                 board.setDescription(dto.getDescription());
             }
-            if (!board.getCreator().getId().equals(loginUser.getId())) {
-                throw new RuntimeException("생성자만 수정할 수 있습니다.");
-            }
+
 
             return board.getId();
         } catch (Exception e) {
             log.error("게시판 수정 실패 : {}", e.getMessage());
-            return null;
+            throw e;
         }
 
     }

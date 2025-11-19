@@ -3,6 +3,7 @@ package com.univus.project.controller;
 import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.comment.CommentReqDto;
 import com.univus.project.dto.comment.CommentResDto;
+import com.univus.project.dto.post.PostReqDto;
 import com.univus.project.entity.User;
 import com.univus.project.repository.UserRepository;
 import com.univus.project.service.CommentService;
@@ -42,9 +43,29 @@ public class CommentController {
     }
 
     // 댓글 수정
+    @PutMapping("/update/{commentId}")
+    public ResponseEntity<Long> updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentReqDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+
+        Long id = commentService.updateComment(commentId, dto, user);
+        return ResponseEntity.ok(id);
+    }
 
 
     // 댓글 삭제
+    @DeleteMapping("/delete/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        commentService.deleteComment(commentId, user);
+        return ResponseEntity.ok().build();
+    }
 
 
 }
