@@ -1,6 +1,7 @@
 package com.univus.project.controller;
 
 
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.post.PostDetailDto;
 import com.univus.project.dto.post.PostListDto;
 import com.univus.project.dto.post.PostReqDto;
@@ -12,6 +13,8 @@ import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +26,7 @@ import java.util.List;
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
 public class PostController {
+    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PostService postService;
 
@@ -30,22 +34,14 @@ public class PostController {
     @PostMapping("/create")
     public ResponseEntity<Long> createPost(
             @ModelAttribute PostReqDto dto,
-            @RequestParam(required = false) String fileUrl
-    ) {
-        User user = getLoggedInMember();  // 실제 구현 필요
+            @RequestParam(required = false) String fileUrl,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+            ) {
+        User user = userDetails.getUser();
 
         Long postId = postService.createPost(dto, fileUrl, user);
         return ResponseEntity.ok(postId);
     }
-
-    private User getLoggedInMember() {
-        return userRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("유저 없음"));
-    }
-    // 1L : 임시
-    // getLoggedInMember() : 실제 로직으로 변경 필요
-
-
 
     // 특정 게시판의 게시글 목록
     @GetMapping("/board/{boardId}")
@@ -72,13 +68,26 @@ public class PostController {
     public ResponseEntity<Long> updatePost(
             @PathVariable Long postId,
             @ModelAttribute PostReqDto dto,
-            @RequestParam(required = false) String fileUrl
+            @RequestParam(required = false) String fileUrl,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        User user = getLoggedInMember();  // 실제 구현 필요
+        User user = userDetails.getUser();
 
         Long id = postService.updatePost(postId, dto, fileUrl, user);
         return ResponseEntity.ok(id);
     }
 
+
+
+    // 게시글 삭제
+    @DeleteMapping("/delete/{postId}")
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        postService.deletePost(postId, user);
+        return ResponseEntity.ok().build();
+    }
 
 }

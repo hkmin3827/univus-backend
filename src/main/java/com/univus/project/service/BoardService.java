@@ -3,6 +3,8 @@ package com.univus.project.service;
 import com.univus.project.dto.board.BoardReqDto;
 import com.univus.project.dto.board.BoardResDto;
 import com.univus.project.entity.Board;
+import com.univus.project.entity.Post;
+import com.univus.project.entity.User;
 import com.univus.project.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +22,13 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public Long createBoard(BoardReqDto dto) {
-//        try{
+    public Long createBoard(BoardReqDto dto, User user) {
             Board board = new Board();
             board.setName(dto.getName());
             board.setDescription(dto.getDescription());
+            board.setCreator(user);
             boardRepository.save(board);
             return board.getId();
-//        } catch (Exception e) {
-//            log.error("게시판 생성 실패 : {}", e.getMessage());
-//            return null;
-//        }
     }
 
     public List<BoardResDto> getAllBoards() {
@@ -45,7 +43,7 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
     }
 
-    public Boolean modifyBoard(Long id, BoardReqDto dto){
+    public Long modifyBoard(Long id, BoardReqDto dto, User loginUser){
         try{
             Board board = boardRepository.findById(id).orElseThrow(()->new RuntimeException("해당 게시판 id가 존재하지 않습니다."));
             if (dto.getName() != null) {
@@ -55,24 +53,27 @@ public class BoardService {
             if (dto.getDescription() != null) {
                 board.setDescription(dto.getDescription());
             }
+            if (!board.getCreator().getId().equals(loginUser.getId())) {
+                throw new RuntimeException("생성자만 수정할 수 있습니다.");
+            }
 
-            return true;
+            return board.getId();
         } catch (Exception e) {
             log.error("게시판 수정 실패 : {}", e.getMessage());
-            return false;
+            return null;
         }
 
     }
-    public Boolean deleteBoard(Long id) {
-        try{
-            Board board = boardRepository.findById(id).orElseThrow(()->new RuntimeException("해당 게시판 id가 존재하지 않습니다."));
 
-            boardRepository.delete(board);
-            return true;
-        } catch (Exception e){
-            log.error("게시판 삭제 실패 : {}", e.getMessage());
-            return false;
+    @Transactional
+    public void deleteBoard(Long boardId, User loginUser) {
+       Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+
+        if (!board.getCreator().getId().equals(loginUser.getId())) {
+            throw new RuntimeException("생성자만 삭제할 수 있습니다.");
         }
 
+        boardRepository.delete(board);
     }
 }

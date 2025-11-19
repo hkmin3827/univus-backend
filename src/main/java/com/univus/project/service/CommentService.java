@@ -22,7 +22,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    public Long createComment(CommentReqDto dto, User user) {
+    public Long createComment(CommentReqDto dto, User writer) {
 
         Post post = postRepository.findById(dto.getPostId())
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
@@ -30,14 +30,14 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setContent(dto.getContent());
         comment.setPost(post);
-        comment.setUser(user);
+        comment.setWriter(writer);
 
         commentRepository.save(comment);
         return comment.getId();
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResDto> getCommnets(Long postId){
+    public List<CommentResDto> getComments(Long postId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
@@ -45,5 +45,16 @@ public class CommentService {
                 .stream()
                 .map(CommentResDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteComment(Long commentId, User loginUser) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
+
+        if (!comment.getWriter().getId().equals(loginUser.getId())) {
+            throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+        }
+
+        commentRepository.delete(comment);
     }
 }

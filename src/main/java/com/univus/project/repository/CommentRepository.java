@@ -19,6 +19,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostOrderByCreateTimeAsc(Post post);
 
     // 특정 사용자가 특정 게시판에서 작성한 댓글 수를 계산 -> JPQL 쿼리 필요
-    @Query("SELECT COUNT(c) FROM Comment c WHERE c.user = :user AND c.post.board = :board")
+    @Query("SELECT COUNT(c) FROM Comment c WHERE c.writer = :user AND c.post.board = :board")
     int countByUserAndBoard(@Param("user") User user, @Param("board") Board board);
 }

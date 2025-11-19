@@ -20,6 +20,10 @@ public class Board {
     @Column(name="board_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    private User creator;
+
     @Column(nullable = false, length = 128)
     private String name;   // 게시판 이름
 

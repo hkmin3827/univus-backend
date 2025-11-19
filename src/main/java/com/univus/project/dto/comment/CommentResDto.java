@@ -20,7 +20,7 @@ public class CommentResDto {
     public CommentResDto(Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
-        this.userName = comment.getUser().getName(); // Member 엔티티 기준
+        this.userName = comment.getWriter().getName(); // Member 엔티티 기준
         this.createTime = comment.getCreateTime();
     }
 }

@@ -36,5 +36,5 @@ public class Comment {
     // 작성자(User)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User writer;
 }

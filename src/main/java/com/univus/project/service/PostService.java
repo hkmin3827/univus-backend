@@ -83,6 +83,18 @@ public class PostService {
         }
     }
 
+    @Transactional
+    public void deletePost(Long postId, User loginUser) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+
+        if (!post.getUser().getId().equals(loginUser.getId())) {
+            throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+        }
+
+        postRepository.delete(post);
+    }
+
     @Transactional(readOnly = true)
     public List<PostListDto> getPostsByBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
