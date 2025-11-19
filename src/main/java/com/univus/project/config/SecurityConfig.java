@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf().disable() // API 서버에서 외부 요청 테스트 편의를 위해 비활성화. 프로덕션은 CSRF 보호 재검토 필요.
                 .cors().and()
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/auth/signup", "/auth/login","/h2-console/**").permitAll()
+                        .antMatchers("/auth/signup", "/auth/login", "/auth/exists/**","/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm

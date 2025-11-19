@@ -60,6 +60,12 @@ public class AuthController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/exists/{email}")
+    public ResponseEntity<Boolean> userExists(@PathVariable String email) {
+        boolean isTrue = authService.isUser(email);
+        return ResponseEntity.ok(!isTrue);
+    }
+
     // ✅ 회원가입
     @PostMapping("/signup")
     public ResponseEntity<Long> signup(@RequestBody UserSignUpReqDto dto) {
