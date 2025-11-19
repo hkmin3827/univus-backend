@@ -1,11 +1,13 @@
 package com.univus.project.dto.user;
 
+import com.univus.project.constant.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -14,5 +16,15 @@ public class UserResDto {
     private String name;
     private String image;
     private LocalDateTime regDate;
+    private Role role;
+
+    public UserResDto(String email, String name, Role role, String image, LocalDateTime regDate) {
+        this.email = email;
+        this.name = name;
+        this.role = role;
+        this.image = image;
+        this.regDate = regDate;
+    }
 
 }
+

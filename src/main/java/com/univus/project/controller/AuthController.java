@@ -1,82 +1,82 @@
 package com.univus.project.controller;
-// 회원 가입
 
 import com.univus.project.dto.auth.LoginReqDto;
 import com.univus.project.dto.auth.UserSignUpReqDto;
+import com.univus.project.dto.user.UserResDto;
+import com.univus.project.entity.User;
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.service.AuthService;
+
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
-@CrossOrigin(origins = "http://localhost:3000")
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-
 public class AuthController {
+
+    private final AuthenticationManager authenticationManager;
     private final AuthService authService;
 
-    // 회원 가입 여부 확인x
-    @GetMapping("/exists/{email}")
-    public ResponseEntity<Boolean> userExists(@PathVariable String email) {
-        log.info("email: {}", email);
-        boolean isTrue = authService.isUser(email);
-        return ResponseEntity.ok(isTrue);
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity<Boolean> signup(@RequestBody UserSignUpReqDto userSignUpReqDto) {
-        log.info("userSignUpReqDto: {}", userSignUpReqDto.getEmail());
-        log.info("userSignUpReqDto: {}", userSignUpReqDto.getPwd());
-        log.info("userSignUpReqDto: {}", userSignUpReqDto.getName());
-        return ResponseEntity.ok(authService.signup(userSignUpReqDto));
-    }
-
+    // ✅ 로그인
     @PostMapping("/login")
-    public ResponseEntity<Boolean> login(@RequestBody LoginReqDto loginReqDto) {
-        log.info("loginReqDto: {}", loginReqDto.getEmail());
-        log.info("loginReqDto: {}", loginReqDto.getPwd());
-        boolean isTrue = authService.login(loginReqDto);
-        return ResponseEntity.ok(isTrue);
+    public ResponseEntity<UserResDto> login(@RequestBody LoginReqDto dto,
+                                            HttpServletRequest request) {
+
+        // email + pwd 로 인증 토큰 생성
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPwd());
+
+        // 인증 시도
+        Authentication authentication = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 세션 생성
+        HttpSession session = request.getSession(true);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        // 인증된 사용자 정보
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+
+        // 클라이언트로 반환할 DTO
+        UserResDto res = new UserResDto(
+                user.getEmail(),
+                user.getName(),
+                user.getRole(),
+                user.getImage(),
+                user.getRegDate()
+        );
+
+        return ResponseEntity.ok(res);
+    }
+
+    // ✅ 회원가입
+    @PostMapping("/signup")
+    public ResponseEntity<Long> signup(@RequestBody UserSignUpReqDto dto) {
+
+        Long id = authService.signup(dto);
+        return ResponseEntity.ok(id);
+    }
+
+    // ✅ 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
+
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().build();
     }
 
 
-
-
-//    Security 추가시 작성 변경?
-
-//    private final AuthenticationManager authenticationManager;
-//    private final UserService userService;
-//
-//    @PostMapping("/login")
-//    public ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto dto, HttpServletRequest request) {
-//        UsernamePasswordAuthenticationToken token =
-//                new UsernamePasswordAuthenticationToken(dto.getLoginId(), dto.getPassword());
-//
-//        Authentication authentication = authenticationManager.authenticate(token);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        // 세션 생성(기본)
-//        HttpSession session = request.getSession(true);
-//        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-//
-//        User user = ((com.univus.project.config.CustomUserDetails) authentication.getPrincipal()).getUser();
-//
-//        return ResponseEntity.ok(new AuthResponseDto(user.getId(), user.getLoginId(), user.getName()));
-//    }
-//
-//    @PostMapping("/register")
-//    public ResponseEntity<Long> register(@RequestBody AuthRequestDto dto) {
-//        Long id = userService.register(dto.getLoginId(), dto.getPassword(), dto.getName());
-//        return ResponseEntity.ok(id);
-//    }
-//
-//    @PostMapping("/logout")
-//    public ResponseEntity<Void> logout(HttpServletRequest request) {
-//        request.getSession(false).invalidate();
-//        SecurityContextHolder.clearContext();
-//        return ResponseEntity.ok().build();
-//    }
 }

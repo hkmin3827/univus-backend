@@ -24,7 +24,7 @@ public class ActivityLogService {
     private final ActiveLogRepository activeLogRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final ReactionRepository reactionRepository;
+//    private final ReactionRepository reactionRepository;
     private final TodoRepository todoRepository;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
@@ -62,8 +62,8 @@ public class ActivityLogService {
                     .toList();
 
             int total = attendanceDates.size();
-            int streak = calcStreak(attendanceDates);
-            int monthCount = calcMonth(attendanceDates);
+//            int streak = calcStreak(attendanceDates);      // ⭐ 여기서 사용
+//            int monthCount = calcMonth(attendanceDates);
 
             // 저장
             log.setPostCount(postCount);
@@ -74,8 +74,8 @@ public class ActivityLogService {
             log.setTodoUncompleted(todoNotDone);
 
             log.setAttendanceTotal(total);
-            log.setAttendanceStreak(streak);
-            log.setAttendanceThisMonth(monthCount);
+//            log.setAttendanceStreak(streak);
+//            log.setAttendanceThisMonth(monthCount);
 
             log.setLastUpdated(LocalDateTime.now());
 
@@ -94,6 +94,8 @@ public class ActivityLogService {
         log.setBoard(board);
         return log;
     }
+
+
 
 //    //3) 게시판 전체 로그 조회
 //    private int calcDateStreak(List<LocalDate> list) {

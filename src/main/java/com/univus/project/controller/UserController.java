@@ -1,11 +1,14 @@
 package com.univus.project.controller;
 
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.user.UserModifyReqDto;
 import com.univus.project.dto.user.UserResDto;
+import com.univus.project.entity.User;
 import com.univus.project.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
@@ -38,7 +41,7 @@ public class UserController {
 //    }
 
     // 유저 탈퇴
-    @DeleteMapping("/users/withdraw")
+    @DeleteMapping("/withdraw")
     public ResponseEntity<String> withdrawUser(@PathVariable String email) {
         boolean result = userService.withdrawUser(email);
 
@@ -51,7 +54,7 @@ public class UserController {
 
 
     // 관리자 삭제
-    @DeleteMapping("/admin/users/{email}")
+    @DeleteMapping("/admin/{email}")
     public ResponseEntity<String> deleteUserByAdmin(@PathVariable String email) {
         boolean result = userService.deleteUserByAdmin(email);
 
@@ -60,5 +63,22 @@ public class UserController {
         } else {
             return ResponseEntity.status(400).body("회원 삭제에 실패했습니다.");
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResDto> getCurrentUser(Authentication authentication) {
+        // 인증된 사용자 정보 가져오기
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+
+        UserResDto dto = new UserResDto(
+                user.getEmail(),
+                user.getName(),
+                user.getRole(),
+                user.getImage(),
+                user.getRegDate()
+        );
+
+        return ResponseEntity.ok(dto);
     }
 }

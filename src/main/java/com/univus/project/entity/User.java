@@ -33,16 +33,17 @@ public class User {
     @Column(length = 255)
     private String image;
 
+
     private LocalDateTime regDate;
+    @PrePersist
+    public void prePersist() {
+        this.regDate = LocalDateTime.now();
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;        // 권한 (STUDENT, PROFESSOR 등)
 
-    @PrePersist
-    void prePersist() {
-        if (role == null) role = Role.STUDENT;  // 저장 직전 기본값 강제
-    }
 
     @Column(nullable = false)
     private boolean active = true; // 회원 가입시 (활성)
