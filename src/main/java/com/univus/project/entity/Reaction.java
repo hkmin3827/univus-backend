@@ -1,5 +1,5 @@
 package com.univus.project.entity;
-// 감정 표시
+// 공감
 
 public class Reaction {
 }

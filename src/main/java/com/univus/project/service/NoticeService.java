@@ -10,10 +10,11 @@ import com.univus.project.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -82,15 +83,13 @@ public class NoticeService {
     }
 
     // 5) 최신순 공지 목록 조회
-    public List<NoticeResDto> getAllNotices() {
+    public Page<NoticeResDto> getAllNotices(Pageable pageable) {
         try {
-            return noticeRepository.findAllByOrderByCreateTimeDesc()
-                    .stream()
-                    .map(NoticeResDto::new)
-                    .collect(Collectors.toList());
+            return noticeRepository.findAllByOrderByCreateTimeDesc(pageable)
+                    .map(NoticeResDto::new); // Page<Notice> -> Page<NoticeResDto> 변환
         } catch (Exception e) {
             log.error("공지 목록 조회 실패: {}", e.getMessage());
-            return List.of();
+            return Page.empty();
         }
     }
 

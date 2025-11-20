@@ -20,7 +20,7 @@ public class NoticeResDto {
         this.id = notice.getId();
         this.title = notice.getTitle();
         this.content = notice.getContent();
-        this.email = notice.getUser().getEmail();
+        this.email = notice.getUser() != null ? notice.getUser().getEmail() : null;
         this.createTime = notice.getCreateTime();
     }
 }

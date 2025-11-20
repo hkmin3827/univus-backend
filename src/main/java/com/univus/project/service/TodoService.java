@@ -28,7 +28,6 @@ public class TodoService {
             todo.setContent(dto.getContent());
             todo.setUser(user);
             todo.setDone(false);
-
             todoRepository.save(todo);
             return new TodoResDto(todo);
         } catch (Exception e) {

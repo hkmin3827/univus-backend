@@ -1,17 +1,17 @@
 package com.univus.project.controller;
 
-import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeResDto;
+import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
 import com.univus.project.entity.User;
 import com.univus.project.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
@@ -60,10 +60,10 @@ public class NoticeController {
         return ResponseEntity.ok(result);
     }
 
-    // 5) 최신 공지 목록 조회
+    // 5) 최신 공지 목록 조회 - 페이지네이션 적용
     @GetMapping("/list")
-    public ResponseEntity<List<NoticeResDto>> getAllNotices() {
-        List<NoticeResDto> notices = noticeService.getAllNotices();
+    public ResponseEntity<Page<NoticeResDto>> getAllNotices(Pageable pageable) {
+        Page<NoticeResDto> notices = noticeService.getAllNotices(pageable);
         return ResponseEntity.ok(notices);
     }
 }

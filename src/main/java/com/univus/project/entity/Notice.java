@@ -35,7 +35,6 @@ public class Notice {
         this.createTime = LocalDateTime.now();
     }
 
-    // 작성자 이름 / 이메일을 편리하게 가져오는 메서드
     public String getWriterName() {
         return this.user != null ? this.user.getName() : null;
     }
