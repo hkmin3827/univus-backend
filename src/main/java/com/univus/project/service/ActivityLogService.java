@@ -93,7 +93,7 @@ public class ActivityLogService {
         return log;
     }
 
-//    //3) 게시판 전체 로그 조회
+//    // 3-1) 게시판 전체 로그 조회
 //    private int calcDateStreak(List<LocalDate> list) {
 //        try {
 //            Board board = boardRepository.findById()
@@ -105,6 +105,21 @@ public class ActivityLogService {
 //            return List.of();
 //        }
 //    } BoardRepository 생성 확인 후 맞춰서 다시 작성 예정 (일단 제 마음대로 작성했습니다.)
+
+    // 3-2) 특정 사용자 활동 로그 조회
+    public ActivityLog getUserLog(Long userId, Long boardId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
+            return activeLogRepository.findByUserAndBoard(user, board)
+                    .orElse(null);
+        } catch (Exception e) {
+            log.error("사용자 활동 로그 조회 실패(userId:{}, boardId:{}): {}", userId, boardId, e.getMessage());
+            return null;
+        }
+    }
 
     // 4) 연속 출석일 계산
     private int calcStreak(List<LocalDate> dates) {
