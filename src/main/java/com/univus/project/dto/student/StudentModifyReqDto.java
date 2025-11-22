@@ -11,9 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class StudentModifyReqDto {
-    public class StudentProfileModifyReqDto {
         private String major;
         private String studentNumber;
         private Integer grade;
-    }
 }
