@@ -29,8 +29,14 @@ public class TeamInvite {
     // 초대한 사람(팀장 userId)
     private String inviter;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private InviteStatus status = InviteStatus.PENDING;
 
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
