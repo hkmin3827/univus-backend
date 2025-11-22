@@ -1,7 +1,9 @@
 package com.univus.project.service;
 
+import com.univus.project.dto.student.StudentModifyReqDto;
 import com.univus.project.dto.user.UserModifyReqDto;
 import com.univus.project.dto.user.UserResDto;
+import com.univus.project.entity.Student;
 import com.univus.project.entity.User;
 import com.univus.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,37 +43,39 @@ public class UserService {
         return covertEntityToDto(user);
     }
 
-//    // 회원 정보 수정
-//    public boolean updateUser(UserModifyReqDto userModifyReqDto) {
-//        try {
-//            // 1. 기존 회원 조회
-//            User user = userRepository.findByEmail(userModifyReqDto.getEmail())
-//                    .orElseThrow(() -> new RuntimeException("해당 회원이 존재하지 않습니다."));
+    @Transactional
+    public void updateUserProfile(Long userId, UserModifyReqDto dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getImage() != null) user.setImage(dto.getImage());
+        if (dto.getPhone() != null) user.setPhone(dto.getPhone());
+        if (dto.getProfile() != null) user.setProfile(dto.getProfile());
+    }
+
+    // 학생
+//    @Transactional
+//    public void updateStudentProfile(Long userId, StudentModifyReqDto dto) {
+//        Student student = studentRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학생입니다.");
 //
-//            // 2. 변경할 필드만 업데이트
-//            if (userModifyReqDto.getName() != null) {
-//                user.setName(userModifyReqDto.getName());
-//            }
-//
-//            if (userModifyReqDto.getImage() != null) {
-//                user.setImage(userModifyReqDto.getImage());
-//            }
-//
-//            if (userModifyReqDto.getProfile() != null) {
-//                user.setImage(userModifyReqDto.getProfile());
-//            }
-//
-//            if (userModifyReqDto.getPhone() != null) {
-//                user.setImage(userModifyReqDto.getPhone());
-//            }
-//            userRepository.save(user);
-//
-//            return true;
-//        } catch (Exception e) {
-//            log.error("회원 정보 수정 실패 : {}", e.getMessage());
-//            return false;
-//        }
+//        if (dto.getMajor() != null) student.setMajor(dto.getMajor());
+//        if (dto.getStudentNumber() != null) student.setStudentNumber(dto.getStudentNumber());
+//        if (dto.getGrade() != null) student.setGrade(dto.getGrade());
 //    }
+//
+//    // 교수
+//    @Transactional
+//    public void updateProfessorProfile(Long userId, ProfessorProfileModifyReqDto dto) {
+//        Professor professor = professorRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 교수입니다.");
+//
+//        if (dto.getOffice() != null) professor.setOffice(dto.getOffice());
+//        if (dto.getPosition() != null) professor.setPosition(dto.getPosition());
+//        if (dto.getResearchField() != null) professor.setResearchField(dto.getResearchField());
+//    }
+
 
     // 회원 스스로 탈퇴
     public boolean withdrawUser(String email) {
