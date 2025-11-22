@@ -5,6 +5,8 @@ import com.univus.project.dto.auth.UserSignUpReqDto;
 import com.univus.project.dto.user.UserResDto;
 import com.univus.project.entity.User;
 import com.univus.project.config.CustomUserDetails;
+import com.univus.project.exception.AuthException;
+import com.univus.project.repository.UserRepository;
 import com.univus.project.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,35 +28,47 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
+    private final UserRepository userRepository;
 
     // ✅ 로그인
     @PostMapping("/login")
     public ResponseEntity<UserResDto> login(@RequestBody LoginReqDto dto,
                                             HttpServletRequest request) {
 
-        // email + pwd 로 인증 토큰 생성
+
+        // 1) 이메일 존재 여부 먼저 확인
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new AuthException("존재하지 않는 이메일입니다."));
+
+        // 2) Security 인증 시도
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPwd());
 
-        // 인증 시도
-        Authentication authentication = authenticationManager.authenticate(token);
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(token);
+        } catch (BadCredentialsException e) {
+            // 비밀번호가 틀린 경우
+            throw new AuthException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3) 인증 정보 SecurityContext에 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 세션 생성
+        // 4) 세션에 SecurityContext 저장 (세션 기반 로그인 유지)
         HttpSession session = request.getSession(true);
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-        // 인증된 사용자 정보
+        // 5) 인증된 사용자 정보 꺼내기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+        User authUser = userDetails.getUser();
 
-        // 클라이언트로 반환할 DTO
         UserResDto res = new UserResDto(
-                user.getEmail(),
-                user.getName(),
-                user.getRole(),
-                user.getImage(),
-                user.getRegDate()
+                authUser.getEmail(),
+                authUser.getName(),
+                authUser.getRole(),
+                authUser.getImage(),
+                authUser.getRegDate()
         );
 
         return ResponseEntity.ok(res);
