@@ -33,15 +33,12 @@ public class TeamInvite {
     @Enumerated(EnumType.STRING)
     private InviteStatus status = InviteStatus.PENDING;
 
-<<<<<<< HEAD
-    @Builder.Default
-    private LocalDateTime createAt = LocalDateTime.now();
-=======
+
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
->>>>>>> c9561be053853b8bec99394a48d3065470568288
 }

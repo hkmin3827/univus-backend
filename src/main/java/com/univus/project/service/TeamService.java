@@ -29,6 +29,10 @@ public class TeamService {
             throw new RuntimeException("이미 존재하는 팀 이름입니다.");
         }
 
+        // 리더 존재 여부 체크 메시지
+        User leader = userRepository.findByEmail(dto.getLeaderId())
+                .orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 존재하지 않습니다."));
+
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
                 .description(dto.getDescription())
@@ -37,9 +41,6 @@ public class TeamService {
 
         teamRepository.save(team);
 
-        // 팀 생성자 팀 멤버로 등록
-        User leader = userRepository.findByEmail(dto.getLeaderId())
-                .orElseThrow(() -> new RuntimeException("Leader not found"));
 
         TeamMember leaderMember = TeamMember.builder()
                 .team(team)
@@ -75,6 +76,11 @@ public class TeamService {
 
         team.setDescription(dto.getDescription());
 
+        // 팀장 변경 기능
+        if (dto.getLeader() != null && !dto.getLeader().isEmpty()) {
+            team.setLeader(dto.getLeader());
+        }
+
         teamRepository.save(team);
         return true;
     }
@@ -107,21 +113,14 @@ public class TeamService {
         User invitee = userRepository.findByEmail(dto.getInviteEmail())
                 .orElseThrow(() -> new RuntimeException("초대 대상 사용자가 존재하지 않습니다."));
 
-        boolean isMember = teamMemberRepository.existsByTeamAndUser(team, invitee);
-        if (isMember) {
+        if (teamMemberRepository.existsByTeamAndUser(team, invitee)) {
             throw new RuntimeException("이미 팀 멤버입니다.");
         }
 
         // 이미 초대가 PENDING 상태인지 확인
-        boolean hasPending = inviteRepository.existsByInviteeAndTeamAndStatus(
-                invitee, team, InviteStatus.PENDING
-        );
-        if (hasPending) {
+        if (inviteRepository.existsByInviteeAndTeamAndStatus(invitee, team, InviteStatus.PENDING)) {
             throw new RuntimeException("이미 초대가 전송되어 있습니다.");
         }
-
-        User leader = userRepository.findByEmail(team.getLeader())
-                .orElseThrow(() -> new RuntimeException("Leader not found"));
 
         TeamInvite invite = TeamInvite.builder()
                 .team(team)
@@ -144,7 +143,13 @@ public class TeamService {
             throw new RuntimeException("이미 처리된 초대입니다.");
         }
 
+        if (teamMemberRepository.existsByTeamAndUser(invite.getTeam(), invite.getInvitee())) {
+            throw new RuntimeException("이미 팀 멤버입니다.");
+        }
+
         invite.setStatus(InviteStatus.ACCEPTED);
+
+        inviteRepository.save(invite);
 
         TeamMember member = TeamMember.builder()
                 .team(invite.getTeam())
@@ -164,6 +169,7 @@ public class TeamService {
 
         invite.setStatus(InviteStatus.DECLINED);
 
+        inviteRepository.save(invite);
         return true;
     }
 
