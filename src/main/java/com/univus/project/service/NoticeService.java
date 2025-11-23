@@ -86,7 +86,7 @@ public class NoticeService {
     public Page<NoticeResDto> getAllNotices(Pageable pageable) {
         try {
             return noticeRepository.findAllByOrderByCreateTimeDesc(pageable)
-                    .map(NoticeResDto::new); // Page<Notice> -> Page<NoticeResDto> 변환
+                    .map(NoticeResDto::new);
         } catch (Exception e) {
             log.error("공지 목록 조회 실패: {}", e.getMessage());
             return Page.empty();
