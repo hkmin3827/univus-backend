@@ -45,6 +45,15 @@ public class BoardController {
         return ResponseEntity.ok(new BoardResDto(boardService.getBoard(id)));
     }
 
+    // 팀별 게시판 목록 조회
+    @GetMapping("/findByTeam")
+    public ResponseEntity<List<BoardResDto>> getBoardsByTeam(
+            @RequestParam Long teamId
+    ){
+        List<BoardResDto> result = boardService.getBoardsByTeam(teamId);
+        return ResponseEntity.ok(result);
+    }
+
     // 게시판 수정
     @PutMapping("/modify/{id}")
     public ResponseEntity<Long> modifyBoard(@PathVariable Long id, @RequestBody BoardReqDto dto,

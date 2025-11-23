@@ -43,6 +43,15 @@ public class BoardService {
                 .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
     }
 
+    public List<BoardResDto> getBoardsByTeam(Long teamId) {
+
+        List<Board> boards = boardRepository.findByTeam_Id(teamId);
+
+        return boards.stream()
+                .map(BoardResDto::new)  // 여기만 변경됨
+                .collect(Collectors.toList());
+    }
+
     public Long modifyBoard(Long id, BoardReqDto dto, User loginUser){
         try{
             Board board = boardRepository.findById(id).orElseThrow(()->new RuntimeException("해당 게시판 id가 존재하지 않습니다."));

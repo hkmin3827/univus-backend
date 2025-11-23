@@ -1,8 +1,11 @@
 package com.univus.project.entity;
 
 import lombok.*;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,4 +24,8 @@ public class Team {
 
     // 팀장 userId
     private String leader;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "team")
+    private List<Board> boards = new ArrayList<>();
 }

@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PostResDto {
     private Long postId;
-    private String name;
+    private String name;  // 작성자 이름
     private String title;
     private String content;
     private String fileUrl;
     private LocalDateTime createTime;
-
 }
