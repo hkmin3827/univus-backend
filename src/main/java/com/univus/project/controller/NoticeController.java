@@ -1,10 +1,12 @@
 package com.univus.project.controller;
 
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
 import com.univus.project.entity.User;
 import com.univus.project.service.NoticeService;
+import com.univus.project.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,13 +23,15 @@ import org.springframework.web.bind.annotation.*;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final UserService userService;
 
     // 1) 공지 생성 - 교수 권한 확인
     @PostMapping("/create")
     public ResponseEntity<NoticeResDto> createNotice(
             @RequestBody NoticeWriteDto dto,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+        User user = userDetails.getUser();
         NoticeResDto notice = noticeService.createNotice(dto, user);
         return ResponseEntity.ok(notice);
     }
@@ -44,8 +48,9 @@ public class NoticeController {
     public ResponseEntity<Boolean> modifyNotice(
             @PathVariable Long id,
             @RequestBody NoticeModifyDto dto,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+        User user = userDetails.getUser();
         Boolean result = noticeService.modifyNotice(id, dto, user);
         return ResponseEntity.ok(result);
     }
@@ -54,8 +59,9 @@ public class NoticeController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteNotice(
             @PathVariable Long id,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+        User user = userDetails.getUser();
         Boolean result = noticeService.deleteNotice(id, user);
         return ResponseEntity.ok(result);
     }

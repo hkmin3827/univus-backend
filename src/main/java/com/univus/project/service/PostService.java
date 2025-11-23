@@ -9,6 +9,9 @@ import com.univus.project.repository.PostRepository;
 import com.univus.project.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -137,6 +140,14 @@ public class PostService {
         return postResDto;
 
     }
+    // 게시물 페이지네이션
+    public Page<PostResDto> getPostList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return postRepository.findAll(pageable)
+                .map(post -> convertToDto(post));   // ★ DTO로 매핑
+    }
+
 
 
 }

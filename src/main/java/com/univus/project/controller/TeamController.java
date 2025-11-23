@@ -19,13 +19,13 @@ public class TeamController {
     private final TeamService teamService;
 
     // 팀 생성
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Boolean> createTeam(@RequestBody TeamCreateReqDto dto) {
         return ResponseEntity.ok(teamService.createTeam(dto));
     }
 
     // 팀 전체 조회
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<List<TeamResDto>> getTeams() {
         return ResponseEntity.ok(teamService.findAll());
     }
@@ -73,4 +73,13 @@ public class TeamController {
     public ResponseEntity<Boolean> declineInvite(@PathVariable Long inviteId) {
         return ResponseEntity.ok(teamService.declineInvite(inviteId));
     }
+
+    // 초대 목록 조회
+    // http://localhost:8111/teams/invites?email=ID입력
+    @GetMapping("/invites")
+    public ResponseEntity<List<TeamInviteResDto>> getInvites(@RequestParam String email) {
+        return ResponseEntity.ok(teamService.getPendingInvites(email));
+    }
+
+
 }

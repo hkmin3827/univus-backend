@@ -21,7 +21,7 @@ public class Todo {
 
     private boolean done = false;       // TodoList 완료 여부
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;                  // 작성자 식별
 

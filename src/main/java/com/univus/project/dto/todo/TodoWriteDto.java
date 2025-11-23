@@ -8,5 +8,6 @@ import lombok.ToString;
 @Getter @Setter @NoArgsConstructor @ToString
 public class TodoWriteDto {
     private Long boardId;   // 할일이 속한 게시판
+    private String Email;   // 작성자 이메일
     private String content; // 할일 내용
 }

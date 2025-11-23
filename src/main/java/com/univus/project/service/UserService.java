@@ -124,6 +124,7 @@ public class UserService {
         userResDto.setName(user.getName());
         userResDto.setImage(user.getImage());
         userResDto.setRegDate(user.getRegDate());
+        userResDto.setRole(user.getRole());
         return userResDto;
     }
 
