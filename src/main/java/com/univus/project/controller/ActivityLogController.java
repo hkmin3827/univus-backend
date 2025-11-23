@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@CrossOrigin(origins = "[http://localhost:3000](http://localhost:3000)")
 @RestController
 @RequestMapping("/activity")
 @RequiredArgsConstructor
@@ -34,22 +33,7 @@ public class ActivityLogController {
         }
     }
 
-    // 2) 특정 게시판 전체 사용자 활동 로그 조회
-//    @GetMapping("/board/{boardId}")
-//    public ResponseEntity<List<ActivityLogResDto>> getAllLogsByBoard(@PathVariable Long boardId) {
-//        try {
-//            List<ActivityLogResDto> logs = activityLogService.getAllLogsByBoard(boardId)
-//                    .stream()
-//                    .map(ActivityLogResDto::new)
-//                    .toList();
-//            return ResponseEntity.ok(logs);
-//        } catch (Exception e) {
-//            log.error("게시판 전체 활동 로그 조회 실패(boardId:{}): {}", boardId, e.getMessage());
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
-
-    // 3) 특정 사용자 활동 로그 조회
+    // 2) 특정 사용자 활동 로그 조회
     @GetMapping("/user/{userId}/board/{boardId}")
     public ResponseEntity<ActivityLogResDto> getUserLog(
             @PathVariable Long userId,

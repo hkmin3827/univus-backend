@@ -1,8 +1,5 @@
 package com.univus.project.service;
 
-import com.univus.project.dto.notice.NoticeModifyDto;
-import com.univus.project.dto.notice.NoticeResDto;
-import com.univus.project.dto.notice.NoticeWriteDto;
 import com.univus.project.entity.*;
 import com.univus.project.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,7 @@ public class ActivityLogService {
     private final ActiveLogRepository activeLogRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    //private final ReactionRepository reactionRepository;
+    private final ReactionRepository reactionRepository;
     private final TodoRepository todoRepository;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
@@ -47,7 +44,7 @@ public class ActivityLogService {
             // 게시글, 댓글, 공감 부분
             int postCount = postRepository.countByUserAndBoard(user, board);
             int commentCount = commentRepository.countByUserAndBoard(user, board);
-            // int reactionCount = reactionRepository.countByTargetUserAndBoard(user, board); 리액션 레포지토리 구현 시 확인 후 생성 예정
+             int reactionCount = reactionRepository.countByPost_UserAndPost_Board(user, board);
 
             // todolist 부분
             int todoDone = todoRepository.countByUserAndBoardAndDone(user, board, true);
@@ -66,7 +63,7 @@ public class ActivityLogService {
             // 저장
             log.setPostCount(postCount);
             log.setCommentCount(commentCount);
-            // log.setReactionCount(reactionCount); 마찬가지로 리액션 레포지토리 구현 시 확인 후 생성 예정
+             log.setReactionCount(reactionCount);
 
             log.setTodoCompleted(todoDone);
             log.setTodoUncompleted(todoNotDone);
@@ -93,20 +90,7 @@ public class ActivityLogService {
         return log;
     }
 
-//    // 3-1) 게시판 전체 로그 조회
-//    private int calcDateStreak(List<LocalDate> list) {
-//        try {
-//            Board board = boardRepository.findById()
-//                    .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
-//
-//            return activeLogRepository.findByBoard(board);
-//        } catch (Exception e) {
-//            log.error("게시판 로그 조회 실패 (boardId: {}) : {}", boardId, e.getMessage());
-//            return List.of();
-//        }
-//    } BoardRepository 생성 확인 후 맞춰서 다시 작성 예정 (일단 제 마음대로 작성했습니다.)
-
-    // 3-2) 특정 사용자 활동 로그 조회
+    // 3) 특정 사용자 활동 로그 조회
     public ActivityLog getUserLog(Long userId, Long boardId) {
         try {
             User user = userRepository.findById(userId)

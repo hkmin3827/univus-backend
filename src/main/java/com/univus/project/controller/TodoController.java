@@ -5,10 +5,12 @@ import com.univus.project.dto.todo.TodoResDto;
 import com.univus.project.dto.todo.TodoWriteDto;
 import com.univus.project.entity.User;
 import com.univus.project.service.TodoService;
+import com.univus.project.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,44 +21,63 @@ import java.util.List;
 @RequestMapping("/todo")
 @RequiredArgsConstructor
 public class TodoController {
-    private final TodoService todoService;
 
-    // 1) TodoList 생성
+    private final TodoService todoService;
+    private final UserService userService;
+
+    // 1) Todo 생성
     @PostMapping("/create")
-    public ResponseEntity<TodoResDto> createTodo(@RequestBody TodoWriteDto dto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<TodoResDto> createTodo(@RequestBody TodoWriteDto dto,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
         TodoResDto todo = todoService.createTodo(dto, user);
         return ResponseEntity.ok(todo);
     }
 
-    // 2) TodoList 조회
+    // 2) Todo ID 조회
     @GetMapping("/{id}")
     public ResponseEntity<TodoResDto> getTodo(@PathVariable Long id) {
         return ResponseEntity.ok(todoService.getTodoById(id));
     }
 
-    // 3) TodoList 완료 여부 조회
-    @GetMapping("/done/{done}")
-    public ResponseEntity<List<TodoResDto>> getTodoByDone(@PathVariable boolean done) {
-        return ResponseEntity.ok(todoService.getTodoByDone(done));
+    // 3) 작성자 이메일로 Todo 조회
+    @GetMapping("/user")
+    public ResponseEntity<List<TodoResDto>> getTodoByUser(@AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        return ResponseEntity.ok(todoService.getTodoByUserEmail(email));
     }
 
-    // 4) TodoList 수정
+    // 4) 완료 여부 조회
+    @GetMapping("/done/{done}")
+    public ResponseEntity<List<TodoResDto>> getTodoByDone(@PathVariable boolean done,
+                                                          @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(todoService.getTodoByDoneForUser(done, user));
+    }
+
+    // 5) Todo 수정
     @PutMapping("/modify/{id}")
-    public ResponseEntity<Boolean> modifyTodo(@PathVariable Long id, @RequestBody TodoModifyDto dto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Boolean> modifyTodo(@PathVariable Long id,
+                                              @RequestBody TodoModifyDto dto,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
         Boolean result = todoService.modifyTodo(id, dto, user);
         return ResponseEntity.ok(result);
     }
 
-    // 5) TodoList 삭제
+    // 6) Todo 삭제
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deleteTodo(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Boolean> deleteTodo(@PathVariable Long id,
+                                              @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
         Boolean result = todoService.deleteTodo(id, user);
         return ResponseEntity.ok(result);
     }
 
-    // 6) 최신순 TodoList 목록 조회
+    // 7) 최신 Todo 목록 조회 (로그인 유저 기준)
     @GetMapping("/list")
-    public ResponseEntity<List<TodoResDto>> getAllTodo() {
-        return ResponseEntity.ok(todoService.getAllTodo());
+    public ResponseEntity<List<TodoResDto>> getAllTodoForUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(todoService.getAllTodoForUser(user));
     }
 }

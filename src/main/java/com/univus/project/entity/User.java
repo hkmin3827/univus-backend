@@ -33,6 +33,12 @@ public class User {
     @Column(length = 255)
     private String image;
 
+    @Column(length = 30)
+    private String phone;
+
+    @Lob
+    @Column(columnDefinition = "JSON")
+    private String profile;
 
     private LocalDateTime regDate;
     @PrePersist

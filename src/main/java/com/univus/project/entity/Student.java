@@ -16,14 +16,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor @AllArgsConstructor
 
 public class Student extends User {
-    // 전공 or 학년 같은 정보 등
+    @Column(nullable = false, length = 20)
+    private String studentNumber;   // 학번
 
-    @Column(length = 30)
-    private String phone;
+    @Column(length = 50)
+    private String major;           // 전공
 
-    @Lob
-    @Column(columnDefinition = "JSON")
-    private String profile;
+    @Column
+    private Integer grade;          // 학년 (1,2,3,4)
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;  // 생성 시간 updatable = false(변경 불가)

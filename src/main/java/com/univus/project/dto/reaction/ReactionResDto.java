@@ -10,30 +10,19 @@ import lombok.ToString;
 public class ReactionResDto {
     // User 필드
     private Long userId;
-    private String userName;
-    private String userEmail;
-
-    // Board 필드
-    private Long boardId;
-    private String boardName;
 
     // Post 필드
     private Long postId;
-    private String postTitle;
 
     // 공감 여부
     private boolean press;
 
-    public ReactionResDto(Reaction reaction) {
+    public ReactionResDto(Reaction reaction, boolean press) {
         this.userId = reaction.getUser().getId();
-        this.userName = reaction.getUser().getName();
-        this.userEmail = reaction.getUser().getEmail();
-
-        this.boardId = reaction.getBoard().getId();
-        this.boardName = reaction.getBoard().getName();
-
         this.postId = reaction.getPost().getId();
-        this.postTitle = reaction.getPost().getTitle();
+        this.press = press;
+
+
 
     }
 }
