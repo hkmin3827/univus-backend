@@ -1,16 +1,18 @@
 package com.univus.project.controller;
 
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.activityLog.ActivityLogResDto;
 import com.univus.project.dto.activityLog.BoardUserContributionDto;
 import com.univus.project.dto.activityLog.UserContributionDetailDto;
 import com.univus.project.entity.ActivityLog;
+import com.univus.project.entity.User;
 import com.univus.project.service.ActivityLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -24,8 +26,10 @@ public class ActivityLogController {
     @PostMapping("/recalc/{userId}/{boardId}")
     public ResponseEntity<ActivityLogResDto> recalcActivityLog(
             @PathVariable Long userId,
-            @PathVariable Long boardId) {
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
+            User user = userDetails.getUser();
             ActivityLog log = activityLogService.recalcActivityLog(userId, boardId);
             if (log == null) throw new RuntimeException("활동 로그 재계산 실패");
             return ResponseEntity.ok(new ActivityLogResDto(log));
@@ -39,8 +43,10 @@ public class ActivityLogController {
     @GetMapping("/user/{userId}/board/{boardId}")
     public ResponseEntity<ActivityLogResDto> getUserLog(
             @PathVariable Long userId,
-            @PathVariable Long boardId) {
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
+            User user = userDetails.getUser();
             ActivityLog log = activityLogService.getUserLog(userId, boardId);
             if (log == null) throw new RuntimeException("활동 로그가 없습니다.");
             return ResponseEntity.ok(new ActivityLogResDto(log));
