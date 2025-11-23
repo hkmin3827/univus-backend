@@ -10,15 +10,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Team {
+public class TeamMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String teamName;    // 팀 이름
-    private String description; // 팀 소개
+    @ManyToOne(optional = false)
+    private Team team;
 
-    // 팀장 userId
-    private String leader;
+    @ManyToOne(optional = false)
+    private User user;
 }
