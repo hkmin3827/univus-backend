@@ -1,6 +1,7 @@
 package com.univus.project.repository;
 
 
+import com.univus.project.entity.Board;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.Reaction;
 import com.univus.project.entity.User;
@@ -17,6 +18,8 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
 
     // 특정 게시글의 모든 공감
     List<Reaction> findByPost(Post post);
+    // 추가: 특정 유저가 특정 게시판에서 받은 공감 수
+    int countByPost_UserAndPost_Board(User user, Board board);
 
 
 

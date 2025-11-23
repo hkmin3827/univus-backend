@@ -116,4 +116,9 @@ public class UserService {
         return userResDto;
     }
 
+    public User getUserEntityByEmail(String email) {
+        return userRepository.findByEmailAndActiveTrue(email)
+                .orElseThrow(() -> new RuntimeException("해당 회원이 존재하지 않습니다."));
+    }
+
 }

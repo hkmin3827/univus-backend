@@ -1,7 +1,6 @@
 package com.univus.project.dto.activityLog;
 
 import com.univus.project.entity.ActivityLog;
-import com.univus.project.entity.Notice;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
