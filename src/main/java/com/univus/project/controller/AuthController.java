@@ -11,6 +11,8 @@ import com.univus.project.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -90,11 +93,23 @@ public class AuthController {
 
     // ✅ 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
+    public ResponseEntity<Void> logout(HttpServletRequest request,
+                                       HttpServletResponse response) {
+        // 1. 세션 무효화
         HttpSession session = request.getSession(false);
-        if (session != null) session.invalidate();
+        if (session != null) {
+//            log.info("로그아웃: 세션 무효화, id={}", session.getId());
+            session.invalidate();
+        }
 
-        SecurityContextHolder.clearContext();
+        // 2. JSESSIONID 쿠키 삭제(선택이지만 해두면 깔끔)
+        ResponseCookie cookie = ResponseCookie.from("JSESSIONID", "")
+                .path("/")
+                .maxAge(0) // 즉시 만료
+                .httpOnly(true)
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         return ResponseEntity.ok().build();
     }
 

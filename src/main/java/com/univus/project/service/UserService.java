@@ -43,7 +43,7 @@ public class UserService {
         return covertEntityToDto(user);
     }
 
-
+    // 회원 정보 수정
     public void updateUserProfile(String email, UserModifyReqDto dto) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));

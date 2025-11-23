@@ -35,14 +35,12 @@ public class AuthService {
 
     // 회원 가입
     public Long signup(UserSignUpReqDto dto) {
-<<<<<<< HEAD
-=======
+
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPwd(passwordEncoder.encode(dto.getPwd()));
         user.setRole(dto.getRole());
->>>>>>> 15e877f013b7cb75d041f52048dd606cec87abba
 
         if (dto.getRole() == Role.STUDENT) {
 
