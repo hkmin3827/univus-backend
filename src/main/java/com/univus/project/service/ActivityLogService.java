@@ -1,8 +1,5 @@
 package com.univus.project.service;
 
-import com.univus.project.dto.notice.NoticeModifyDto;
-import com.univus.project.dto.notice.NoticeResDto;
-import com.univus.project.dto.notice.NoticeWriteDto;
 import com.univus.project.entity.*;
 import com.univus.project.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,7 @@ public class ActivityLogService {
     private final ActiveLogRepository activeLogRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    //private final ReactionRepository reactionRepository;
+    private final ReactionRepository reactionRepository;
     private final TodoRepository todoRepository;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;

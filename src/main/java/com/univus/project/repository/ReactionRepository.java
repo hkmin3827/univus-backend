@@ -1,13 +1,24 @@
 package com.univus.project.repository;
 
 
+import com.univus.project.entity.Post;
 import com.univus.project.entity.Reaction;
+import com.univus.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ReactionRepository extends JpaRepository<Reaction, Long> {
-    // 게시글 내 공감수 조회
+import java.util.List;
+import java.util.Optional;
 
-    // 공감수 집계
+public interface ReactionRepository extends JpaRepository<Reaction, Long> {
+    // 특정 게시글의 공감 수 확인
+    long countByPost(Post post);
+    //유저의 공감 여부
+    Optional<Reaction> findByUserAndPost(User user, Post post);
+
+    // 특정 게시글의 모든 공감
+    List<Reaction> findByPost(Post post);
+
+
 
 
 }
