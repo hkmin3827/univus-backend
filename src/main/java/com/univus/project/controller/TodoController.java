@@ -49,8 +49,10 @@ public class TodoController {
 
     // 4) 완료 여부 조회
     @GetMapping("/done/{done}")
-    public ResponseEntity<List<TodoResDto>> getTodoByDone(@PathVariable boolean done) {
-        return ResponseEntity.ok(todoService.getTodoByDone(done));
+    public ResponseEntity<List<TodoResDto>> getTodoByDone(@PathVariable boolean done,
+                                                          @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(todoService.getTodoByDoneForUser(done, user));
     }
 
     // 5) Todo 수정
@@ -72,10 +74,10 @@ public class TodoController {
         return ResponseEntity.ok(result);
     }
 
-    // 7) 최신 Todo 목록 조회
+    // 7) 최신 Todo 목록 조회 (로그인 유저 기준)
     @GetMapping("/list")
-    public ResponseEntity<List<TodoResDto>> getAllTodo() {
-        return ResponseEntity.ok(todoService.getAllTodo());
+    public ResponseEntity<List<TodoResDto>> getAllTodoForUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        return ResponseEntity.ok(todoService.getAllTodoForUser(user));
     }
-
 }

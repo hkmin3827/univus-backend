@@ -30,10 +30,10 @@ public class AuthService {
     // 회원 가입
     public Long signup(UserSignUpReqDto dto) {
         User user = new User();
-        user.setEmail(dto.getEmail());
         user.setName(dto.getName());
-        user.setPwd(passwordEncoder.encode(dto.getPwd()));  // 🔥 여기 중요!!
-        user.setRole(Role.STUDENT);
+        user.setEmail(dto.getEmail());
+        user.setPwd(passwordEncoder.encode(dto.getPwd()));
+        user.setRole(dto.getRole());
 
         userRepository.save(user);
         return user.getId();

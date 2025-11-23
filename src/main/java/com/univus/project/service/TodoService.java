@@ -23,6 +23,10 @@ public class TodoService {
 
     // 1) TodoList 생성 (작성한 User 확인)
     public TodoResDto createTodo(TodoWriteDto dto, User user) {
+        if (user == null) {
+            log.error("Todo 생성 실패: 사용자 정보가 없습니다.");
+            throw new RuntimeException("사용자 정보가 필요합니다.");
+        }
         try {
             Todo todo = new Todo();
             todo.setContent(dto.getContent());
@@ -32,7 +36,7 @@ public class TodoService {
             return new TodoResDto(todo);
         } catch (Exception e) {
             log.error("Todo 생성 실패: {}", e.getMessage());
-            return null;
+            throw new RuntimeException("Todo 생성 중 오류가 발생했습니다.");
         }
     }
 
@@ -53,6 +57,7 @@ public class TodoService {
         try {
             return todoRepository.findByUser_Email(email)
                     .stream()
+                    .filter(todo -> todo.getUser() != null)
                     .map(TodoResDto::new)
                     .collect(Collectors.toList());
         } catch (Exception e) {
@@ -61,12 +66,15 @@ public class TodoService {
         }
     }
 
-    // 4) 완료 여부 조회
-    public List<TodoResDto> getTodoByDone(boolean done) {
+    // 4) 완료 여부 조회 (로그인 유저 기준)
+    public List<TodoResDto> getTodoByDoneForUser(boolean done, User user) {
+        if (user == null) {
+            throw new RuntimeException("사용자 정보가 필요합니다.");
+        }
         try {
-            return todoRepository.findByDone(done)
+            return todoRepository.findByDoneAndUser(done, user)  // User 기준 추가
                     .stream()
-                    .map(TodoResDto::new)
+                    .map(todo -> new TodoResDto(todo))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("TodoList 완료 여부 조회 실패: {}", e.getMessage());
@@ -108,9 +116,12 @@ public class TodoService {
     }
 
     // 6) 최신 목록 조회
-    public List<TodoResDto> getAllTodo() {
+    public List<TodoResDto> getAllTodoForUser(User user) {
+        if (user == null) {
+            throw new RuntimeException("사용자 정보가 필요합니다.");
+        }
         try {
-            return todoRepository.findAllByOrderByCreateTimeDesc()
+            return todoRepository.findByUserOrderByCreateTimeDesc(user) // user 기준 정렬
                     .stream()
                     .map(TodoResDto::new)
                     .collect(Collectors.toList());
