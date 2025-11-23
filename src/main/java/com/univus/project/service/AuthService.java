@@ -3,7 +3,11 @@ package com.univus.project.service;
 import com.univus.project.constant.Role;
 import com.univus.project.dto.auth.LoginReqDto;
 import com.univus.project.dto.auth.UserSignUpReqDto;
+import com.univus.project.entity.Professor;
+import com.univus.project.entity.Student;
 import com.univus.project.entity.User;
+import com.univus.project.repository.ProfessorRepository;
+import com.univus.project.repository.StudentRepository;
 import com.univus.project.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +24,8 @@ import java.util.Optional;
 @Slf4j
 public class AuthService {
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
 
     // 회원 가입 여부
@@ -29,14 +35,49 @@ public class AuthService {
 
     // 회원 가입
     public Long signup(UserSignUpReqDto dto) {
-        User user = new User();
-        user.setEmail(dto.getEmail());
-        user.setName(dto.getName());
-        user.setPwd(passwordEncoder.encode(dto.getPwd()));  // 🔥 여기 중요!!
-        user.setRole(Role.STUDENT);
 
-        userRepository.save(user);
-        return user.getId();
+        if (dto.getRole() == Role.STUDENT) {
+
+            Student s = new Student();
+
+            // 공통(User) 필드
+            s.setEmail(dto.getEmail());
+            s.setPwd(passwordEncoder.encode(dto.getPwd()));
+            s.setName(dto.getName());
+            s.setImage(dto.getImage());
+            s.setPhone(dto.getPhone());
+            s.setRole(Role.STUDENT);
+
+            // 학생 전용 필드는 회원가입 단계에서 입력받지 않음 → null 저장
+            s.setStudentNumber(null);
+            s.setMajor(null);
+            s.setGrade(null);
+
+            Student saved = studentRepository.save(s);
+            return saved.getId();
+        }
+
+        else if (dto.getRole() == Role.PROFESSOR) {
+
+            Professor p = new Professor();
+
+            // 공통(User) 필드
+            p.setEmail(dto.getEmail());
+            p.setPwd(passwordEncoder.encode(dto.getPwd()));
+            p.setName(dto.getName());
+            p.setImage(dto.getImage());
+            p.setPhone(dto.getPhone());
+            p.setRole(Role.PROFESSOR);
+
+            // 교수 전용 필드는 회원가입 때 입력받지 않음 → null 저장
+            p.setDepartment(null);
+            p.setPosition(null);
+
+            Professor saved = professorRepository.save(p);
+            return saved.getId();
+        }
+
+        throw new IllegalArgumentException("지원하지 않는 역할입니다: " + dto.getRole());
     }
 
     public Long login(LoginReqDto dto) {

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor @AllArgsConstructor
 
 public class Student extends User {
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String studentNumber;   // 학번
 
     @Column(length = 50)

@@ -21,9 +21,7 @@ public class Professor extends User {
     private String department;          // 소속 학과
 
     @Column(length = 30)
-    private String position;        // 직위 (조교수, 부교수, 교수 등)
-
-
+    private String position;        // 직위 (조교, 부교수, 교수 등)
 
     @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createdAt; // 생성 시간 updatable = false(변경 불가)

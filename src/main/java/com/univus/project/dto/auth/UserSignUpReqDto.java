@@ -1,5 +1,4 @@
 package com.univus.project.dto.auth;
-// 회원 가입
 
 import com.univus.project.constant.Role;
 import lombok.Getter;
@@ -12,5 +11,19 @@ public class UserSignUpReqDto {
     private String pwd;
     private String name;
     private String image;
-    private Role role;
+    private String phone;
+    private Role role;   // STUDENT / PROFESSOR
+
+    // ------------------
+    // 학생 전용 필드
+    // ------------------
+    private String studentNumber;
+    private String major;
+    private Integer grade;
+
+    // ------------------
+    // 교수 전용 필드
+    // ------------------
+    private String department;
+    private String position;
 }

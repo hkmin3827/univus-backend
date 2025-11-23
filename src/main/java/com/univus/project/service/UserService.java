@@ -43,15 +43,26 @@ public class UserService {
         return covertEntityToDto(user);
     }
 
-    @Transactional
-    public void updateUserProfile(Long userId, UserModifyReqDto dto) {
-        User user = userRepository.findById(userId)
+
+    public void updateUserProfile(String email, UserModifyReqDto dto) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        if (dto.getName() != null) user.setName(dto.getName());
-        if (dto.getImage() != null) user.setImage(dto.getImage());
-        if (dto.getPhone() != null) user.setPhone(dto.getPhone());
-        if (dto.getProfile() != null) user.setProfile(dto.getProfile());
+        if (dto.getName() != null && !dto.getName().isBlank()) {
+            user.setName(dto.getName());
+        }
+        if (dto.getImage() != null && !dto.getImage().isBlank()) {
+            user.setImage(dto.getImage());
+        }
+        if (dto.getPhone() != null && !dto.getPhone().isBlank()) {
+            user.setPhone(dto.getPhone());
+        }
+        if (dto.getProfile() != null && !dto.getProfile().isBlank()) {
+            user.setProfile(dto.getProfile());
+        }
+
+        // email은 웬만하면 여기서 수정 안 하는 걸 추천
+        log.info("공통 프로필 수정 완료, userId={}", email);
     }
 
     // 학생
