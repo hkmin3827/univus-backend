@@ -2,16 +2,19 @@ package com.univus.project.controller;
 
 
 import com.univus.project.config.CustomUserDetails;
+import com.univus.project.dto.PageResponse;
 import com.univus.project.dto.post.PostDetailDto;
 import com.univus.project.dto.post.PostListDto;
 import com.univus.project.dto.post.PostReqDto;
 import com.univus.project.dto.post.PostResDto;
 import com.univus.project.entity.User;
+import com.univus.project.repository.PostRepository;
 import com.univus.project.repository.UserRepository;
 import com.univus.project.service.PostService;
 import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -90,4 +93,12 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/list/page")
+    public ResponseEntity<PageResponse<PostResDto>> postList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Page<PostResDto> pageResult = postService.getPostList(page, size);
+        return ResponseEntity.ok(PageResponse.from(pageResult));
+    }
 }

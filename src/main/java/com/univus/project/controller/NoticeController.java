@@ -1,5 +1,6 @@
 package com.univus.project.controller;
 
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -29,9 +29,9 @@ public class NoticeController {
     @PostMapping("/create")
     public ResponseEntity<NoticeResDto> createNotice(
             @RequestBody NoticeWriteDto dto,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        User user = userDetails.getUser();
         NoticeResDto notice = noticeService.createNotice(dto, user);
         return ResponseEntity.ok(notice);
     }
@@ -48,9 +48,9 @@ public class NoticeController {
     public ResponseEntity<Boolean> modifyNotice(
             @PathVariable Long id,
             @RequestBody NoticeModifyDto dto,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        User user = userDetails.getUser();
         Boolean result = noticeService.modifyNotice(id, dto, user);
         return ResponseEntity.ok(result);
     }
@@ -59,9 +59,9 @@ public class NoticeController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteNotice(
             @PathVariable Long id,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        User user = userService.getUserEntityByEmail(userDetails.getUsername());
+        User user = userDetails.getUser();
         Boolean result = noticeService.deleteNotice(id, user);
         return ResponseEntity.ok(result);
     }
