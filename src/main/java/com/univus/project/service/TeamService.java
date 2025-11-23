@@ -24,6 +24,11 @@ public class TeamService {
     @Transactional
     public Boolean createTeam(TeamCreateReqDto dto) {
 
+        // 팀 이름 중복 체크
+        if (teamRepository.findByTeamName(dto.getTeamName()) != null) {
+            throw new RuntimeException("이미 존재하는 팀 이름입니다.");
+        }
+
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
                 .description(dto.getDescription())
@@ -80,6 +85,9 @@ public class TeamService {
         Team team = teamRepository.findByTeamName(teamName);
         if (team == null) throw new RuntimeException("팀을 찾을 수 없습니다.");
 
+        // 초대 기록 삭제
+        inviteRepository.deleteAll(inviteRepository.findByTeam(team));
+
         // 팀 멤버 삭제
         teamMemberRepository.deleteByTeam(team);
 
@@ -99,11 +107,26 @@ public class TeamService {
         User invitee = userRepository.findByEmail(dto.getInviteEmail())
                 .orElseThrow(() -> new RuntimeException("초대 대상 사용자가 존재하지 않습니다."));
 
+        boolean isMember = teamMemberRepository.existsByTeamAndUser(team, invitee);
+        if (isMember) {
+            throw new RuntimeException("이미 팀 멤버입니다.");
+        }
+
+        // 이미 초대가 PENDING 상태인지 확인
+        boolean hasPending = inviteRepository.existsByInviteeAndTeamAndStatus(
+                invitee, team, InviteStatus.PENDING
+        );
+        if (hasPending) {
+            throw new RuntimeException("이미 초대가 전송되어 있습니다.");
+        }
+
+        User leader = userRepository.findByEmail(team.getLeader())
+                .orElseThrow(() -> new RuntimeException("Leader not found"));
+
         TeamInvite invite = TeamInvite.builder()
                 .team(team)
                 .invitee(invitee)
                 .inviter(team.getLeader())   // 팀장 userId
-                .status(InviteStatus.PENDING)
                 .build();
 
         inviteRepository.save(invite);
@@ -142,5 +165,23 @@ public class TeamService {
         invite.setStatus(InviteStatus.DECLINED);
 
         return true;
+    }
+
+    // 초대 목록 조회
+    public List<TeamInviteResDto> getPendingInvites(String email) {
+        List<TeamInvite> invites = inviteRepository.findByInvitee_EmailAndStatus(
+                email,
+                InviteStatus.PENDING
+        );
+
+        return invites.stream()
+                .map(invite -> TeamInviteResDto.builder()
+                        .inviteId(invite.getId())
+                        .teamName(invite.getTeam().getTeamName())
+                        .inviter(invite.getInviter())
+                        .status(invite.getStatus().name())
+                        .inviteeEmail(invite.getInvitee().getEmail())
+                        .build()
+                ).collect(Collectors.toList());
     }
 }
