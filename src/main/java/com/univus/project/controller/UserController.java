@@ -77,4 +77,12 @@ public class UserController {
 
         return ResponseEntity.ok(dto);
     }
+
+    @PutMapping("/{email}")
+    public ResponseEntity<Void> updateUserProfile(@PathVariable String email,
+                                                  @RequestBody UserModifyReqDto dto) {
+        log.info("공통 프로필 수정 요청 email={}, dto={}", email, dto);
+        userService.updateUserProfile(email, dto);
+        return ResponseEntity.ok().build();
+    }
 }
