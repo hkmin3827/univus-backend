@@ -54,7 +54,7 @@ public class ScheduleService {
     // 기간으로 일정 조회 (필요 시 일반 목록용)
     public List<ScheduleResDto> getSchedulesBetween(User user, LocalDateTime start, LocalDateTime end) {
         return scheduleRepository
-                .findByUserIdAndDateBetweenOrderByDateTimeAsc(user.getId(), start, end)
+                .findByUserIdAndDateTimeBetweenOrderByDateTimeAsc(user.getId(), start, end)
                 .stream()
                 .map(ScheduleResDto::fromEntity)
                 .collect(Collectors.toList());
@@ -76,6 +76,13 @@ public class ScheduleService {
                 .collect(Collectors.toList());
 
         return new HomeScheduleResDto(todayList, upcomingList);
+    }
+
+    public List<ScheduleResDto> getAllSchedules(Long userId) {
+        return scheduleRepository.findByUserIdOrderByDateTimeAsc(userId)
+                .stream()
+                .map(ScheduleResDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
 }

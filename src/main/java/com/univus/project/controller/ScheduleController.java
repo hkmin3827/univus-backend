@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/schedules")
 @RequiredArgsConstructor
@@ -59,4 +61,14 @@ public class ScheduleController {
         HomeScheduleResDto res = scheduleService.getHomeSchedules(user);
         return ResponseEntity.ok(res);
     }
+    // 일정 조회
+    @GetMapping
+    public ResponseEntity<List<ScheduleResDto>> getAllSchedules(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        List<ScheduleResDto> schedules = scheduleService.getAllSchedules(user.getId());
+        return ResponseEntity.ok(schedules);
+    }
+
 }

@@ -11,10 +11,10 @@ import java.util.Optional;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     // 특정 사용자 + 기간 조회
-    List<Schedule> findByUserIdAndDateBetweenOrderByDateTimeAsc(
+    List<Schedule> findByUserIdAndDateTimeBetweenOrderByDateTimeAsc(
             Long userId, LocalDateTime start, LocalDateTime end
     );
-
+    List<Schedule> findByUserIdOrderByDateTimeAsc(Long userId);
     // 수정/삭제 시 본인 확인용
     Optional<Schedule> findByIdAndUserId(Long id, Long userId);
 }

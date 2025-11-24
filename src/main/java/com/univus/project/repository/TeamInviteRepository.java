@@ -1,17 +1,13 @@
 package com.univus.project.repository;
 
-import com.univus.project.entity.Team;
 import com.univus.project.entity.TeamInvite;
-import com.univus.project.constant.InviteStatus;
-import com.univus.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
+// TeamInvite 엔티티용 레포지토리
 public interface TeamInviteRepository extends JpaRepository<TeamInvite, Long> {
-    List<TeamInvite> findByInvitee_EmailAndStatus(String email, InviteStatus status);
 
-    boolean existsByInviteeAndTeamAndStatus(User invitee, Team team, InviteStatus status);
-
-    List<TeamInvite> findByTeam(Team team);
+    // 초대 토큰으로 초대 내역 찾기
+    Optional<TeamInvite> findByInviteToken(String inviteToken);
 }
