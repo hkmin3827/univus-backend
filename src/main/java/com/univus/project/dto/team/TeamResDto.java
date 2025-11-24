@@ -1,25 +1,19 @@
 package com.univus.project.dto.team;
 
-import com.univus.project.entity.Team;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
-@Getter
-@Setter
+// 팀 상세/목록 응답용 DTO
+@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class TeamResDto {
-    private Long id;
-    private String teamName;
-    private String description;
-    private String leader;
+    private Long id;            // 팀 ID
+    private String teamName;    // 팀 이름
+    private String description; // 팀 소개
 
-    public static TeamResDto fromEntity(Team team) {
-        return TeamResDto.builder()
-                .id(team.getId())
-                .teamName(team.getTeamName())
-                .description(team.getDescription())
-                .leader(team.getLeader())
-                .build();
-    }
+    private Long leaderId;      // 팀장 ID
+    private String leaderName;  // 팀장 이름
+    private String leaderEmail; // 팀장 이메일
+
+    private long memberCount;   // 팀 멤버 수
 }
