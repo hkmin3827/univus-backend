@@ -87,6 +87,4 @@ public class TeamController {
     public ResponseEntity<List<TeamInviteResDto>> getInvites(@RequestParam String email) {
         return ResponseEntity.ok(teamService.getPendingInvites(email));
     }
-
-
 }
