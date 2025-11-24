@@ -67,6 +67,7 @@ public class AuthController {
         User authUser = userDetails.getUser();
 
         UserResDto res = new UserResDto(
+                authUser.getId(),
                 authUser.getEmail(),
                 authUser.getName(),
                 authUser.getRole(),

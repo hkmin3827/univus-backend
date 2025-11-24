@@ -1,10 +1,12 @@
 package com.univus.project.controller;
 
+import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.team.*;
 import com.univus.project.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +22,15 @@ public class TeamController {
 
     // 팀 생성
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createTeam(@RequestBody TeamCreateReqDto dto) {
-        return ResponseEntity.ok(teamService.createTeam(dto));
-    }
+    public ResponseEntity<Long> createTeam(
+            @RequestBody TeamCreateReqDto dto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getUser().getId();
 
+        Long teamId = teamService.createTeam(dto, userId);
+        return ResponseEntity.ok(teamId);
+    }
     // 팀 전체 조회
     @GetMapping("/list")
     public ResponseEntity<List<TeamResDto>> getTeams() {

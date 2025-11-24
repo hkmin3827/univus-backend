@@ -12,13 +12,15 @@ import java.time.LocalDateTime;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class UserResDto {
+    private Long id;
     private String email;
     private String name;
     private String image;
     private LocalDateTime regDate;
     private Role role;
 
-    public UserResDto(String email, String name, Role role, String image, LocalDateTime regDate) {
+    public UserResDto(Long id, String email, String name, Role role, String image, LocalDateTime regDate) {
+        this.id = id;
         this.email = email;
         this.name = name;
         this.role = role;

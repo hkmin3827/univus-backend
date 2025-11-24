@@ -21,35 +21,51 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
 
     // 팀 생성
+//    @Transactional
+//    public Boolean createTeam(TeamCreateReqDto dto) {
+//
+//        // 팀 이름 중복 체크
+//        if (teamRepository.findByTeamName(dto.getTeamName()) != null) {
+//            throw new RuntimeException("이미 존재하는 팀 이름입니다.");
+//        }
+//
+//        // 리더 존재 여부 체크 메시지
+//        User leader = userRepository.findByEmail(dto.getLeaderId())
+//                .orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 존재하지 않습니다."));
+//
+//        Team team = Team.builder()
+//                .teamName(dto.getTeamName())
+//                .description(dto.getDescription())
+//                .leader(dto.getLeaderId())   // userId 저장
+//                .build();
+//
+//        teamRepository.save(team);
+//
+//
+//        TeamMember leaderMember = TeamMember.builder()
+//                .team(team)
+//                .user(leader)
+//                .build();
+//
+//        teamMemberRepository.save(leaderMember);
+//
+//        return true;
+//    }
+
     @Transactional
-    public Boolean createTeam(TeamCreateReqDto dto) {
+    public Long createTeam(TeamCreateReqDto dto, Long leaderId) {
 
-        // 팀 이름 중복 체크
-        if (teamRepository.findByTeamName(dto.getTeamName()) != null) {
-            throw new RuntimeException("이미 존재하는 팀 이름입니다.");
-        }
+        User leader = userRepository.findById(leaderId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 리더 존재 여부 체크 메시지
-        User leader = userRepository.findByEmail(dto.getLeaderId())
-                .orElseThrow(() -> new RuntimeException("해당 이메일의 사용자가 존재하지 않습니다."));
-
-        Team team = Team.builder()
-                .teamName(dto.getTeamName())
-                .description(dto.getDescription())
-                .leader(dto.getLeaderId())   // userId 저장
-                .build();
+        Team team = new Team();
+        team.setTeamName(dto.getTeamName());
+        team.setDescription(dto.getDescription());
+        team.setLeader(leader.getEmail());
 
         teamRepository.save(team);
 
-
-        TeamMember leaderMember = TeamMember.builder()
-                .team(team)
-                .user(leader)
-                .build();
-
-        teamMemberRepository.save(leaderMember);
-
-        return true;
+        return team.getId();
     }
 
     // 팀 전체 조회

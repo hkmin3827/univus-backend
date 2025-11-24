@@ -26,6 +26,7 @@ public class StudentService {
 
         // 공통 정보 세팅
         UserResDto userDto = new UserResDto(
+                student.getId(),
                 student.getEmail(),
                 student.getName(),
                 student.getImage(),

@@ -10,6 +10,9 @@ import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 @Configuration
@@ -20,27 +23,46 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-                .csrf().disable() // API 서버에서 외부 요청 테스트 편의를 위해 비활성화. 프로덕션은 CSRF 보호 재검토 필요.
-                .cors().and()
+                .csrf().disable()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/auth/signup", "/auth/login", "/auth/exists/**","/h2-console/**", "/profile/students/**", "/profile/professors/**").permitAll()
+                        .antMatchers("/auth/signup", "/auth/login", "/auth/exists/**",
+                                "/h2-console/**",
+                                "/profile/students/**",
+                                "/profile/professors/**",
+                                "/teams/**") // 수정됨
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(sm -> sm
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .userDetailsService(customUserDetailsService)
-                .formLogin().disable(); // REST API 방식으로 로그인 처리 (컨트롤러에서 AuthenticationManager 사용)
+                .formLogin().disable();
 
-        // h2-console 허용 (개발 시)
         http.headers().frameOptions().disable();
 
         return http.build();
     }
 
+
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

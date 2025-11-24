@@ -26,6 +26,7 @@ public class ProfessorService {
 
         // 공통 정보
         UserResDto userDto = new UserResDto(
+                professor.getId(),
                 professor.getEmail(),
                 professor.getName(),
                 professor.getImage(),

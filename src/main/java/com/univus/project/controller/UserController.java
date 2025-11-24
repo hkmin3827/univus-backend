@@ -68,6 +68,7 @@ public class UserController {
         User user = userDetails.getUser();
 
         UserResDto dto = new UserResDto(
+                user.getId(),
                 user.getEmail(),
                 user.getName(),
                 user.getRole(),
