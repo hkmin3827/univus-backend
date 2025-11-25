@@ -27,7 +27,7 @@ public class ScheduleService {
         Schedule s = new Schedule();
         s.setTitle(dto.getTitle());
         s.setDescription(dto.getDescription());
-        s.setDateTime(LocalDateTime.parse(dto.getDateTime()));
+        s.setDateTime(dto.getDateTime());
         s.setUser(user);
 
         return scheduleRepository.save(s).getId();
@@ -39,7 +39,7 @@ public class ScheduleService {
 
         if (dto.getTitle() != null) s.setTitle(dto.getTitle());
         if (dto.getDescription() != null) s.setDescription(dto.getDescription());
-        if (dto.getDateTime() != null) s.setDateTime(LocalDateTime.parse(dto.getDateTime()));
+        if (dto.getDateTime() != null) s.setDateTime(dto.getDateTime());
 
         return s.getId();
     }

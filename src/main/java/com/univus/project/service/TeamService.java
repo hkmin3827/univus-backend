@@ -26,6 +26,13 @@ public class TeamService {
      */
     @Transactional
     public TeamResDto createTeam(TeamCreateReqDto dto, User leader) {
+        if (dto.getTeamName() == null || dto.getTeamName().trim().isEmpty()) {
+            throw new IllegalArgumentException("팀 이름은 필수 입력 항목입니다.");
+        }
+        if (teamRepository.existsByTeamName(dto.getTeamName())) {
+            throw new IllegalArgumentException("이미 존재하는 팀 이름입니다.");
+        }
+
         // 1) Team 엔티티 생성
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
