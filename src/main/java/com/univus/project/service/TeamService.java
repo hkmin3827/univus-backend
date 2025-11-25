@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 // 팀 생성 / 조회 비즈니스 로직
 @Service
 @RequiredArgsConstructor
@@ -77,5 +80,11 @@ public class TeamService {
                 .leaderEmail(team.getLeader().getEmail())
                 .memberCount(memberCount)
                 .build();
+    }
+    @Transactional(readOnly = true)
+    public List<TeamResDto> getTeamsByUser(User user) {
+        return teamMemberRepository.findByUser(user).stream()
+                .map(tm -> TeamResDto.fromEntity(tm.getTeam()))
+                .collect(Collectors.toList());
     }
 }

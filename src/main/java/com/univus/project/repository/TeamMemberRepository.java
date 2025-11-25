@@ -5,6 +5,8 @@ import com.univus.project.entity.TeamMember;
 import com.univus.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 // TeamMember 엔티티용 레포지토리
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
@@ -13,4 +15,6 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
     // 팀 멤버 수 카운트
     long countByTeam(Team team);
+    List<TeamMember> findByUser(User user);
+
 }

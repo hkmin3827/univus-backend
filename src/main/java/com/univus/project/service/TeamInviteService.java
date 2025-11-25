@@ -83,38 +83,31 @@ public class TeamInviteService {
      */
     @Transactional
     public void acceptInvite(String token, User currentUser) {
-        // 1) 초대 조회
         TeamInvite invite = teamInviteRepository.findByInviteToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 초대 링크입니다."));
 
-        // 2) 만료 여부 체크
+        // 링크 만료 확인
         if (invite.isExpired()) {
-            invite.setStatus(InviteStatus.EXPIRED);
             throw new IllegalStateException("초대 링크가 만료되었습니다.");
-        }
-
-        // 3) 이미 처리된 초대인지 체크
-        if (invite.getStatus() != InviteStatus.PENDING) {
-            throw new IllegalStateException("이미 처리된 초대입니다.");
         }
 
         Team team = invite.getTeam();
 
-        // 4) 이미 팀 멤버인지 확인
-        if (!teamMemberRepository.existsByTeamAndUser(team, currentUser)) {
-            // 멤버가 아니라면 새로 팀 멤버 추가
-            TeamMember member = TeamMember.builder()
-                    .team(team)
-                    .user(currentUser)
-                    .build();
-            teamMemberRepository.save(member);
+        // 이미 팀 멤버라면 차단 (팀장이든 일반사용자든)
+        if (teamMemberRepository.existsByTeamAndUser(team, currentUser)) {
+            throw new IllegalStateException("이미 가입된 팀입니다.");
         }
 
-        // 5) 초대 정보 업데이트 (수락한 유저/시간/상태)
-        invite.setInvitee(currentUser);
-        invite.setStatus(InviteStatus.ACCEPTED);
-        invite.setAcceptedAt(LocalDateTime.now());
+        // 팀 미가입 → 언제든 가입 가능
+        TeamMember member = TeamMember.builder()
+                .team(team)
+                .user(currentUser)
+                .build();
+        teamMemberRepository.save(member);
+
+        // invite.setStatus(ACCEPTED); 삭제 → 링크는 계속 PENDING 상태 유지
     }
+
 
     // 팀의 leader 와 현재 유저가 같은지 확인
     private boolean isLeader(Team team, User inviter) {

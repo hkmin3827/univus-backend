@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 // 팀 관련 API 모음 (팀 생성, 조회, 초대 등)
 @RestController
 @RequestMapping("/teams")
@@ -81,6 +83,12 @@ public class TeamController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<TeamResDto>> getMyTeams() {
+        User loginUser = getCurrentUser();
+        List<TeamResDto> teams = teamService.getTeamsByUser(loginUser);
+        return ResponseEntity.ok(teams);
+    }
     /**
      * 현재 로그인한 User 엔티티 가져오기
      * - 프로젝트에서 사용하는 CustomUserDetails 기준

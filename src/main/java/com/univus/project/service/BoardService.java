@@ -3,14 +3,13 @@ package com.univus.project.service;
 import com.univus.project.dto.board.BoardReqDto;
 import com.univus.project.dto.board.BoardResDto;
 import com.univus.project.entity.Board;
-import com.univus.project.entity.Post;
 import com.univus.project.entity.User;
 import com.univus.project.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,10 +17,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class BoardService {
     private final BoardRepository boardRepository;
 
+    @Transactional
     public Long createBoard(BoardReqDto dto, User user) {
             Board board = new Board();
             board.setName(dto.getName());
@@ -30,28 +29,27 @@ public class BoardService {
             boardRepository.save(board);
             return board.getId();
     }
-
+    @Transactional
     public List<BoardResDto> getAllBoards() {
         return boardRepository.findAll()
                 .stream()
                 .map(BoardResDto::new)
                 .collect(Collectors.toList());
     }
-
+    @Transactional
     public Board getBoard(Long id) {
         return boardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
     }
 
+    @Transactional(readOnly = true)
     public List<BoardResDto> getBoardsByTeam(Long teamId) {
-
-        List<Board> boards = boardRepository.findByTeam_Id(teamId);
-
-        return boards.stream()
-                .map(BoardResDto::new)  // 여기만 변경됨
-                .collect(Collectors.toList());
+        return boardRepository.findByTeamId(teamId).stream()
+                .map(BoardResDto::new)
+                .toList();
     }
 
+    @Transactional
     public Long modifyBoard(Long id, BoardReqDto dto, User loginUser){
         try{
             Board board = boardRepository.findById(id).orElseThrow(()->new RuntimeException("해당 게시판 id가 존재하지 않습니다."));

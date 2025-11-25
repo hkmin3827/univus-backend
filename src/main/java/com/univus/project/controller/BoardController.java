@@ -44,14 +44,9 @@ public class BoardController {
     public ResponseEntity<BoardResDto> getBoard(@PathVariable Long id) {
         return ResponseEntity.ok(new BoardResDto(boardService.getBoard(id)));
     }
-
-    // 팀별 게시판 목록 조회
-    @GetMapping("/findByTeam")
-    public ResponseEntity<List<BoardResDto>> getBoardsByTeam(
-            @RequestParam Long teamId
-    ){
-        List<BoardResDto> result = boardService.getBoardsByTeam(teamId);
-        return ResponseEntity.ok(result);
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<List<BoardResDto>> getBoardsByTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(boardService.getBoardsByTeam(teamId));
     }
 
     // 게시판 수정
