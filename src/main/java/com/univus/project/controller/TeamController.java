@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 // 팀 관련 API 모음 (팀 생성, 조회, 초대 등)
 @RestController
-@RequestMapping("/api/teams")
+@RequestMapping("/teams")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class TeamController {
