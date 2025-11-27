@@ -16,11 +16,13 @@ public class PostListDto {
     private String title;
     private String userName;
     private LocalDateTime createTime;
+    private String fileUrl;
 
     public PostListDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.userName = post.getUser().getName();  // Member 엔티티에 name이 있다고 가정
         this.createTime = post.getCreateTime();
+        this.fileUrl = post.getFileUrl();
     }
 }

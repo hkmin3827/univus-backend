@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findByTeamId(Long teamId);
+    boolean existsByTeamIdAndName(Long teamId, String name);
 }

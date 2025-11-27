@@ -10,5 +10,5 @@ import lombok.ToString;
 public class PostReqDto {
     private String title;
     private String content;
-    private Long boardId;
+    private Long BoardId;
 }

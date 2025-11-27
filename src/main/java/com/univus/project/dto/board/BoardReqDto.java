@@ -12,5 +12,4 @@ public class BoardReqDto {
     private Long teamId;
     private String name;
     private String description;
-    private User creator;
 }

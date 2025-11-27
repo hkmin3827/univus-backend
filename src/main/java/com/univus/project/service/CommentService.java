@@ -10,8 +10,13 @@ import com.univus.project.repository.CommentRepository;
 import com.univus.project.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,49 +43,42 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResDto> getComments(Long postId){
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+    public Page<CommentResDto> getComments(Long postId, int page, int size, String keyword) {
 
-        return commentRepository.findByPost(post)
-                .stream()
-                .map(CommentResDto::new)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
+
+        Page<Comment> comments;
+
+        if (keyword != null && !keyword.isBlank()) {
+            comments = commentRepository.findByPostIdAndContentContaining(postId, keyword, pageable);
+        } else {
+            comments = commentRepository.findByPostId(postId, pageable);
+        }
+
+        return comments.map(CommentResDto::new);
     }
 
-    public void deleteComment(Long commentId, User loginUser) {
+    public void deleteComment(Long commentId, User user) {
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
 
-        if (!comment.getWriter().getId().equals(loginUser.getId())) {
+        if (!comment.getWriter().getId().equals(user.getId())) {
             throw new RuntimeException("작성자만 삭제할 수 있습니다.");
         }
 
         commentRepository.delete(comment);
     }
-
     public Long updateComment(Long commentId, CommentReqDto dto, User user) {
-        try {
-            Comment comment = commentRepository.findById(commentId)
-                    .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
 
-            // 권한 체크(본인만 수정하도록)
-            if (!comment.getWriter().getId().equals(user.getId())) {
-                throw new RuntimeException("수정 권한이 없습니다.");
-            }
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
 
-            comment.setContent(dto.getContent());
-
-            if (user == null || user.getId() == null) {
-                throw new RuntimeException("로그인한 유저가 존재하지 않습니다.");
-            }
-
-            commentRepository.save(comment);
-            return comment.getId();
-
-        }  catch (Exception e){
-            log.error("댓글 수정 실패", e);
-            throw e;
+        if (!comment.getWriter().getId().equals(user.getId())) {
+            throw new RuntimeException("수정 권한이 없습니다.");
         }
+
+        comment.setContent(dto.getContent());
+        return comment.getId();
     }
 }

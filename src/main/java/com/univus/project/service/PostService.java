@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,68 +31,49 @@ public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
 
-    public Long createPost(PostReqDto dto, String fileUrl, User user) {
-        try{
-            Board board = boardRepository.findById(dto.getBoardId())
-                    .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+    public Long createPost(Long boardId, PostReqDto dto, String fileUrl, User user) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
 
-            Post post = new Post();
-            post.setTitle(dto.getTitle());
-            post.setContent(dto.getContent());
-            post.setBoard(board);
-            post.setUser(user);
+        Post post = new Post();
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+        post.setBoard(board);
+        post.setUser(user);
+
+        if (fileUrl != null && !fileUrl.isBlank()) {
             post.setFileUrl(fileUrl);
-            if (fileUrl != null && !fileUrl.isBlank()) {
-                post.setFileUrl(fileUrl);
-            }
-            if (user == null || user.getId() == null) {
-                throw new RuntimeException("로그인한 유저가 존재하지 않습니다.");
-            }
-
-            postRepository.save(post);
-            return post.getId();
-        } catch (Exception e){
-            log.error("게시물 생성 실패", e);
-            throw e;
         }
+
+        postRepository.save(post);
+        return post.getId();
     }
 
     public Long updatePost(Long postId, PostReqDto dto, String fileUrl, User user) {
-        try {
-            Post post = postRepository.findById(postId)
-                    .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
-            // 권한 체크(본인만 수정하도록)
-            if (!post.getUser().getId().equals(user.getId())) {
-                throw new RuntimeException("수정 권한이 없습니다.");
-            }
-
-            post.setTitle(dto.getTitle());
-            post.setContent(dto.getContent());
-
-            // Firebase 이미지 URL 새로 전달되면 업데이트
-            if (fileUrl != null && !fileUrl.isBlank()) {
-                post.setFileUrl(fileUrl);
-            }
-            if (user == null || user.getId() == null) {
-                throw new RuntimeException("로그인한 유저가 존재하지 않습니다.");
-            }
-
-            postRepository.save(post);
-            return post.getId();
-
-        }  catch (Exception e){
-            log.error("게시물 수정 실패", e);
-            throw e;
-        }
-    }
-
-    @Transactional
-    public void deletePost(Long postId, User loginUser) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
-        if (!post.getUser().getId().equals(loginUser.getId())) {
+        if (!post.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("수정 권한이 없습니다.");
+        }
+
+        post.setTitle(dto.getTitle());
+        post.setContent(dto.getContent());
+
+        if (fileUrl != null && !fileUrl.isBlank()) {
+            post.setFileUrl(fileUrl);
+        }
+
+        return post.getId();
+    }
+
+    @Transactional
+    public void deletePost(Long postId, User user) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+
+        if (!post.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("작성자만 삭제할 수 있습니다.");
         }
 
@@ -110,24 +92,28 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResDto> getPostsByTitle(String title) {
-        List<Post> posts = postRepository.findByTitleContaining(title);
-        List<PostResDto> postResDtos =new ArrayList<>();
-        for(Post post:posts){
-            postResDtos.add(convertToDto(post));
-        }
-        return postResDtos;
+    public Page<PostListDto> getPosts(Long boardId, int page, int size, String keyword, String sort) {
 
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
+
+
+        Page<Post> posts;
+
+        if (keyword != null && !keyword.isBlank()) {
+            posts = postRepository.findByBoardIdAndTitleContaining(boardId, keyword, pageable);
+        } else {
+            posts = postRepository.findByBoardId(boardId, pageable);
+        }
+
+        return posts.map(PostListDto::new);
     }
 
     @Transactional(readOnly = true)
     public PostDetailDto getPostDetail(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
-
         return new PostDetailDto(post);
     }
-
 
     private PostResDto convertToDto(Post post){
         PostResDto postResDto = new PostResDto();   // 비어있는 객체 생성
@@ -140,14 +126,6 @@ public class PostService {
         return postResDto;
 
     }
-    // 게시물 페이지네이션
-    public Page<PostResDto> getPostList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        return postRepository.findAll(pageable)
-                .map(post -> convertToDto(post));   // ★ DTO로 매핑
-    }
-
 
 
 }

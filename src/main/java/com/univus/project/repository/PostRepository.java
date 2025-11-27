@@ -20,4 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByBoardOrderByCreateTimeDesc(Board board);
 
     int countByUserAndBoard(User user, Board board);
+
+    Page<Post> findByBoardId(Long boardId, Pageable pageable);
+    Page<Post> findByBoardIdAndTitleContaining(Long boardId, String keyword, Pageable pageable);
 }
