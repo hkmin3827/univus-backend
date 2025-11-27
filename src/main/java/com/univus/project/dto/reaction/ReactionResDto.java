@@ -1,5 +1,6 @@
 package com.univus.project.dto.reaction;
 
+import com.univus.project.constant.ReactionType;
 import com.univus.project.entity.Reaction;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,19 +9,24 @@ import lombok.ToString;
 
 @Getter @Setter @NoArgsConstructor @ToString
 public class ReactionResDto {
-    // User 필드
-    private Long userId;
 
     // Post 필드
     private Long postId;
 
-    // 공감 여부
-    private boolean press;
+    // User 필드
+    private Long userId;
 
-    public ReactionResDto(Reaction reaction, boolean press) {
+    //어떤 감정인지 여부
+    private ReactionType type;
+
+    // 현재 로그인 유저가 누른 반응인지 여부
+    private boolean mine;
+
+    public ReactionResDto(Reaction reaction, Long currentUserId) {
         this.userId = reaction.getUser().getId();
         this.postId = reaction.getPost().getId();
-        this.press = press;
+        this.type = reaction.getType();
+        this.mine = reaction.getUser().getId().equals(currentUserId);
 
 
 

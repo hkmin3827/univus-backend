@@ -1,6 +1,7 @@
 package com.univus.project.entity;
 // 공감
 
+import com.univus.project.constant.ReactionType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,6 +34,11 @@ public class Reaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    //반응 식별
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReactionType type;
 
     private LocalDateTime createTime;
 

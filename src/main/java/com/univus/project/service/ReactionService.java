@@ -1,5 +1,6 @@
 package com.univus.project.service;
 
+import com.univus.project.constant.ReactionType;
 import com.univus.project.dto.reaction.ReactionResDto;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.Reaction;
@@ -23,22 +24,29 @@ public class ReactionService {
 
     // 1) 공감 토글 생성
     @Transactional
-    public boolean toggleReaction(Long postId, User user) {
+    public ReactionType toggleReaction(Long postId, User user, ReactionType type) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(()-> new IllegalArgumentException("게시글이 없습니다!"));
         return reactionRepository.findByUserAndPost(user, post)
                 .map(reaction -> {
                     // 이미 공감한 경우 -> 공감 취소
-                    reactionRepository.delete(reaction);
-                    return false;
-                })
+                    if(reaction.getType() == type){
+                        reactionRepository.delete(reaction);
+                        return null;   //프론트에서는 "반응 없음" 처리
+                    } else {
+                        //다른 타입을 누르면 -> 타입 변경
+                        reaction.setType(type);
+                        return reaction.getType();
+                    }
+                 })
                 .orElseGet(() -> {
                     // 공감하지 않은 경우 -> 공감 추가
                     Reaction newReaction = new Reaction();
                     newReaction.setPost(post);
                     newReaction.setUser(user);
+                    newReaction.setType(type);
                     reactionRepository.save(newReaction);
-                    return true;
+                    return newReaction.getType();
                 });
     }
 
@@ -51,7 +59,7 @@ public class ReactionService {
         List<Reaction> reactions = reactionRepository.findByPost(post);
 
         return reactions.stream()
-                .map(r -> new ReactionResDto(r, r.getUser().getId().equals(user.getId())))
+                .map(r -> new ReactionResDto(r, user.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -62,5 +70,12 @@ public class ReactionService {
         return reactionRepository.countByPost(post);
     }
 
+    // 4) 타입별 매서드
+
+    public long getReactionCountByType(Long postId, ReactionType type) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 없습니다!"));
+        return reactionRepository.countByPostAndType(post, type);
+    }
 
 }
