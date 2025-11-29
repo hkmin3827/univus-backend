@@ -11,4 +11,6 @@ public class PostReqDto {
     private String title;
     private String content;
     private Long BoardId;
+    private String fileUrl;
+    private String fileName;
 }

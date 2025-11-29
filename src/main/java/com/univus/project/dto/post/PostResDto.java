@@ -16,5 +16,6 @@ public class PostResDto {
     private String title;
     private String content;
     private String fileUrl;
+    private String fileName;
     private LocalDateTime createTime;
 }

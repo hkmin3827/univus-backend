@@ -31,7 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
 
-    public Long createPost(Long boardId, PostReqDto dto, String fileUrl, User user) {
+    public Long createPost(Long boardId, PostReqDto dto, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
 
@@ -41,15 +41,18 @@ public class PostService {
         post.setBoard(board);
         post.setUser(user);
 
-        if (fileUrl != null && !fileUrl.isBlank()) {
-            post.setFileUrl(fileUrl);
+        if (dto.getFileUrl() != null && !dto.getFileUrl().isBlank()) {
+            post.setFileUrl(dto.getFileUrl());
+        }
+        if (dto.getFileName() != null && !dto.getFileName().isBlank()) {
+            post.setFileName(dto.getFileName());
         }
 
         postRepository.save(post);
         return post.getId();
     }
 
-    public Long updatePost(Long postId, PostReqDto dto, String fileUrl, User user) {
+    public Long updatePost(Long postId, PostReqDto dto, User user) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
@@ -61,8 +64,11 @@ public class PostService {
         post.setTitle(dto.getTitle());
         post.setContent(dto.getContent());
 
-        if (fileUrl != null && !fileUrl.isBlank()) {
-            post.setFileUrl(fileUrl);
+        if (dto.getFileUrl() != null && !dto.getFileUrl().isBlank()) {
+            post.setFileUrl(dto.getFileUrl());
+        }
+        if (dto.getFileName() != null && !dto.getFileName().isBlank()) {
+            post.setFileName(dto.getFileName());
         }
 
         return post.getId();
@@ -122,6 +128,7 @@ public class PostService {
         postResDto.setTitle(post.getTitle());
         postResDto.setContent(post.getContent());
         postResDto.setFileUrl(post.getFileUrl());
+        postResDto.setFileName(post.getFileName());
         postResDto.setCreateTime(post.getCreateTime());
         return postResDto;
 

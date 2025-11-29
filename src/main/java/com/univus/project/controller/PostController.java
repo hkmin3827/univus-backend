@@ -37,12 +37,10 @@ public class PostController {
     public ResponseEntity<Long> createPost(
             @PathVariable Long boardId,
             @RequestBody PostReqDto dto,
-            @RequestParam(required = false) String fileUrl,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        dto.setBoardId(boardId);
         User user = userDetails.getUser();
-        Long postId = postService.createPost(boardId, dto, fileUrl, user);
+        Long postId = postService.createPost(boardId, dto, user);
         return ResponseEntity.ok(postId);
     }
     // 게시글 목록 + 검색 + 페이지네이션
@@ -70,11 +68,10 @@ public class PostController {
     public ResponseEntity<Long> updatePost(
             @PathVariable Long postId,
             @RequestBody PostReqDto dto,
-            @RequestParam(required = false) String fileUrl,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         User user = userDetails.getUser();
-        Long id = postService.updatePost(postId, dto, fileUrl, user);
+        Long id = postService.updatePost(postId, dto, user);
         return ResponseEntity.ok(id);
     }
 

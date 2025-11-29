@@ -53,9 +53,10 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Board getBoard(Long id) {
-        return boardRepository.findById(id)
+    public BoardResDto getBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다."));
+        return new BoardResDto(board);
     }
 
     @Transactional(readOnly = true)

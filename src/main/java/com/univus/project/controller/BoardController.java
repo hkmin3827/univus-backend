@@ -43,13 +43,12 @@ public class BoardController {
         return ResponseEntity.ok(boardService.getBoardsByTeam(teamId));
     }
 
-    // 게시판 상세 조회 (단일)
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardResDto> getBoard(
             @PathVariable Long teamId,
             @PathVariable Long boardId
     ) {
-        return ResponseEntity.ok(new BoardResDto(boardService.getBoard(boardId)));
+        return ResponseEntity.ok(boardService.getBoard(boardId));
     }
 
     // 게시판 수정

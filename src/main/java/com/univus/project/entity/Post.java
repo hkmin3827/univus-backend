@@ -27,6 +27,7 @@ public class Post {
     @Lob
     private String content;
     private String fileUrl;
+    private String fileName;
 
 
     private LocalDateTime createTime;
