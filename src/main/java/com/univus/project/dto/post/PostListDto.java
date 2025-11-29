@@ -17,6 +17,7 @@ public class PostListDto {
     private String userName;
     private LocalDateTime createTime;
     private String fileUrl;
+    private String writerImage;
 
     public PostListDto(Post post) {
         this.id = post.getId();
@@ -24,5 +25,6 @@ public class PostListDto {
         this.userName = post.getUser().getName();  // Member 엔티티에 name이 있다고 가정
         this.createTime = post.getCreateTime();
         this.fileUrl = post.getFileUrl();
+        this.writerImage = post.getUser().getImage();
     }
 }

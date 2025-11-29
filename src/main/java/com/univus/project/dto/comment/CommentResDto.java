@@ -16,6 +16,7 @@ public class CommentResDto {
     private String content;
     private String userName;
     private String userEmail;
+    private String writerImage;
     private LocalDateTime createTime;
 
     public CommentResDto(Comment comment) {
@@ -24,5 +25,6 @@ public class CommentResDto {
         this.userName = comment.getWriter().getName(); // Member 엔티티 기준
         this.userEmail = comment.getWriter().getEmail();
         this.createTime = comment.getCreateTime();
+        this.writerImage = comment.getWriter().getImage();
     }
 }

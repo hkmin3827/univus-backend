@@ -21,6 +21,7 @@ public class PostDetailDto {
     private String fileName;
     private String userName;
     private LocalDateTime createTime;
+    private String writerImage;
 
     private List<CommentResDto> comments;
 
@@ -32,6 +33,7 @@ public class PostDetailDto {
         this.fileName = post.getFileName();
         this.userName = post.getUser().getName();
         this.createTime = post.getCreateTime();
+        this.writerImage = post.getUser().getImage();
 
         this.comments = post.getComments()
                 .stream()
