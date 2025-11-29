@@ -29,8 +29,9 @@ public class ProfessorService {
                 professor.getId(),
                 professor.getEmail(),
                 professor.getName(),
+                professor.getPhone(),   // ✅ 여기
                 professor.getImage(),
-                professor.getCreatedAt(),   // Professor 엔티티의 createdAt
+                professor.getRegDate(),
                 professor.getRole()
         );
 

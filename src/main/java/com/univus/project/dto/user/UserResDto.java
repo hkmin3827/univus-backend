@@ -15,6 +15,7 @@ public class UserResDto {
     private Long id;
     private String email;
     private String name;
+    private String phone;
     private String image;
     private LocalDateTime regDate;
     private Role role;
@@ -23,9 +24,10 @@ public class UserResDto {
         this.id = id;
         this.email = email;
         this.name = name;
-        this.role = role;
+        this.phone = phone;
         this.image = image;
         this.regDate = regDate;
+        this.role = role;
     }
 
 }

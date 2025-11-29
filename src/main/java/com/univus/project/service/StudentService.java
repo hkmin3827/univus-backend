@@ -29,8 +29,9 @@ public class StudentService {
                 student.getId(),
                 student.getEmail(),
                 student.getName(),
+                student.getPhone(),   // ✅ 여기
                 student.getImage(),
-                student.getCreatedAt(),   // Student 엔티티의 createdAt
+                student.getRegDate(),
                 student.getRole()
         );
 

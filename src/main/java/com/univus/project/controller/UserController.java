@@ -71,9 +71,10 @@ public class UserController {
                 user.getId(),
                 user.getEmail(),
                 user.getName(),
-                user.getRole(),
+                user.getPhone(),  
                 user.getImage(),
-                user.getRegDate()
+                user.getRegDate(),
+                user.getRole()
         );
 
         return ResponseEntity.ok(dto);
