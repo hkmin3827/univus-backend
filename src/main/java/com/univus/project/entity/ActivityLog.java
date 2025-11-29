@@ -20,6 +20,7 @@ public class ActivityLog {
     private User user;                  // 사용자 식별
 
     @ManyToOne
+    @JoinColumn(name = "board_id")
     private Board board;                // 프로젝트 활동 식별
 
     // 집계 항목
@@ -33,6 +34,8 @@ public class ActivityLog {
     private int attendanceTotal;        // 총 출석일
     private int attendanceStreak;       // 연속 출석일
     private int attendanceThisMonth;    // 이번 달 출석일
+
+    private int contributionScore;      // 기여도 점수
 
     private LocalDateTime lastUpdated;  // 활동로그 업데이트 날짜
 }

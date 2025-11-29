@@ -34,7 +34,8 @@ public class SecurityConfig {
                                 "/h2-console/**",
                                 "/profile/students/**",
                                 "/profile/professors/**",
-                                "/teams/**") // 수정됨
+                                "/teams/**",
+                                "/activity/**") // 수정됨
                         .permitAll()
                         .anyRequest().authenticated()
                 )

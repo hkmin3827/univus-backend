@@ -15,5 +15,5 @@ public interface ActiveLogRepository extends JpaRepository<ActivityLog, Long> {
     Optional<ActivityLog> findByUserAndBoard(User user, Board board);
 
     // 특정 게시판 내 모든 활동 로그 조회
-    List<ActivityLog> findByBoard(Board board);
+    List<ActivityLog> findByBoardId(Long boardId);
 }

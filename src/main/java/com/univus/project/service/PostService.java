@@ -31,6 +31,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
 
+    private final ActivityLogService activityLogService;
+
     public Long createPost(Long boardId, PostReqDto dto, User user) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
@@ -49,6 +51,10 @@ public class PostService {
         }
 
         postRepository.save(post);
+
+        // 🔥🔴 핵심: ActivityLog 업데이트 필수!!
+        activityLogService.recalcActivityLog(user.getId(), boardId);
+
         return post.getId();
     }
 

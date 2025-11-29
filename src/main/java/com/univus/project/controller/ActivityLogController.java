@@ -1,6 +1,8 @@
 package com.univus.project.controller;
 
 import com.univus.project.dto.activityLog.ActivityLogResDto;
+import com.univus.project.dto.activityLog.BoardUserContributionDto;
+import com.univus.project.dto.activityLog.UserContributionDetailDto;
 import com.univus.project.entity.ActivityLog;
 import com.univus.project.service.ActivityLogService;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,36 @@ public class ActivityLogController {
             return ResponseEntity.ok(new ActivityLogResDto(log));
         } catch (Exception e) {
             log.error("사용자 활동 로그 조회 실패(userId:{}, boardId:{}): {}", userId, boardId, e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 3) 특정 보드의 팀원별 기여도 리스트 (인사이트 메인 PieChart / TOP5용)
+    @GetMapping("/board/{boardId}/contribution")
+    public ResponseEntity<List<BoardUserContributionDto>> getBoardContribution(
+            @PathVariable Long boardId
+    ) {
+        try {
+            List<BoardUserContributionDto> list = activityLogService.getBoardUserContributions(boardId);
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            log.error("보드별 팀원 기여도 조회 실패(boardId:{}): {}", boardId, e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 4) 특정 팀원의 상세 기여도 (팀원 클릭 시 상세 그래프용)
+    @GetMapping("/user/{userId}/board/{boardId}/detail")
+    public ResponseEntity<UserContributionDetailDto> getUserContributionDetail(
+            @PathVariable Long userId,
+            @PathVariable Long boardId
+    ) {
+        try {
+            UserContributionDetailDto dto = activityLogService.getUserContributionDetail(userId, boardId);
+            if (dto == null) throw new RuntimeException("기여도 정보가 없습니다.");
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            log.error("사용자 기여도 상세 조회 실패(userId:{}, boardId:{}): {}", userId, boardId, e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
