@@ -32,7 +32,8 @@ public class StudentService {
                 student.getPhone(),   // ✅ 여기
                 student.getImage(),
                 student.getRegDate(),
-                student.getRole()
+                student.getRole(),
+                student.isActive()
         );
 
         // 학생 전용 정보 세팅

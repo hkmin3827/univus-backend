@@ -32,7 +32,8 @@ public class ProfessorService {
                 professor.getPhone(),   // ✅ 여기
                 professor.getImage(),
                 professor.getRegDate(),
-                professor.getRole()
+                professor.getRole(),
+                professor.isActive()
         );
 
         // 교수 전용 정보

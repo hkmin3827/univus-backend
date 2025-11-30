@@ -62,8 +62,21 @@ public class UserController {
         }
     }
 
+    // 관리자 탈퇴
+    @PatchMapping("/admin/{email}/withdraw")
+    public ResponseEntity<String> withdrawByAdmin(@PathVariable String email) {
+        boolean result = userService.withdrawUser(email);
+
+
+        if (result) {
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } else {
+            return ResponseEntity.status(400).body("회원 탈퇴에 실패했습니다.");
+        }
+    }
+
     //계정 복구
-    @PatchMapping("/recover/{email}")
+    @PatchMapping("/admin/{email}/recover")
     public ResponseEntity<String> recoverUserByAdmin(@PathVariable String email) {
         boolean result = userService.recoverUserByAdmin(email);
 
@@ -87,7 +100,8 @@ public class UserController {
                 user.getPhone(),  
                 user.getImage(),
                 user.getRegDate(),
-                user.getRole()
+                user.getRole(),
+                user.isActive()
         );
 
         return ResponseEntity.ok(dto);
