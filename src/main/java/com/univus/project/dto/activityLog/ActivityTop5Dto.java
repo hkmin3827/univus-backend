@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class ActivityTop5Dto {
     private Long userId;
-    private String name;
-    private String image;
-    private long count;
+    private String userName;
+    private String userImage;
+    private Long count;
 }

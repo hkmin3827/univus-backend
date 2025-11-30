@@ -9,6 +9,7 @@ import com.univus.project.entity.Reaction;
 import com.univus.project.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -28,7 +29,23 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     //타입별 개수
     long countByPostAndType(Post post, ReactionType type);
 
-    List<ActivityTop5Dto> findReactionTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
+    @Query("""
+    SELECT new com.univus.project.dto.activityLog.ActivityTop5Dto(
+        r.user.id,
+        r.user.name,
+        r.user.image,
+        COUNT(r)
+    )
+    FROM Reaction r
+    WHERE r.board.id = :boardId
+    GROUP BY r.user.id, r.user.name, r.user.image
+    ORDER BY COUNT(r) DESC
+""")
+    List<ActivityTop5Dto> findReactionTop5ByBoardId(
+            @Param("boardId") Long boardId,
+            Pageable pageable
+    );
+
 
 
 }

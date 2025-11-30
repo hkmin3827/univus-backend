@@ -35,6 +35,7 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
         Comment comment = new Comment();
+        comment.setBoard(post.getBoard());
         comment.setContent(dto.getContent());
         comment.setPost(post);
         comment.setWriter(writer);
@@ -69,9 +70,7 @@ public class CommentService {
         return comments.map(CommentResDto::new);
     }
 
-<<<<<<< HEAD
     // ✅ 댓글 삭제
-=======
     // 전체 게시글에서 키워드 기반 댓글 검색
     @Transactional(readOnly = true)
     public Page<CommentResDto> searchAllComments(String keyword, int page, int size) {
@@ -80,8 +79,6 @@ public class CommentService {
         return comments.map(CommentResDto::new);
     }
 
-
->>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
     public void deleteComment(Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId)

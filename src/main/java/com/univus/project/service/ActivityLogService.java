@@ -239,18 +239,32 @@ public class ActivityLogService {
         }
     }
 
-    // 2) 게시글 TOP5
     public List<ActivityTop5Dto> getPostTop5(Long boardId) {
-        return postRepository.findPostTop5ByBoardId(boardId, Pageable.ofSize(5));
+        try {
+            return postRepository.findPostTop5ByBoardId(boardId, Pageable.ofSize(5));
+        } catch (Exception e) {
+            log.error("게시글 TOP5 조회 실패: {}", e.getMessage());
+            return List.of();
+        }
     }
 
     // 3) 댓글 TOP5
     public List<ActivityTop5Dto> getCommentTop5(Long boardId) {
-        return commentRepository.findCommentTop5ByBoardId(boardId, Pageable.ofSize(5));
+        try {
+            return commentRepository.findCommentTop5ByBoardId(boardId, Pageable.ofSize(5));
+        } catch (Exception e) {
+            log.error("댓글 TOP5 조회 실패: {}", e.getMessage());
+            return List.of();
+        }
     }
 
     // 4) 리액션 TOP5
     public List<ActivityTop5Dto> getReactionTop5(Long boardId) {
-        return reactionRepository.findReactionTop5ByBoardId(boardId, Pageable.ofSize(5));
+        try {
+            return reactionRepository.findReactionTop5ByBoardId(boardId, Pageable.ofSize(5));
+        } catch (Exception e) {
+            log.error("리액션 TOP5 조회 실패: {}", e.getMessage());
+            return List.of();
+        }
     }
 }
