@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-//package com.univus.project.controller;
-//
-//import com.univus.project.config.CustomUserDetails;
-//import com.univus.project.dto.todo.TodoModifyDto;
-//import com.univus.project.dto.todo.TodoResDto;
-//import com.univus.project.dto.todo.TodoWriteDto;
-//import com.univus.project.entity.User;
-//import com.univus.project.service.TodoService;
-//import com.univus.project.service.UserService;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@Slf4j
-//@CrossOrigin(origins = "http://localhost:3000")
-//@RestController
-//@RequestMapping("/todo")
-//@RequiredArgsConstructor
-//public class TodoController {
-=======
 package com.univus.project.controller;
 
 import com.univus.project.config.CustomUserDetails;
@@ -46,7 +21,6 @@ import java.util.List;
 @RequestMapping("/todo")
 @RequiredArgsConstructor
 public class TodoController {
->>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
 //
 //    private final TodoService todoService;
 //    private final UserService userService;
@@ -119,8 +93,4 @@ public class TodoController {
 //    public ResponseEntity<List<TodoResDto>> getCompletedTodosForTeam(@PathVariable Long teamId) {
 //        return ResponseEntity.ok(todoService.getCompletedTodosForTeam(teamId));
 //    }
-<<<<<<< HEAD
-//}
-=======
 }
->>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483

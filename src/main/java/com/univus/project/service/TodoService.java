@@ -21,15 +21,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class TodoService {
-<<<<<<< HEAD
-
-    private final TodoRepository todoRepository;
-    private final BoardRepository boardRepository;          // 🔥 추가
-    private final ActivityLogService activityLogService;    // 🔥 추가
-
-    // 1) TodoList 생성 (작성한 User + Board 확인)
-
-=======
 //
 //    private final TodoRepository todoRepository;
 //    private final BoardRepository boardRepository;          // 🔥 추가
@@ -39,7 +30,6 @@ public class TodoService {
 //    private final TodoRepository todoRepository;
 //    private final BoardRepository boardRepository;
 //
->>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
 //    // Todo 생성 (User + Board 연계)
 //    public TodoResDto createTodo(TodoWriteDto dto, User user) {
 //        if (user == null) {
@@ -74,11 +64,7 @@ public class TodoService {
 //
 //        if (dto.getBoardId() == null) {
 //            log.error("Todo 생성 실패: 게시판 ID가 없습니다.");
-<<<<<<< HEAD
-//
-=======
 //            throw new RuntimeException("게시판을 선택해야 합니다.");
->>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
 //        }
 //
 //        Long boardIdValue;
@@ -133,13 +119,7 @@ public class TodoService {
 //            return todoRepository.findByDoneAndUser(done, user)
 //                    .stream()
 //                    .map(TodoResDto::new)
-<<<<<<< HEAD
-//
 //                    .map(todo -> new TodoResDto(todo.getBoard().getName(), todo))
-//
-=======
-//                    .map(todo -> new TodoResDto(todo.getBoard().getName(), todo))
->>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
 //                    .collect(Collectors.toList());
 //        } catch (Exception e) {
 //            log.error("TodoList 완료 여부 조회 실패: {}", e.getMessage());
@@ -147,13 +127,7 @@ public class TodoService {
 //        }
 //    }
 //
-<<<<<<< HEAD
-//
 //    // 5) TodoList 수정 (작성자 권한 체크 + done 변경 시 기여도 반영)
-//
-=======
-//    // 5) TodoList 수정 (작성자 권한 체크 + done 변경 시 기여도 반영)
->>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
 //    // 5) 팀 단위로 완료된 Todo 조회
 //    public List<TodoResDto> getCompletedTodosForTeam(Long teamId) {
 //        return todoRepository.findByBoard_Team_IdAndDoneOrderByCreateTimeDesc(teamId, true)
