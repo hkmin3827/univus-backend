@@ -66,4 +66,14 @@ public class CommentController {
         commentService.deleteComment(commentId, user);
         return ResponseEntity.ok().build();
     }
+
+    // 전체 게시글 댓글 검색 (topbar 검색용)
+    @GetMapping("/search")
+    public Page<CommentResDto> searchComments(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size
+    ) {
+        return commentService.searchAllComments(keyword, page, size);
+    }
 }

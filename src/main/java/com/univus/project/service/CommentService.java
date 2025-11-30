@@ -58,6 +58,15 @@ public class CommentService {
         return comments.map(CommentResDto::new);
     }
 
+    // 전체 게시글에서 키워드 기반 댓글 검색
+    @Transactional(readOnly = true)
+    public Page<CommentResDto> searchAllComments(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
+        Page<Comment> comments = commentRepository.findByContentContaining(keyword, pageable);
+        return comments.map(CommentResDto::new);
+    }
+
+
     public void deleteComment(Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId)
