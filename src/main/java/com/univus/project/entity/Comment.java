@@ -37,4 +37,8 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;
+
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
 }

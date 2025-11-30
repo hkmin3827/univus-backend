@@ -1,9 +1,12 @@
 package com.univus.project.repository;
 
+import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.entity.ActivityLog;
 import com.univus.project.entity.Board;
 import com.univus.project.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +19,6 @@ public interface ActiveLogRepository extends JpaRepository<ActivityLog, Long> {
 
     // 특정 게시판 내 모든 활동 로그 조회
     List<ActivityLog> findByBoardId(Long boardId);
+
+
 }

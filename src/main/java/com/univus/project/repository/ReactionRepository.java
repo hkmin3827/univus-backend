@@ -2,11 +2,14 @@ package com.univus.project.repository;
 
 
 import com.univus.project.constant.ReactionType;
+import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.entity.Board;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.Reaction;
 import com.univus.project.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +28,7 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     //타입별 개수
     long countByPostAndType(Post post, ReactionType type);
 
-
+    List<ActivityTop5Dto> findReactionTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
 
 
 }

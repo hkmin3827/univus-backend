@@ -1,6 +1,7 @@
 package com.univus.project.repository;
 
 
+import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.entity.Board;
 import com.univus.project.entity.Comment;
 import com.univus.project.entity.Post;
@@ -28,4 +29,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByPostId(Long postId, Pageable pageable);
     Page<Comment> findByPostIdAndContentContaining(Long postId, String keyword, Pageable pageable);
     Page<Comment> findByPostIdOrderByCreateTimeDesc(Long postId, Pageable pageable);
+
+    List<ActivityTop5Dto> findCommentTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
 }
