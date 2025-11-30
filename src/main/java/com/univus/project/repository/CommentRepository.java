@@ -29,6 +29,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByPostId(Long postId, Pageable pageable);
     Page<Comment> findByPostIdAndContentContaining(Long postId, String keyword, Pageable pageable); // 키워드 검색용 메서드
     Page<Comment> findByPostIdOrderByCreateTimeDesc(Long postId, Pageable pageable);
+<<<<<<< HEAD
     @Query("""
     SELECT new com.univus.project.dto.activityLog.ActivityTop5Dto(
         c.writer.id,
@@ -47,5 +48,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     );
 
 
+=======
+
+    List<ActivityTop5Dto> findCommentTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
+>>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
     Page<Comment> findByContentContaining(String keyword, Pageable pageable);   // 전체 게시글 댓글 검색
 }

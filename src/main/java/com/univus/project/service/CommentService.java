@@ -79,6 +79,10 @@ public class CommentService {
         return comments.map(CommentResDto::new);
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> b6f44e7214e46c018b931af57f28d108cdd15483
     public void deleteComment(Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId)

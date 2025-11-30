@@ -20,6 +20,7 @@ public class PostDetailDto {
     private String fileUrl;
     private String fileName;
     private String userName;
+    private String userEmail;
     private LocalDateTime createTime;
     private String writerImage;
 
@@ -32,6 +33,7 @@ public class PostDetailDto {
         this.fileUrl = post.getFileUrl();
         this.fileName = post.getFileName();
         this.userName = post.getUser().getName();
+        this.userEmail = post.getUser().getEmail();
         this.createTime = post.getCreateTime();
         this.writerImage = post.getUser().getImage();
 
