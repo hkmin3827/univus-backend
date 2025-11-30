@@ -118,6 +118,22 @@ public class UserService {
         }
     }
 
+    // 탈퇴 취소
+    public boolean recoverUserByAdmin(String email) {
+        try {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+
+            user.setActive(true);   // false → true 로 변경 (탈퇴 처리)
+
+            userRepository.save(user);   // @Transactional이면 생략해도 변경감지로 반영됨
+            return true;
+        } catch (Exception e) {
+            log.error("회원 복구 실패 : {}", e.getMessage());
+            return false;
+        }
+    }
+
     private UserResDto covertEntityToDto(User user) {
         UserResDto userResDto = new UserResDto();
         userResDto.setEmail(user.getEmail());

@@ -37,9 +37,10 @@ public class UserController {
 
 
     // 유저 탈퇴
-    @DeleteMapping("/withdraw")
+    @PatchMapping("/withdraw/{email}")
     public ResponseEntity<String> withdrawUser(@PathVariable String email) {
         boolean result = userService.withdrawUser(email);
+
 
         if (result) {
             return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
@@ -58,6 +59,18 @@ public class UserController {
             return ResponseEntity.ok("관리자에 의해 계정이 삭제되었습니다.");
         } else {
             return ResponseEntity.status(400).body("회원 삭제에 실패했습니다.");
+        }
+    }
+
+    //계정 복구
+    @PatchMapping("/recover/{email}")
+    public ResponseEntity<String> recoverUserByAdmin(@PathVariable String email) {
+        boolean result = userService.recoverUserByAdmin(email);
+
+        if (result) {
+            return ResponseEntity.ok("회원 복구가 완료되었습니다.");
+        } else {
+            return ResponseEntity.status(400).body("회원 복구에 실패했습니다.");
         }
     }
 
