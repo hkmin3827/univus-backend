@@ -14,8 +14,10 @@ public class TodoResDto {
     private String content; // 할일 내용
     private boolean done;   // 완료 여부
     private LocalDateTime createTime;
+    private String boardName; // 프로젝트명(게시판 이름)
 
-    public TodoResDto(Todo todo) {
+    public TodoResDto(String boardName, Todo todo) {
+        this.boardName = boardName;
         this.id = todo.getId();
         this.email = todo.getUser().getEmail();
         this.content = todo.getContent();

@@ -29,9 +29,17 @@ public class TodoController {
     @PostMapping("/create")
     public ResponseEntity<TodoResDto> createTodo(@RequestBody TodoWriteDto dto,
                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        log.info("수신된 DTO 값: {}", dto);
+        log.info("boardId: {}", dto.getBoardId());
+
         User user = userDetails.getUser();
-        TodoResDto todo = todoService.createTodo(dto, user);
-        return ResponseEntity.ok(todo);
+        try {
+            TodoResDto todo = todoService.createTodo(dto, user);
+            return ResponseEntity.ok(todo);
+        } catch (RuntimeException e) {
+            log.error("Todo 생성 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     // 2) Todo ID 조회
@@ -40,11 +48,10 @@ public class TodoController {
         return ResponseEntity.ok(todoService.getTodoById(id));
     }
 
-    // 3) 작성자 이메일로 Todo 조회
-    @GetMapping("/user")
-    public ResponseEntity<List<TodoResDto>> getTodoByUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        String email = userDetails.getUsername();
-        return ResponseEntity.ok(todoService.getTodoByUserEmail(email));
+    // 3) 게시판별로 Todo 조회
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<List<TodoResDto>> getTodosByBoard(@PathVariable Long boardId) {
+        return ResponseEntity.ok(todoService.getTodosByBoard(boardId));
     }
 
     // 4) 완료 여부 조회
@@ -79,5 +86,11 @@ public class TodoController {
     public ResponseEntity<List<TodoResDto>> getAllTodoForUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         return ResponseEntity.ok(todoService.getAllTodoForUser(user));
+    }
+
+    // 8) 팀 기준 완료된 Todo 조회
+    @GetMapping("/team/{teamId}/completed")
+    public ResponseEntity<List<TodoResDto>> getCompletedTodosForTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(todoService.getCompletedTodosForTeam(teamId));
     }
 }
