@@ -2,6 +2,7 @@ package com.univus.project.controller;
 
 import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.activityLog.ActivityLogResDto;
+import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.dto.activityLog.BoardUserContributionDto;
 import com.univus.project.dto.activityLog.UserContributionDetailDto;
 import com.univus.project.entity.ActivityLog;
@@ -87,6 +88,35 @@ public class ActivityLogController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    // 5) 게시글 TOP5
+    @GetMapping("/board/{boardId}/top5/posts")
+    public ResponseEntity<List<ActivityTop5Dto>> getPostTop5(
+            @PathVariable Long boardId
+    ) {
+        List<ActivityTop5Dto> list = activityLogService.getPostTop5(boardId);
+        return ResponseEntity.ok(list);
+    }
+
+    // 6) 댓글 TOP5
+    @GetMapping("/board/{boardId}/top5/comments")
+    public ResponseEntity<List<ActivityTop5Dto>> getCommentTop5(
+            @PathVariable Long boardId
+    ) {
+        List<ActivityTop5Dto> list = activityLogService.getCommentTop5(boardId);
+        return ResponseEntity.ok(list);
+    }
+
+    // 7) 리액션 TOP5
+    @GetMapping("/board/{boardId}/top5/reactions")
+    public ResponseEntity<List<ActivityTop5Dto>> getReactionTop5(
+            @PathVariable Long boardId
+    ) {
+        List<ActivityTop5Dto> list = activityLogService.getReactionTop5(boardId);
+        return ResponseEntity.ok(list);
+    }
+
+
 
 }
 

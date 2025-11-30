@@ -2,7 +2,6 @@ package com.univus.project.service;
 
 import com.univus.project.dto.comment.CommentReqDto;
 import com.univus.project.dto.comment.CommentResDto;
-import com.univus.project.dto.post.PostReqDto;
 import com.univus.project.entity.Comment;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.User;
@@ -17,17 +16,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
+
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
+    // 🔥 추가: 활동 로그 서비스 주입
+    private final ActivityLogService activityLogService;
+
+    // ✅ 댓글 작성
     public Long createComment(CommentReqDto dto, User writer) {
 
         Post post = postRepository.findById(dto.getPostId())
@@ -39,6 +40,16 @@ public class CommentService {
         comment.setWriter(writer);
 
         commentRepository.save(comment);
+
+        // 🔥 댓글 생성 후 활동 로그 재계산
+        try {
+            Long boardId = post.getBoard().getId();
+            activityLogService.recalcActivityLog(writer.getId(), boardId);
+        } catch (Exception e) {
+            log.error("댓글 작성 후 활동 로그 계산 실패 (userId:{}, postId:{}): {}",
+                    writer.getId(), post.getId(), e.getMessage());
+        }
+
         return comment.getId();
     }
 
@@ -58,6 +69,9 @@ public class CommentService {
         return comments.map(CommentResDto::new);
     }
 
+<<<<<<< HEAD
+    // ✅ 댓글 삭제
+=======
     // 전체 게시글에서 키워드 기반 댓글 검색
     @Transactional(readOnly = true)
     public Page<CommentResDto> searchAllComments(String keyword, int page, int size) {
@@ -67,6 +81,7 @@ public class CommentService {
     }
 
 
+>>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
     public void deleteComment(Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId)
@@ -76,8 +91,28 @@ public class CommentService {
             throw new RuntimeException("작성자만 삭제할 수 있습니다.");
         }
 
+        // 삭제 전에 boardId 뽑아두기
+        Long boardId = null;
+        try {
+            boardId = comment.getPost().getBoard().getId();
+        } catch (Exception e) {
+            log.warn("댓글 삭제 시 보드 정보 조회 실패(commentId:{}): {}", commentId, e.getMessage());
+        }
+
         commentRepository.delete(comment);
+
+        // 🔥 댓글 삭제 후 활동 로그 재계산
+        if (boardId != null) {
+            try {
+                activityLogService.recalcActivityLog(user.getId(), boardId);
+            } catch (Exception e) {
+                log.error("댓글 삭제 후 활동 로그 계산 실패 (userId:{}, boardId:{}): {}",
+                        user.getId(), boardId, e.getMessage());
+            }
+        }
     }
+
+    // ✅ 댓글 수정 (내용만 바뀌고 개수는 그대로라, 기여도 재계산은 안 해도 됨)
     public Long updateComment(Long commentId, CommentReqDto dto, User user) {
 
         Comment comment = commentRepository.findById(commentId)

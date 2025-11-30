@@ -1,11 +1,13 @@
 package com.univus.project.service;
 
+import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.dto.activityLog.BoardUserContributionDto;
 import com.univus.project.dto.activityLog.UserContributionDetailDto;
 import com.univus.project.entity.*;
 import com.univus.project.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -235,5 +237,20 @@ public class ActivityLogService {
             log.error("이번 달 출석 수 계산 실패: {}", e.getMessage());
             return 0;
         }
+    }
+
+    // 2) 게시글 TOP5
+    public List<ActivityTop5Dto> getPostTop5(Long boardId) {
+        return postRepository.findPostTop5ByBoardId(boardId, Pageable.ofSize(5));
+    }
+
+    // 3) 댓글 TOP5
+    public List<ActivityTop5Dto> getCommentTop5(Long boardId) {
+        return commentRepository.findCommentTop5ByBoardId(boardId, Pageable.ofSize(5));
+    }
+
+    // 4) 리액션 TOP5
+    public List<ActivityTop5Dto> getReactionTop5(Long boardId) {
+        return reactionRepository.findReactionTop5ByBoardId(boardId, Pageable.ofSize(5));
     }
 }

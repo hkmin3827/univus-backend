@@ -25,6 +25,10 @@ public class Reaction {
     @Column(name = "reaction_id")
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
+
     // 작성자 식별
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

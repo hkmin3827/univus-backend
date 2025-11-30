@@ -21,19 +21,56 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class TodoService {
+<<<<<<< HEAD
+
+    private final TodoRepository todoRepository;
+    private final BoardRepository boardRepository;          // 🔥 추가
+    private final ActivityLogService activityLogService;    // 🔥 추가
+
+    // 1) TodoList 생성 (작성한 User + Board 확인)
+=======
     private final TodoRepository todoRepository;
     private final BoardRepository boardRepository;
 
     // Todo 생성 (User + Board 연계)
+>>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
     public TodoResDto createTodo(TodoWriteDto dto, User user) {
         if (user == null) {
             log.error("Todo 생성 실패: 사용자 정보가 없습니다.");
             throw new RuntimeException("사용자 정보가 필요합니다.");
         }
+<<<<<<< HEAD
+        try {
+            // 🔥 보드 조회 (Todo가 어느 보드에 속하는지)
+            Board board = boardRepository.findById(dto.getBoardId())
+                    .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+
+            Todo todo = new Todo();
+            todo.setContent(dto.getContent());
+            todo.setUser(user);
+            todo.setBoard(board);      // 🔥 반드시 보드 세팅
+            todo.setDone(false);
+
+            todoRepository.save(todo);
+
+            // 🔥 Todo 생성 후 활동 로그 재계산
+            try {
+                activityLogService.recalcActivityLog(user.getId(), board.getId());
+            } catch (Exception e) {
+                log.error("Todo 생성 후 활동 로그 계산 실패(userId:{}, boardId:{}): {}",
+                        user.getId(), board.getId(), e.getMessage());
+            }
+
+            return new TodoResDto(todo);
+        } catch (Exception e) {
+            log.error("Todo 생성 실패: {}", e.getMessage());
+            throw new RuntimeException("Todo 생성 중 오류가 발생했습니다.");
+=======
 
         if (dto.getBoardId() == null) {
             log.error("Todo 생성 실패: 게시판 ID가 없습니다.");
             throw new RuntimeException("게시판을 선택해야 합니다.");
+>>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
         }
 
         Long boardIdValue;
@@ -85,9 +122,13 @@ public class TodoService {
             throw new RuntimeException("사용자 정보가 필요합니다.");
         }
         try {
-            return todoRepository.findByDoneAndUser(done, user)  // User 기준 추가
+            return todoRepository.findByDoneAndUser(done, user)
                     .stream()
+<<<<<<< HEAD
+                    .map(TodoResDto::new)
+=======
                     .map(todo -> new TodoResDto(todo.getBoard().getName(), todo))
+>>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("TodoList 완료 여부 조회 실패: {}", e.getMessage());
@@ -95,6 +136,9 @@ public class TodoService {
         }
     }
 
+<<<<<<< HEAD
+    // 5) TodoList 수정 (작성자 권한 체크 + done 변경 시 기여도 반영)
+=======
     // 5) 팀 단위로 완료된 Todo 조회
     public List<TodoResDto> getCompletedTodosForTeam(Long teamId) {
         return todoRepository.findByBoard_Team_IdAndDoneOrderByCreateTimeDesc(teamId, true)
@@ -104,15 +148,31 @@ public class TodoService {
     }
 
     // 6) TodoList 수정 (작성자 권한 체크)
+>>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
     public Boolean modifyTodo(Long id, TodoModifyDto dto, User user) {
-        try{
+        try {
             Todo todo = todoRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
-            if (!todo.getUser().getId().equals(user.getId())){
+            if (!todo.getUser().getId().equals(user.getId())) {
                 throw new RuntimeException("수정 권한이 없습니다.");
             }
+
+            boolean prevDone = todo.isDone();
+
             todo.setContent(dto.getContent());
             todo.setDone(dto.isDone());
+
+            // 🔥 완료 여부가 바뀌었으면 활동 로그 재계산
+            try {
+                if (todo.getBoard() != null && prevDone != dto.isDone()) {
+                    Long boardId = todo.getBoard().getId();
+                    activityLogService.recalcActivityLog(user.getId(), boardId);
+                }
+            } catch (Exception e) {
+                log.error("Todo 수정 후 활동 로그 계산 실패(userId:{}, todoId:{}): {}",
+                        user.getId(), id, e.getMessage());
+            }
+
             return true;
         } catch (Exception e) {
             log.error("Todo 수정 실패: {}", e.getMessage());
@@ -120,15 +180,32 @@ public class TodoService {
         }
     }
 
-    // 6) TodoList 삭제 (작성자 권한 체크)
+    // 6) TodoList 삭제 (작성자 권한 체크 + 기여도 반영)
     public Boolean deleteTodo(Long id, User user) {
         try {
             Todo todo = todoRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
-            if (!todo.getUser().getId().equals(user.getId())){
+            if (!todo.getUser().getId().equals(user.getId())) {
                 throw new RuntimeException("삭제 권한이 없습니다.");
             }
+
+            Long boardId = null;
+            if (todo.getBoard() != null) {
+                boardId = todo.getBoard().getId();
+            }
+
             todoRepository.delete(todo);
+
+            // 🔥 삭제 후 활동 로그 재계산
+            if (boardId != null) {
+                try {
+                    activityLogService.recalcActivityLog(user.getId(), boardId);
+                } catch (Exception e) {
+                    log.error("Todo 삭제 후 활동 로그 계산 실패(userId:{}, boardId:{}): {}",
+                            user.getId(), boardId, e.getMessage());
+                }
+            }
+
             return true;
         } catch (Exception e) {
             log.error("Todo 삭제 실패: {}", e.getMessage());
@@ -136,13 +213,13 @@ public class TodoService {
         }
     }
 
-    // 6) 최신 목록 조회
+    // 7) 최신 목록 조회
     public List<TodoResDto> getAllTodoForUser(User user) {
         if (user == null) {
             throw new RuntimeException("사용자 정보가 필요합니다.");
         }
         try {
-            return todoRepository.findByUserOrderByCreateTimeDesc(user) // user 기준 정렬
+            return todoRepository.findByUserOrderByCreateTimeDesc(user)
                     .stream()
                     .map(todo -> new TodoResDto(todo.getBoard().getName(), todo))
                     .collect(Collectors.toList());
