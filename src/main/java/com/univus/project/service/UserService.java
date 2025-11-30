@@ -157,6 +157,7 @@ public class UserService {
         userResDto.setImage(user.getImage());
         userResDto.setRegDate(user.getRegDate());
         userResDto.setRole(user.getRole());
+        userResDto.setActive(user.isActive());
         return userResDto;
     }
 
