@@ -27,8 +27,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     
     // 페이지네이션
     Page<Comment> findByPostId(Long postId, Pageable pageable);
-    Page<Comment> findByPostIdAndContentContaining(Long postId, String keyword, Pageable pageable);
+    Page<Comment> findByPostIdAndContentContaining(Long postId, String keyword, Pageable pageable); // 키워드 검색용 메서드
     Page<Comment> findByPostIdOrderByCreateTimeDesc(Long postId, Pageable pageable);
+<<<<<<< HEAD
 
     List<ActivityTop5Dto> findCommentTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
+=======
+    Page<Comment> findByContentContaining(String keyword, Pageable pageable);   // 전체 게시글 댓글 검색
+>>>>>>> c2c57b2a18df4f22a46c3200895ecab6825e8e52
 }

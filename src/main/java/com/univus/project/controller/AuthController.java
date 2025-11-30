@@ -72,7 +72,8 @@ public class AuthController {
                 authUser.getName(),
                 authUser.getRole(),
                 authUser.getImage(),
-                authUser.getRegDate()
+                authUser.getRegDate(),
+                authUser.isActive()
         );
 
         return ResponseEntity.ok(res);

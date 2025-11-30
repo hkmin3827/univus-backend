@@ -19,8 +19,9 @@ public class UserResDto {
     private String image;
     private LocalDateTime regDate;
     private Role role;
+    private boolean active;
 
-    public UserResDto(Long id, String email, String name, Role role, String image, LocalDateTime regDate) {
+    public UserResDto(Long id, String email, String name, Role role, String image, LocalDateTime regDate, boolean active) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -28,6 +29,7 @@ public class UserResDto {
         this.image = image;
         this.regDate = regDate;
         this.role = role;
+        this.active = active;
     }
 
 }
