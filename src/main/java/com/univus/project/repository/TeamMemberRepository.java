@@ -4,6 +4,7 @@ import com.univus.project.entity.Team;
 import com.univus.project.entity.TeamMember;
 import com.univus.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -16,5 +17,9 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
     // 팀 멤버 수 카운트
     long countByTeam(Team team);
     List<TeamMember> findByUser(User user);
+
+    List<TeamMember> findByTeamId(Long teamId);
+    @Query("SELECT tm FROM TeamMember tm JOIN FETCH tm.user WHERE tm.team.id = :teamId")
+    List<TeamMember> findByTeamIdWithUser(Long teamId);
 
 }
