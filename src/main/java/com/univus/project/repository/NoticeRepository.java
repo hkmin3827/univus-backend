@@ -14,6 +14,8 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     // 제목에 특정 단어가 포함된 공지 조회
     List<Notice> findByTitleContaining(String title);
+    // 제목이나 내용에 특정 단어가 포함된 공지 조회
+    List<Notice> findByTitleContainingOrContentContaining(String title, String content);
 
     // 최신순으로 공지 조회 -> 페이지네이션 진행
     Page<Notice> findAllByOrderByCreateTimeDesc(Pageable pageable);
