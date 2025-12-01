@@ -31,4 +31,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.board.team.id = :teamId AND p.user.id = :userId ORDER BY p.createTime DESC")
     List<Post> findByTeamAndUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
+
 }

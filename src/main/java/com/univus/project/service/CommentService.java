@@ -38,6 +38,7 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
         Comment comment = new Comment();
+        comment.setBoard(post.getBoard());
         comment.setContent(dto.getContent());
         comment.setPost(post);
         comment.setWriter(writer);
@@ -80,7 +81,6 @@ public class CommentService {
         Page<Comment> comments = commentRepository.findByContentContaining(keyword, pageable);
         return comments.map(CommentResDto::new);
     }
-
 
     public void deleteComment(Long commentId, User user) {
 
