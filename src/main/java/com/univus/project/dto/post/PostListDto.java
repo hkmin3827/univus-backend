@@ -18,10 +18,12 @@ public class PostListDto {
     private LocalDateTime createTime;
     private String fileUrl;
     private String writerImage;
+    private String content;
 
     public PostListDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
+        this.content = post.getContent();
         this.userName = post.getUser().getName();  // Member 엔티티에 name이 있다고 가정
         this.createTime = post.getCreateTime();
         this.fileUrl = post.getFileUrl();

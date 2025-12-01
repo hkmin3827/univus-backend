@@ -23,6 +23,7 @@ public class PostDetailDto {
     private String userEmail;
     private LocalDateTime createTime;
     private String writerImage;
+    private Long boardId;
 
     private List<CommentResDto> comments;
 
@@ -36,6 +37,7 @@ public class PostDetailDto {
         this.userEmail = post.getUser().getEmail();
         this.createTime = post.getCreateTime();
         this.writerImage = post.getUser().getImage();
+        this.boardId = post.getBoard().getId();
 
         this.comments = post.getComments()
                 .stream()
