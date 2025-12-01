@@ -27,6 +27,18 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByBoardId(Long boardId, Pageable pageable);
     Page<Post> findByBoardIdAndTitleContaining(Long boardId, String keyword, Pageable pageable);
 
+    @Query("""
+    SELECT new com.univus.project.dto.activityLog.ActivityTop5Dto(
+        p.user.id,
+        p.user.name,
+        p.user.image,
+        COUNT(p)
+    )
+    FROM Post p
+    WHERE p.board.id = :boardId
+    GROUP BY p.user.id, p.user.name, p.user.image
+    ORDER BY COUNT(p) DESC
+""")
     List<ActivityTop5Dto> findPostTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.board.team.id = :teamId AND p.user.id = :userId ORDER BY p.createTime DESC")
