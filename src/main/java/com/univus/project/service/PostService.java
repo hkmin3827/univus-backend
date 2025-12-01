@@ -127,6 +127,12 @@ public class PostService {
         return new PostDetailDto(post);
     }
 
+    @Transactional(readOnly = true)
+    public List<PostListDto> getMyPosts(Long teamId, Long userId) {
+        List<Post> posts = postRepository.findByTeamAndUser(teamId, userId);
+        return posts.stream().map(PostListDto::new).collect(Collectors.toList());
+    }
+
     private PostResDto convertToDto(Post post){
         PostResDto postResDto = new PostResDto();   // 비어있는 객체 생성
         postResDto.setPostId(post.getId());

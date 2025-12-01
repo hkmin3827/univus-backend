@@ -18,6 +18,7 @@ public class CommentResDto {
     private String userEmail;
     private String writerImage;
     private LocalDateTime createTime;
+    private Long postId;
 
     public CommentResDto(Comment comment) {
         this.id = comment.getId();
@@ -26,5 +27,6 @@ public class CommentResDto {
         this.userEmail = comment.getWriter().getEmail();
         this.createTime = comment.getCreateTime();
         this.writerImage = comment.getWriter().getImage();
+        this.postId = comment.getPost().getId();
     }
 }

@@ -16,6 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -121,5 +124,11 @@ public class CommentService {
 
         comment.setContent(dto.getContent());
         return comment.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentResDto> getMyComments(Long teamId, Long userId) {
+        List<Comment> comments = commentRepository.findByTeamAndUser(teamId, userId);
+        return comments.stream().map(CommentResDto::new).collect(Collectors.toList());
     }
 }

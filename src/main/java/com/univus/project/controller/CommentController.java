@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
@@ -75,5 +77,14 @@ public class CommentController {
             @RequestParam(defaultValue = "30") int size
     ) {
         return commentService.searchAllComments(keyword, page, size);
+    }
+    @GetMapping("/my/{teamId}")
+    public ResponseEntity<List<CommentResDto>> getMyComments(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getUser().getId();
+        List<CommentResDto> comments = commentService.getMyComments(teamId, userId);
+        return ResponseEntity.ok(comments);
     }
 }

@@ -32,4 +32,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<ActivityTop5Dto> findCommentTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
     Page<Comment> findByContentContaining(String keyword, Pageable pageable);   // 전체 게시글 댓글 검색
+
+    @Query("SELECT c FROM Comment c WHERE c.post.board.team.id = :teamId AND c.writer.id = :userId ORDER BY c.createTime DESC")
+    List<Comment> findByTeamAndUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
+
 }

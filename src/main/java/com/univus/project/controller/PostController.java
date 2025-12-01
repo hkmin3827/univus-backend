@@ -85,4 +85,14 @@ public class PostController {
         postService.deletePost(postId, user);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/my/{teamId}")
+    public ResponseEntity<List<PostListDto>> getMyPosts(
+            @PathVariable Long teamId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getUser().getId();
+        List<PostListDto> posts = postService.getMyPosts(teamId, userId);
+        return ResponseEntity.ok(posts);
+    }
 }
