@@ -49,6 +49,18 @@ public class UserController {
         }
     }
 
+    // 관리자회원 전체 조회
+    @GetMapping("/admin/list")
+    public ResponseEntity<List<UserResDto>> getUsersByAdmin() {
+        return ResponseEntity.ok(userService.findAllByAdmin());
+    }
+
+
+    // 관리자 개별 회원 조회 (email)
+    @GetMapping("/admin/{email}")
+    public ResponseEntity<UserResDto> getUserByAdmin(@PathVariable String email) {
+        return ResponseEntity.ok(userService.findByEmailByAdmin(email));
+    }
 
     // 관리자 삭제
     @DeleteMapping("/admin/{email}")
@@ -65,7 +77,7 @@ public class UserController {
     // 관리자 탈퇴
     @PatchMapping("/admin/{email}/withdraw")
     public ResponseEntity<String> withdrawByAdmin(@PathVariable String email) {
-        boolean result = userService.withdrawUser(email);
+        boolean result = userService.withdrawByAdmin(email);
 
 
         if (result) {

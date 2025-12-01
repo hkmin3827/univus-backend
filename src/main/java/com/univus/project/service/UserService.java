@@ -104,6 +104,27 @@ public class UserService {
         }
     }
 
+    // 회원 전체 조회 -관리자용
+    public List<UserResDto> findAllByAdmin() {
+        List<User> users = userRepository.findAll()
+                .stream() // 리스트 데이터를 가공하기 편한 상태로 바꿈
+                .toList(); // 리스트 상태 복구
+
+        List<UserResDto> userResDtos = new ArrayList<>();
+        for (User user : users) {
+            userResDtos.add(covertEntityToDto(user));
+        }
+        return userResDtos;
+    }
+
+    // 관리자 개별 회원 조회
+    public UserResDto findByEmailByAdmin(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("해당 회원이 존재하지 않습니다."));
+        return covertEntityToDto(user);
+    }
+
+
     // 관리자에 의한 강제 삭제
     public boolean deleteUserByAdmin(String email) {
         try {
@@ -123,7 +144,7 @@ public class UserService {
         try {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
-
+            
             user.setActive(false);   // true → false 로 변경 (탈퇴 처리)
 
             userRepository.save(user);   // @Transactional이면 생략해도 변경감지로 반영됨
