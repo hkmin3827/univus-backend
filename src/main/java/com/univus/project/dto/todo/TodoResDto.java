@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class TodoResDto {
     private Long id;        // todolist id
     private String email;   // 작성자 이메일
+    private String userName;    // 작성자 이름
     private String content; // 할일 내용
     private boolean done;   // 완료 여부
     private LocalDateTime createTime;
@@ -20,6 +21,7 @@ public class TodoResDto {
         this.boardName = boardName;
         this.id = todo.getId();
         this.email = todo.getUser().getEmail();
+        this.userName = todo.getUser().getName();
         this.content = todo.getContent();
         this.done = todo.isDone();
         this.createTime = todo.getCreateTime();
