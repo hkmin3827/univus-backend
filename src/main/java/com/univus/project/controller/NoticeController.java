@@ -47,6 +47,13 @@ public class NoticeController {
         return ResponseEntity.ok(notices);
     }
 
+    // 공지 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<NoticeResDto> getNotice(@PathVariable Long id) {
+        NoticeResDto notice = noticeService.getNoticeById(id);
+        return ResponseEntity.ok(notice);
+    }
+
     // 3) 공지 수정 - 작성자 본인만 가능
     @PutMapping("/modify/{id}")
     public ResponseEntity<Boolean> modifyNotice(

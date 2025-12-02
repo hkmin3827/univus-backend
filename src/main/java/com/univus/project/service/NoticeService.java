@@ -58,6 +58,12 @@ public class NoticeService {
         }
     }
 
+    public NoticeResDto getNoticeById(Long id) {
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("공지사항을 찾을 수 없습니다."));
+        return new NoticeResDto(notice);
+    }
+
 
     // 3) 공지 수정
     public Boolean modifyNotice(Long id, NoticeModifyDto dto, User user) {
