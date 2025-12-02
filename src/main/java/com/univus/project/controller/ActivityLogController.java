@@ -89,6 +89,27 @@ public class ActivityLogController {
         }
     }
 
+    
+    // 출석 부분
+    @GetMapping("/boards/{boardId}/me")
+    public ActivityLogResDto getMyActivityLogOnBoard(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        return activityLogService.getActivityLogForUserAndBoard(user, boardId);
+    }
+
+    @PostMapping("/boards/{boardId}/check-in")
+    public ResponseEntity<Void> checkIn(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getUser().getId();
+        activityLogService.checkIn(userId, boardId);
+        return ResponseEntity.ok().build();
+    }
+
     // 5) 게시글 TOP5
     @GetMapping("/board/{boardId}/top5/posts")
     public ResponseEntity<List<ActivityTop5Dto>> getPostTop5(

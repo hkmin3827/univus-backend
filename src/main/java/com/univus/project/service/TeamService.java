@@ -77,8 +77,15 @@ public class TeamService {
         if (!team.getLeader().getId().equals(user.getId())) {
             throw new RuntimeException("팀장만 정보를 수정할 수 있습니다.");
         }
-        dto.setTeamName(dto.getTeamName());
-        dto.setDescription(dto.getDescription());
+        team.setTeamName(dto.getTeamName());
+        team.setDescription(dto.getDescription());
+
+        if (dto.getTeamName() != null && !dto.getTeamName().isBlank()) {
+            team.setTeamName(dto.getTeamName());
+        }
+        if (dto.getDescription() != null) {
+            team.setDescription(dto.getDescription());
+        }
 
         return team.getId();
     }

@@ -1,5 +1,6 @@
 package com.univus.project.service;
 
+import com.univus.project.dto.activityLog.ActivityLogResDto;
 import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.dto.activityLog.BoardUserContributionDto;
 import com.univus.project.dto.activityLog.UserContributionDetailDto;
@@ -63,7 +64,7 @@ public class ActivityLogService {
                     .map(Attendance::getDate)
                     .toList();
 
-            int total = attendanceDates.size();
+            int total = (int) attendanceDates.stream().distinct().count();
             int streak = calcStreak(attendanceDates);
             int monthCount = calcMonth(attendanceDates);
 
@@ -197,7 +198,7 @@ public class ActivityLogService {
     /**
      * 6) 연속 출석일 계산
      */
-    private int calcStreak(List<LocalDate> dates) {
+    public int calcStreak(List<LocalDate> dates) {
         try {
             if (dates == null || dates.isEmpty()) return 0;
 
@@ -224,7 +225,7 @@ public class ActivityLogService {
     /**
      * 7) 이번 달 출석 횟수
      */
-    private int calcMonth(List<LocalDate> dates) {
+    public int calcMonth(List<LocalDate> dates) {
         try {
             if (dates == null || dates.isEmpty()) return 0;
 
@@ -236,6 +237,72 @@ public class ActivityLogService {
         } catch (Exception e) {
             log.error("이번 달 출석 수 계산 실패: {}", e.getMessage());
             return 0;
+        }
+    }
+
+    /**
+     * React용: (로그인한) User + Board 기준으로 ActivityLog를 DTO로 반환
+     *  - 출석 정보까지 포함해서 반환
+     *  - 필요하면 항상 최신 상태가 되도록 재계산 호출
+     */
+    public ActivityLogResDto getActivityLogForUserAndBoard(User user, Long boardId) {
+        try {
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다. boardId=" + boardId));
+
+            // 🔥 항상 최신 데이터가 필요하다면 재계산 한 번 돌려주기
+            ActivityLog log = recalcActivityLog(user.getId(), boardId);
+            if (log == null) {
+                // 재계산이 실패한 경우를 대비한 fallback
+                log = activeLogRepository.findByUserAndBoard(user, board)
+                        .orElseGet(() -> createNewLog(user, board));
+            }
+
+            return new ActivityLogResDto(log);
+
+        } catch (Exception e) {
+            log.error("활동 로그 DTO 조회 실패(userId:{}, boardId:{}): {}", user.getId(), boardId, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * ✅ 오늘 해당 보드에 출석 체크
+     *  - attendance 테이블에 기록 저장
+     *  - 그 다음 활동 로그 재계산(recalcActivityLog)까지 한 번에 처리
+     */
+    public void checkIn(Long userId, Long boardId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. userId=" + userId));
+
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다. boardId=" + boardId));
+
+            LocalDate today = LocalDate.now();
+
+            // 이미 오늘 출석했으면 중복 저장 X
+            boolean exists = attendanceRepository
+                    .findByUserAndBoardAndDate(user, board, today)
+                    .isPresent();
+
+            if (exists) {
+                log.info("이미 오늘 출석한 사용자입니다. userId={}, boardId={}", userId, boardId);
+                return;
+            }
+
+            // 🔥 출석 엔티티 저장 (@PrePersist로 date = today 자동 세팅)
+            Attendance attendance = new Attendance();
+            attendance.setUser(user);
+            attendance.setBoard(board);
+            attendanceRepository.save(attendance);
+
+            // 🔥 출석까지 포함해서 활동로그 재계산
+            recalcActivityLog(userId, boardId);
+
+        } catch (Exception e) {
+            log.error("출석 체크 실패(userId:{}, boardId:{}): {}", userId, boardId, e.getMessage());
+            throw e;
         }
     }
 
