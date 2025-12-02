@@ -77,6 +77,14 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
+    public List<TodoResDto> getTodosByTeamAndBoard(Long teamId, Long boardId) {
+        return todoRepository.findByBoard_Team_IdAndBoard_Id(teamId, boardId)
+                .stream()
+                .map(todo -> new TodoResDto(todo.getBoard().getName(), todo))
+                .collect(Collectors.toList());
+    }
+
+
 
     // 4) 완료 여부 기준 로그인 사용자 조회
     public List<TodoResDto> getTodoByDoneForUser(boolean done, User user) {

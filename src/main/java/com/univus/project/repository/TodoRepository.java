@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     // board기준 작성자 조회
     List<Todo> findByBoard(Board board);
+    List<Todo> findByBoard_Team_IdAndBoard_Id(Long teamId, Long boardId);
+
     // 완료 여부 기준 조회
     List<Todo> findByDoneAndUser(boolean done, User user);
     // 최신 할일 순 조회
