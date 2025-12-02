@@ -25,15 +25,7 @@ public class ProfessorService {
                 .orElseThrow(() -> new IllegalArgumentException("교수 정보가 없습니다. email=" + email));
 
         // 공통 정보
-        UserResDto userDto = new UserResDto(
-                professor.getId(),
-                professor.getEmail(),
-                professor.getName(),
-                professor.getPhone(),   // ✅ 여기
-                professor.getImage(),
-                professor.getRegDate(),
-                professor.getRole(),
-                professor.isActive()
+        UserResDto userDto = new UserResDto(professor
         );
 
         // 교수 전용 정보

@@ -2,6 +2,7 @@ package com.univus.project.service;
 
 import com.univus.project.dto.team.TeamCreateReqDto;
 import com.univus.project.dto.team.TeamResDto;
+import com.univus.project.entity.Post;
 import com.univus.project.entity.Team;
 import com.univus.project.entity.TeamMember;
 import com.univus.project.entity.User;
@@ -56,7 +57,31 @@ public class TeamService {
         // 4) DTO 로 변환해서 반환
         return toDto(saved);
     }
+    @Transactional
+    public void deleteTeam(Long teamId, User user) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("팀이 존재하지 않습니다."));
 
+        if (!team.getLeader().getId().equals(user.getId())) {
+            throw new RuntimeException("팀장만 해체할 수 있습니다.");
+        }
+
+        teamRepository.delete(team);
+    }
+
+    @Transactional
+    public Long updateTeam(Long teamId,TeamCreateReqDto dto, User user) {
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("팀이 존재하지 않습니다."));
+        if (!team.getLeader().getId().equals(user.getId())) {
+            throw new RuntimeException("팀장만 정보를 수정할 수 있습니다.");
+        }
+        dto.setTeamName(dto.getTeamName());
+        dto.setDescription(dto.getDescription());
+
+        return team.getId();
+    }
     /**
      * 팀 상세 조회
      */

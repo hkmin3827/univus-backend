@@ -40,7 +40,12 @@ public class UserService {
     public UserResDto findByEmail(String email) {
         User user = userRepository.findByEmailAndActiveTrue(email)
                 .orElseThrow(() -> new RuntimeException("해당 회원이 존재하지 않습니다."));
-        return covertEntityToDto(user);
+        return new UserResDto(user);
+    }
+    public UserResDto findById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 회원이 존재하지 않습니다."));
+        return new UserResDto(user);
     }
 
     // 회원 정보 수정

@@ -25,15 +25,7 @@ public class StudentService {
                 .orElseThrow(() -> new IllegalArgumentException("학생 정보가 없습니다. email=" + email));
 
         // 공통 정보 세팅
-        UserResDto userDto = new UserResDto(
-                student.getId(),
-                student.getEmail(),
-                student.getName(),
-                student.getPhone(),   // ✅ 여기
-                student.getImage(),
-                student.getRegDate(),
-                student.getRole(),
-                student.isActive()
+        UserResDto userDto = new UserResDto(student
         );
 
         // 학생 전용 정보 세팅

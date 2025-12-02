@@ -67,13 +67,7 @@ public class AuthController {
         User authUser = userDetails.getUser();
 
         UserResDto res = new UserResDto(
-                authUser.getId(),
-                authUser.getEmail(),
-                authUser.getName(),
-                authUser.getRole(),
-                authUser.getImage(),
-                authUser.getRegDate(),
-                authUser.isActive()
+                authUser
         );
 
         return ResponseEntity.ok(res);

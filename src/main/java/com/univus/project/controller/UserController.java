@@ -28,12 +28,16 @@ public class UserController {
         return ResponseEntity.ok(userService.findAll());
     }
 
-    // 개별 회원 조회 (email)
-    @GetMapping("/{email}")
-    public ResponseEntity<UserResDto> getUser(@PathVariable String email) {
-        return ResponseEntity.ok(userService.findByEmail(email));
-    }
-
+        // 개별 회원 조회 (email)
+        @GetMapping("/email/{email}")
+        public ResponseEntity<UserResDto> getUser(@PathVariable String email) {
+            return ResponseEntity.ok(userService.findByEmail(email));
+        }
+        @GetMapping("/id/{userId}")
+        public ResponseEntity<UserResDto> getUserProfile(@PathVariable Long userId) {
+            UserResDto userInfo = userService.findById(userId);
+            return ResponseEntity.ok(userInfo);
+        }
 
 
     // 유저 탈퇴
@@ -106,14 +110,7 @@ public class UserController {
         User user = userDetails.getUser();
 
         UserResDto dto = new UserResDto(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getPhone(),  
-                user.getImage(),
-                user.getRegDate(),
-                user.getRole(),
-                user.isActive()
+               user
         );
 
         return ResponseEntity.ok(dto);

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,20 @@ public class TeamController {
         TeamResDto res = teamService.getTeam(teamId);
         return ResponseEntity.ok(res);
     }
-
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<Boolean> deleteTeam(
+            @PathVariable Long teamId
+    ) {
+        User user = getCurrentUser();
+        teamService.deleteTeam(teamId, user);
+        return ResponseEntity.ok().build();
+    }
+    @PutMapping("/modify/{teamId}")
+    public ResponseEntity<Long> updateTeam(@PathVariable Long teamId, TeamCreateReqDto dto, @AuthenticationPrincipal CustomUserDetails userDetails){
+        User user = getCurrentUser();
+        teamService.updateTeam(teamId, dto, user);
+        return ResponseEntity.ok(teamId);
+    }
     /**
      * 팀 초대 URL 생성 (팀장만 가능)
      * - 프론트에서 이 URL 을 복사해서 공유

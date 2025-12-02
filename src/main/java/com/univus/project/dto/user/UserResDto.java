@@ -1,6 +1,9 @@
 package com.univus.project.dto.user;
 
 import com.univus.project.constant.Role;
+import com.univus.project.entity.Professor;
+import com.univus.project.entity.Student;
+import com.univus.project.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,15 +24,34 @@ public class UserResDto {
     private Role role;
     private boolean active;
 
-    public UserResDto(Long id, String email, String name, Role role, String image, LocalDateTime regDate, boolean active) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.phone = phone;
-        this.image = image;
-        this.regDate = regDate;
-        this.role = role;
-        this.active = active;
+    private String department;
+    private String position;
+    private String studentNumber;
+    private String major;
+    private Integer grade;
+
+    public UserResDto(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.name = user.getName();
+        this.image = user.getImage();
+        this.phone = user.getPhone();
+        this.regDate = user.getRegDate();
+        this.role = user.getRole();
+        this.active = user.isActive();
+
+        if (user instanceof Professor) {
+            Professor professor = (Professor) user;
+            this.department = professor.getDepartment();
+            this.position = professor.getPosition();
+        }
+
+        if (user instanceof Student) {
+            Student student = (Student) user;
+            this.studentNumber = student.getStudentNumber();
+            this.major = student.getMajor();
+            this.grade = student.getGrade();
+        }
     }
 
 }
