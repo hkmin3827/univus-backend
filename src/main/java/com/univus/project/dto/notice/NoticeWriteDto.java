@@ -7,6 +7,7 @@ import lombok.ToString;
 
 @Getter @Setter @NoArgsConstructor @ToString
 public class NoticeWriteDto {
+    private Long teamId;        // 팀선택
     private String email;       // 작성자 이메일
     private String title;       // 공지 제목
     private String content;     // 공지 내용

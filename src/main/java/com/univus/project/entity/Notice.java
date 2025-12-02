@@ -30,6 +30,11 @@ public class Notice {
 
     private LocalDateTime createTime;   // 생성 시간
 
+    // Team 연관관계 매핑
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
     @PrePersist
     public void prePersist() {
         this.createTime = LocalDateTime.now();

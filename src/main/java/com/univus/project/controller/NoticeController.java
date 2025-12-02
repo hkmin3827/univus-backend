@@ -5,6 +5,7 @@ import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
 import com.univus.project.entity.User;
+import com.univus.project.repository.TeamRepository;
 import com.univus.project.service.NoticeService;
 import com.univus.project.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +38,13 @@ public class NoticeController {
     }
 
     // 2) 공지 조회 - 모든 유저 접근 가능
-    @GetMapping("/{id}")
-    public ResponseEntity<NoticeResDto> getNotice(@PathVariable Long id) {
-        NoticeResDto notice = noticeService.getNoticeById(id);
-        return ResponseEntity.ok(notice);
+    @GetMapping("/list/{teamId}")
+    public ResponseEntity<Page<NoticeResDto>> getNoticesByTeam(
+            @PathVariable Long teamId,
+            Pageable pageable) {
+
+        Page<NoticeResDto> notices = noticeService.getNoticesByTeam(teamId, pageable);
+        return ResponseEntity.ok(notices);
     }
 
     // 3) 공지 수정 - 작성자 본인만 가능

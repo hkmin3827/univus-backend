@@ -12,6 +12,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     // 특정 User가 작성한 공지 조회
     List<Notice> findByUser(User user);
 
+    // 팀별 공지 조회
+    Page<Notice> findByTeam_IdOrderByCreateTimeDesc(Long teamId, Pageable pageable);
+
     // 제목에 특정 단어가 포함된 공지 조회
     List<Notice> findByTitleContaining(String title);
     // 제목이나 내용에 특정 단어가 포함된 공지 조회
