@@ -5,6 +5,8 @@ import com.univus.project.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -17,9 +19,16 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     // 제목에 특정 단어가 포함된 공지 조회
     List<Notice> findByTitleContaining(String title);
+
     // 제목이나 내용에 특정 단어가 포함된 공지 조회
     List<Notice> findByTitleContainingOrContentContaining(String title, String content);
 
     // 최신순으로 공지 조회 -> 페이지네이션 진행
     Page<Notice> findAllByOrderByCreateTimeDesc(Pageable pageable);
+
+    @Query("SELECT DISTINCT n FROM Notice n " +
+            "WHERE n.team.id = :teamId " +
+            "AND (n.title LIKE %:keyword% OR n.content LIKE %:keyword%) " +
+            "ORDER BY n.createTime DESC")
+    List<Notice> searchNotices(@Param("teamId") Long teamId, @Param("keyword") String keyword);
 }

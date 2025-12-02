@@ -49,5 +49,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("SELECT c FROM Comment c WHERE c.post.board.team.id = :teamId AND c.writer.id = :userId ORDER BY c.createTime DESC")
     List<Comment> findByTeamAndUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
-
+    @Query("SELECT DISTINCT c FROM Comment c " +
+            "WHERE c.post.board.team.id = :teamId " +
+            "AND c.content LIKE %:keyword% " +
+            "ORDER BY c.createTime DESC")
+    List<Comment> searchComments(@Param("teamId") Long teamId, @Param("keyword") String keyword);
 }

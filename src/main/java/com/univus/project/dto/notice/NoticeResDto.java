@@ -14,6 +14,7 @@ public class NoticeResDto {
     private String title;   // 공지 제목
     private String content; // 공지 내용
     private String email;    // 작성자 이메일
+    private String writerName;
     private LocalDateTime createTime;
 
     public NoticeResDto(Notice notice) {
@@ -21,6 +22,7 @@ public class NoticeResDto {
         this.title = notice.getTitle();
         this.content = notice.getContent();
         this.email = notice.getUser() != null ? notice.getUser().getEmail() : null;
+        this.writerName = notice.getWriterName();
         this.createTime = notice.getCreateTime();
     }
 }

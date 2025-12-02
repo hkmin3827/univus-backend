@@ -43,5 +43,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.board.team.id = :teamId AND p.user.id = :userId ORDER BY p.createTime DESC")
     List<Post> findByTeamAndUser(@Param("teamId") Long teamId, @Param("userId") Long userId);
-
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "WHERE p.board.team.id = :teamId " +
+            "AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) " +
+            "ORDER BY p.createTime DESC")
+    List<Post> searchPosts(@Param("teamId") Long teamId, @Param("keyword") String keyword);
 }

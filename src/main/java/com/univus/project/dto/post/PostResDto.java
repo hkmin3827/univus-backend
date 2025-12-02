@@ -20,6 +20,7 @@ public class PostResDto {
     private String fileName;
     private LocalDateTime createTime;
     private Long boardId;
+    private String boardName;
 
     public PostResDto(Post post){
         this.postId = post.getId();
@@ -30,5 +31,6 @@ public class PostResDto {
         this.fileName = post.getFileName();
         this.createTime = post.getCreateTime();
         this.boardId = post.getBoard().getId();
+        this.boardName = post.getBoard().getName();
     }
 }
