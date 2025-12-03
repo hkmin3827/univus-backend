@@ -53,6 +53,10 @@ public class TodoController {
     public ResponseEntity<List<TodoResDto>> getTodosByBoard(@PathVariable Long boardId) {
         return ResponseEntity.ok(todoService.getTodosByBoard(boardId));
     }
+    @GetMapping("/board/{boardId}/list")
+    public ResponseEntity<List<TodoResDto>> getTodosByBoardId(@PathVariable Long boardId) {
+        return ResponseEntity.ok(todoService.getTodosByBoardId(boardId));
+    }
 
     // 4) 완료 기준 조회
     @GetMapping("/done/{done}")

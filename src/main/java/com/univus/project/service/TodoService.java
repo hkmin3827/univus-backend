@@ -76,6 +76,14 @@ public class TodoService {
                 .map(todo -> new TodoResDto(board.getName(), todo))
                 .collect(Collectors.toList());
     }
+    public List<TodoResDto> getTodosByBoardId(Long boardId) {
+        List<Todo> todos = todoRepository.findAllWithUserAndBoardByBoardId(boardId);
+
+        return todos.stream()
+                .map(todo -> new TodoResDto(todo))
+                .collect(Collectors.toList());
+    }
+
 
     public List<TodoResDto> getTodosByTeamAndBoard(Long teamId, Long boardId) {
         return todoRepository.findByBoard_Team_IdAndBoard_Id(teamId, boardId)

@@ -16,6 +16,7 @@ public class TodoResDto {
     private boolean done;   // 완료 여부
     private LocalDateTime createTime;
     private String boardName; // 프로젝트명(게시판 이름)
+    private Long boardId;
 
     public TodoResDto(String boardName, Todo todo) {
         this.boardName = boardName;
@@ -25,5 +26,16 @@ public class TodoResDto {
         this.content = todo.getContent();
         this.done = todo.isDone();
         this.createTime = todo.getCreateTime();
+        this.boardId = todo.getBoard().getId();
+    }
+    public TodoResDto(Todo todo) {
+        this.boardName = todo.getBoard().getName();
+        this.id = todo.getId();
+        this.email = todo.getUser().getEmail();
+        this.userName = todo.getUser().getName();
+        this.content = todo.getContent();
+        this.done = todo.isDone();
+        this.createTime = todo.getCreateTime();
+        this.boardId = todo.getBoard().getId();
     }
 }

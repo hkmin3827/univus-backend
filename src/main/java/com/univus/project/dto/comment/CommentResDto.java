@@ -20,6 +20,7 @@ public class CommentResDto {
     private LocalDateTime createTime;
     private Long postId;
     private String boardName;
+    private Long boardId;
 
     public CommentResDto(Comment comment) {
         this.id = comment.getId();
@@ -30,5 +31,6 @@ public class CommentResDto {
         this.writerImage = comment.getWriter().getImage();
         this.postId = comment.getPost().getId();
         this.boardName = comment.getPost().getBoard().getName();
+        this.boardId = comment.getPost().getBoard().getId();
     }
 }
