@@ -43,6 +43,7 @@ public class ReactionService {
                     // 공감하지 않은 경우 -> 공감 추가
                     Reaction newReaction = new Reaction();
                     newReaction.setPost(post);
+                    newReaction.setBoard(post.getBoard());
                     newReaction.setUser(user);
                     newReaction.setType(type);
                     reactionRepository.save(newReaction);

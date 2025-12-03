@@ -16,7 +16,7 @@ public class UserContributionDetailDto {
     // 카테고리별 카운트
     private int postCount;
     private int commentCount;
-    private int reactionCount;
+    private int reactionCount;  //내가 누른 공감
     private int todoCompleted;
     private int todoUncompleted;
 

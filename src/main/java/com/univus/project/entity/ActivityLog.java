@@ -26,7 +26,7 @@ public class ActivityLog {
     // 집계 항목
     private int postCount;              // 작성한 게시글 수
     private int commentCount;           // 작성한 댓글 수
-    private int reactionCount;          // 받은 Reaction 수
+    private int reactionCount;          // 내가 누른 Reaction 수
 
     private int todoCompleted;          // 완료한 TodoList 수
     private int todoUncompleted;        // 미완료 TodoList 수

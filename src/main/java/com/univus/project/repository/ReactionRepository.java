@@ -26,6 +26,9 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     // 추가: 특정 유저가 특정 게시판에서 받은 공감 수
     int countByPost_UserAndPost_Board(User user, Board board);
 
+    //내가 해당 보드에서 "직접 누른" 리액션 수
+    int countByUserAndBoard(User user, Board board);
+
     //타입별 개수
     long countByPostAndType(Post post, ReactionType type);
 

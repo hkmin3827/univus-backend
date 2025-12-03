@@ -52,7 +52,7 @@ public class ActivityLogService {
             // 게시글, 댓글, 공감 부분
             int postCount = postRepository.countByUserAndBoard(user, board);
             int commentCount = commentRepository.countByUserAndBoard(user, board);
-            int reactionCount = reactionRepository.countByPost_UserAndPost_Board(user, board);
+            int reactionCount = reactionRepository.countByUserAndBoard(user, board);
 
             // todolist 부분
             int todoDone = todoRepository.countByUserAndBoardAndDone(user, board, true);

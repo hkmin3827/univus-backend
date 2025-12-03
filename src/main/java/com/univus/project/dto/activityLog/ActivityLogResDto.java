@@ -22,7 +22,7 @@ public class ActivityLogResDto {
     // 활동 기여도 필드 - 게시글, 댓글, 공감
     private int postCount;
     private int commentCount;
-    private int reactionCount;
+    private int reactionCount;  // 내가 누른 공감
 
     // TodoList 필드 - 완료, 미완료
     private int todoCompleted;
