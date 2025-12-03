@@ -25,28 +25,39 @@ public class ReactionService {
     // 1) 공감 토글 생성
     @Transactional
     public ReactionType toggleReaction(Long postId, User user, ReactionType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("type은 null일 수 없습니다.");
+        }
+
         Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new IllegalArgumentException("게시글이 없습니다!"));
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 없습니다! postId=" + postId));
+
+        // 1) 기존 리액션이 있는지 확인
         return reactionRepository.findByUserAndPost(user, post)
                 .map(reaction -> {
-                    // 이미 공감한 경우 -> 공감 취소
-                    if(reaction.getType() == type){
-                        reactionRepository.delete(reaction);
-                        return null;   //프론트에서는 "반응 없음" 처리
-                    } else {
-                        //다른 타입을 누르면 -> 타입 변경
-                        reaction.setType(type);
+                    // 이미 같은 타입이면 → 아무 변화 없음 (중복 방지)
+                    if (reaction.getType() == type) {
+                        log.info("이미 동일한 리액션이 존재합니다. userId={}, postId={}, type={}",
+                                user.getId(), postId, type);
                         return reaction.getType();
                     }
-                 })
+                    // 다른 타입이면 → 타입만 변경
+                    log.info("리액션 타입 변경: userId={}, postId={}, {} -> {}",
+                            user.getId(), postId, reaction.getType(), type);
+                    reaction.setType(type); // JPA 더티 체킹으로 자동 업데이트
+                    return reaction.getType();
+                })
                 .orElseGet(() -> {
-                    // 공감하지 않은 경우 -> 공감 추가
+                    // 2) 기존 리액션이 없으면 새로 생성
                     Reaction newReaction = new Reaction();
                     newReaction.setPost(post);
                     newReaction.setBoard(post.getBoard());
                     newReaction.setUser(user);
                     newReaction.setType(type);
+
                     reactionRepository.save(newReaction);
+                    log.info("새 리액션 생성: userId={}, postId={}, type={}",
+                            user.getId(), postId, type);
                     return newReaction.getType();
                 });
     }
