@@ -22,6 +22,8 @@ public class Notice {
     @Lob
     @Column(nullable = false)
     private  String content;            // 공지 내용
+
+    @Lob
     private String fileUrl;
     private String fileName;
 
