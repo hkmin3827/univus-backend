@@ -39,7 +39,7 @@ public class TeamInviteService {
 
         // 2) 팀장인지 확인 (팀장만 초대 가능)
         if (!isLeader(team, inviter)) {
-            throw new AccessDeniedException("팀장만 초대 URL을 생성할 수 있습니다.");
+                throw new AccessDeniedException("팀장만 초대 URL을 생성할 수 있습니다.");
         }
 
         // 3) 랜덤 초대 토큰 생성

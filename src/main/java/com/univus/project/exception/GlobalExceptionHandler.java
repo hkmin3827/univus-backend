@@ -1,5 +1,6 @@
 package com.univus.project.exception;
 
+import com.univus.project.constant.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +19,31 @@ public class GlobalExceptionHandler {
     // 공통 에러 응답 객체
     static class ErrorResponse {
         private final String message;
+        private final String code;
+        private final int status;
 
         public ErrorResponse(String message) {
             this.message = message;
+            this.code = "AUTH_ERROR";
+            this.status = HttpStatus.UNAUTHORIZED.value();
         }
+
+        public ErrorResponse(ErrorCode errorCode) {
+            this.message = errorCode.getMessage();
+            this.code = errorCode.name();
+            this.status = errorCode.getStatus().value();
+        }
+
 
         public String getMessage() {
             return message;
         }
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<?> handleCustomException(CustomException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatus())
+                .body(new ErrorResponse(e.getErrorCode()));
     }
 }

@@ -47,10 +47,12 @@ public class TeamController {
      * 팀 상세 조회
      */
     @GetMapping("/{teamId}")
-    public ResponseEntity<TeamResDto> getTeam(@PathVariable Long teamId) {
-        TeamResDto res = teamService.getTeam(teamId);
+    public ResponseEntity<TeamResDto> getTeam(@PathVariable Long teamId,  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        User user = getCurrentUser();
+        TeamResDto res = teamService.getTeam(teamId,user.getId());
         return ResponseEntity.ok(res);
     }
+
     @DeleteMapping("/{teamId}")
     public ResponseEntity<Boolean> deleteTeam(
             @PathVariable Long teamId
@@ -59,6 +61,7 @@ public class TeamController {
         teamService.deleteTeam(teamId, user);
         return ResponseEntity.ok().build();
     }
+
     @PutMapping("/modify/{teamId}")
     public ResponseEntity<Long> updateTeam(@PathVariable Long teamId, @RequestBody TeamCreateReqDto dto, @AuthenticationPrincipal CustomUserDetails userDetails){
         User user = getCurrentUser();

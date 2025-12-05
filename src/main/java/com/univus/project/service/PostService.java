@@ -1,11 +1,14 @@
 package com.univus.project.service;
 
+import com.univus.project.constant.ErrorCode;
 import com.univus.project.dto.post.*;
 import com.univus.project.entity.Board;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.User;
+import com.univus.project.exception.CustomException;
 import com.univus.project.repository.BoardRepository;
 import com.univus.project.repository.PostRepository;
+import com.univus.project.repository.TeamMemberRepository;
 import com.univus.project.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +33,26 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     private final ActivityLogService activityLogService;
 
-    public Long createPost(Long boardId, PostReqDto dto, User user) {
+    public Long createPost(Long teamId, Long boardId, PostReqDto dto, User user) {
+        if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (!board.getTeam().getId().equals(teamId)) {
+            throw new CustomException(ErrorCode.INVALID_RELATION);
+        }
+
+        boolean isMember = teamMemberRepository.existsByTeamIdAndUserId(teamId, user.getId());
+        if (!isMember) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
+        }
 
         Post post = new Post();
         post.setTitle(dto.getTitle());
@@ -52,28 +69,35 @@ public class PostService {
 
         postRepository.save(post);
 
-        // 🔥🔴 핵심: ActivityLog 업데이트 필수!!
         activityLogService.recalcActivityLog(user.getId(), boardId);
 
         return post.getId();
     }
-
-    public Long updatePost(Long postId, PostReqDto dto, User user) {
+    public Long updatePost(Long teamId, Long boardId, Long postId, PostReqDto dto, User user) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() ->new CustomException(ErrorCode.POST_NOT_FOUND));
+        Board board = post.getBoard();
 
+        if (!board.getId().equals(boardId) || !board.getTeam().getId().equals(teamId)) {
+            throw new CustomException(ErrorCode.INVALID_RELATION);
+        }
         if (!post.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("수정 권한이 없습니다.");
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
 
-        post.setTitle(dto.getTitle());
-        post.setContent(dto.getContent());
+
+        if (dto.getTitle() != null && !dto.getTitle().trim().isEmpty()) {
+            post.setTitle(dto.getTitle());
+        }
+
+        if (dto.getContent() != null) {
+            post.setContent(dto.getContent());
+        }
+
 
         if (dto.getFileUrl() != null && !dto.getFileUrl().isBlank()) {
             post.setFileUrl(dto.getFileUrl());
-        }
-        if (dto.getFileName() != null && !dto.getFileName().isBlank()) {
             post.setFileName(dto.getFileName());
         }
 
@@ -81,21 +105,24 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(Long postId, User user) {
+    public void deletePost(Long teamId, Long boardId, Long postId, User user) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() ->  new CustomException(ErrorCode.POST_NOT_FOUND));
 
+        Board board = post.getBoard();
         if (!post.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
-
+        if (!board.getId().equals(boardId) || !board.getTeam().getId().equals(teamId)) {
+            throw new CustomException(ErrorCode.INVALID_RELATION);
+        }
         postRepository.delete(post);
     }
 
     @Transactional(readOnly = true)
     public List<PostListDto> getPostsByBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+                .orElseThrow(() ->  new CustomException(ErrorCode.BOARD_NOT_FOUND));
 
         return postRepository.findByBoard(board)
                 .stream()
@@ -107,8 +134,6 @@ public class PostService {
     public Page<PostListDto> getPosts(Long boardId, int page, int size, String keyword, String sort) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
-
-
         Page<Post> posts;
 
         if (keyword != null && !keyword.isBlank()) {
@@ -121,9 +146,21 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostDetailDto getPostDetail(Long postId) {
+    public PostDetailDto getPostDetail(Long teamId, Long boardId, Long postId, Long userId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Board board = post.getBoard();
+
+        if (!board.getId().equals(boardId) || !board.getTeam().getId().equals(teamId)) {
+            throw new CustomException(ErrorCode.INVALID_RELATION);
+        }
+
+        boolean isMember = teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
+        if (!isMember) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
+        }
+
+
         return new PostDetailDto(post);
     }
 

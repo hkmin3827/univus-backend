@@ -23,7 +23,7 @@ import org.springframework.http.HttpHeaders;
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/team/{teamId}/notice")
 @RequiredArgsConstructor
 public class NoticeController {
 
@@ -33,28 +33,32 @@ public class NoticeController {
     // 1) 공지 생성 - 교수 권한 확인
     @PostMapping("/create")
     public ResponseEntity<NoticeResDto> createNotice(
+            @PathVariable Long teamId,
             @RequestBody NoticeWriteDto dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         User user = userDetails.getUser();
-        NoticeResDto notice = noticeService.createNotice(dto, user);
+        NoticeResDto notice = noticeService.createNotice(teamId, dto, user);
         return ResponseEntity.ok(notice);
     }
 
     // 2) 공지 조회 - 모든 유저 접근 가능
-    @GetMapping("/list/{teamId}")
+    @GetMapping("/list")
     public ResponseEntity<Page<NoticeResDto>> getNoticesByTeam(
             @PathVariable Long teamId,
-            Pageable pageable) {
+            Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Page<NoticeResDto> notices = noticeService.getNoticesByTeam(teamId, pageable);
+        Page<NoticeResDto> notices = noticeService.getNoticesByTeam(teamId, pageable, userDetails.getUser().getId());
         return ResponseEntity.ok(notices);
     }
 
     // 공지 상세 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<NoticeResDto> getNotice(@PathVariable Long id) {
-        NoticeResDto notice = noticeService.getNoticeById(id);
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<NoticeResDto> getNotice(@PathVariable Long teamId,
+                                                  @PathVariable Long noticeId,
+                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+        NoticeResDto notice = noticeService.getNoticeById(teamId, noticeId, userDetails.getUser().getId());
         return ResponseEntity.ok(notice);
     }
 
@@ -77,30 +81,32 @@ public class NoticeController {
     }
 
     // 3) 공지 수정 - 작성자 본인만 가능
-    @PutMapping("/modify/{id}")
+    @PutMapping("/modify/{noticeId}")
     public ResponseEntity<Boolean> modifyNotice(
-            @PathVariable Long id,
+            @PathVariable Long teamId,
+            @PathVariable Long noticeId,
             @RequestBody NoticeModifyDto dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         User user = userDetails.getUser();
-        Boolean result = noticeService.modifyNotice(id, dto, user);
+        Boolean result = noticeService.modifyNotice(teamId, noticeId, dto, user);
         return ResponseEntity.ok(result);
     }
 
     // 4) 공지 삭제 - 작성자 본인만 가능
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{noticeId}")
     public ResponseEntity<Boolean> deleteNotice(
-            @PathVariable Long id,
+            @PathVariable Long teamId,
+            @PathVariable Long noticeId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         User user = userDetails.getUser();
-        Boolean result = noticeService.deleteNotice(id, user);
+        Boolean result = noticeService.deleteNotice(teamId, noticeId, user);
         return ResponseEntity.ok(result);
     }
 
     // 5) 최신 공지 목록 조회 - 페이지네이션 적용
-    @GetMapping("/list")
+    @GetMapping("/recentlist")
     public ResponseEntity<Page<NoticeResDto>> getAllNotices(Pageable pageable) {
         Page<NoticeResDto> notices = noticeService.getAllNotices(pageable);
         return ResponseEntity.ok(notices);

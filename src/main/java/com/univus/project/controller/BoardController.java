@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")  // 프론트 연결
 @RestController
-@RequestMapping("/teams/{teamId}/board")
+@RequestMapping("/team/{teamId}/board")
 @RequiredArgsConstructor
 public class BoardController {
 
@@ -48,7 +48,7 @@ public class BoardController {
             @PathVariable Long teamId,
             @PathVariable Long boardId
     ) {
-        return ResponseEntity.ok(boardService.getBoard(boardId));
+        return ResponseEntity.ok(boardService.getBoard(teamId, boardId, null));
     }
 
     // 게시판 수정

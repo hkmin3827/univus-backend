@@ -1,11 +1,13 @@
 package com.univus.project.service;
 
+import com.univus.project.constant.ErrorCode;
 import com.univus.project.dto.team.TeamCreateReqDto;
 import com.univus.project.dto.team.TeamResDto;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.Team;
 import com.univus.project.entity.TeamMember;
 import com.univus.project.entity.User;
+import com.univus.project.exception.CustomException;
 import com.univus.project.repository.TeamMemberRepository;
 import com.univus.project.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +33,10 @@ public class TeamService {
     @Transactional
     public TeamResDto createTeam(TeamCreateReqDto dto, User leader) {
         if (dto.getTeamName() == null || dto.getTeamName().trim().isEmpty()) {
-            throw new IllegalArgumentException("팀 이름은 필수 입력 항목입니다.");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
         if (teamRepository.existsByTeamName(dto.getTeamName())) {
-            throw new IllegalArgumentException("이미 존재하는 팀 이름입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_TEAM_NAME);
         }
 
         // 1) Team 엔티티 생성
@@ -60,10 +62,10 @@ public class TeamService {
     @Transactional
     public void deleteTeam(Long teamId, User user) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("팀이 존재하지 않습니다."));
+                .orElseThrow(() ->  new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
         if (!team.getLeader().getId().equals(user.getId())) {
-            throw new RuntimeException("팀장만 해체할 수 있습니다.");
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
 
         teamRepository.delete(team);
@@ -73,9 +75,9 @@ public class TeamService {
     public Long updateTeam(Long teamId,TeamCreateReqDto dto, User user) {
 
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("팀이 존재하지 않습니다."));
+                .orElseThrow(() ->new CustomException(ErrorCode.TEAM_NOT_FOUND));
         if (!team.getLeader().getId().equals(user.getId())) {
-            throw new RuntimeException("팀장만 정보를 수정할 수 있습니다.");
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
         team.setTeamName(dto.getTeamName());
         team.setDescription(dto.getDescription());
@@ -93,9 +95,14 @@ public class TeamService {
      * 팀 상세 조회
      */
     @Transactional(readOnly = true)
-    public TeamResDto getTeam(Long teamId) {
+    public TeamResDto getTeam(Long teamId, Long userId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("팀이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+        boolean isMember = teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
+        if (!isMember) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
+        }
+
         return toDto(team);
     }
 
