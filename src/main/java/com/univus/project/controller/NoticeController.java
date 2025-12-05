@@ -1,6 +1,7 @@
 package com.univus.project.controller;
 
 import com.univus.project.config.CustomUserDetails;
+import com.univus.project.dto.notice.FileResDto;
 import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 
 @Slf4j
 @CrossOrigin(origins = "http://localhost:3000")
@@ -52,6 +56,24 @@ public class NoticeController {
     public ResponseEntity<NoticeResDto> getNotice(@PathVariable Long id) {
         NoticeResDto notice = noticeService.getNoticeById(id);
         return ResponseEntity.ok(notice);
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<?> downloadFile(@PathVariable Long id) {
+
+        // NoticeResDto 에 저장된 fileUrl, fileName 등을 service에서 가져옴
+        FileResDto fileInfo = noticeService.getFileInfo(id);
+
+        if (fileInfo == null || fileInfo.getFileUrl() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Resource resource = new FileSystemResource(fileInfo.getFileUrl());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + fileInfo.getFileName() + "\"")
+                .body(resource);
     }
 
     // 3) 공지 수정 - 작성자 본인만 가능

@@ -9,5 +9,7 @@ import lombok.ToString;
 public class NoticeModifyDto {
     private String title;       // 공지 제목
     private String content;     // 공지 내용
+    private String fileUrl;
+    private String fileName;
 
 }

@@ -22,6 +22,8 @@ public class Notice {
     @Lob
     @Column(nullable = false)
     private  String content;            // 공지 내용
+    private String fileUrl;
+    private String fileName;
 
     // 작성자 정보 -> User 연동
     @ManyToOne(fetch = FetchType.LAZY)

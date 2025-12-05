@@ -1,6 +1,7 @@
 package com.univus.project.service;
 
 import com.univus.project.constant.Role;
+import com.univus.project.dto.notice.FileResDto;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
@@ -34,6 +35,9 @@ public class NoticeService {
             notice.setTitle(dto.getTitle());
             notice.setContent(dto.getContent());
             notice.setUser(user);
+            notice.setFileUrl(dto.getFileUrl());
+            notice.setFileName(dto.getFileName());
+
 
             Team team = teamRepository.findById(dto.getTeamId())
                     .orElseThrow(() -> new RuntimeException("팀이 없습니다."));
@@ -64,6 +68,15 @@ public class NoticeService {
         return new NoticeResDto(notice);
     }
 
+    public FileResDto getFileInfo(Long id) {
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notice not found"));
+
+        if (notice.getFileUrl() == null) return null;
+
+        return new FileResDto(notice.getFileUrl(), notice.getFileName());
+    }
+
 
     // 3) 공지 수정
     public Boolean modifyNotice(Long id, NoticeModifyDto dto, User user) {
@@ -75,6 +88,8 @@ public class NoticeService {
             }
             notice.setTitle(dto.getTitle());
             notice.setContent(dto.getContent());
+            notice.setFileUrl(dto.getFileUrl());
+            notice.setFileName(dto.getFileName());
             return true;
         } catch(Exception e) {
             log.error("공지 수정 실패: {}", e.getMessage());

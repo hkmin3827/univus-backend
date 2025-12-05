@@ -16,6 +16,8 @@ public class NoticeResDto {
     private String email;    // 작성자 이메일
     private String professorName;
     private String professorImage;
+    private String fileUrl;
+    private String fileName;
     private LocalDateTime createTime;
 
     public NoticeResDto(Notice notice) {
@@ -25,6 +27,8 @@ public class NoticeResDto {
         this.email = notice.getUser() != null ? notice.getUser().getEmail() : null;
         this.professorName = notice.getUser().getName();
         this.professorImage = notice.getUser().getImage();
+        this.fileUrl = notice.getFileUrl();
+        this.fileName = notice.getFileName();
         this.createTime = notice.getCreateTime();
     }
 }
