@@ -24,9 +24,11 @@ public class NoticeResDto {
         this.id = notice.getId();
         this.title = notice.getTitle();
         this.content = notice.getContent();
-        this.email = notice.getUser() != null ? notice.getUser().getEmail() : null;
-        this.professorName = notice.getUser().getName();
-        this.professorImage = notice.getUser().getImage();
+        if (notice.getUser() != null) {
+            this.email = notice.getUser().getEmail();
+            this.professorName = notice.getUser().getName();
+            this.professorImage = notice.getUser().getImage();
+        }
         this.fileUrl = notice.getFileUrl();
         this.fileName = notice.getFileName();
         this.createTime = notice.getCreateTime();

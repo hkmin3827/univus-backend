@@ -123,8 +123,8 @@ public class NoticeService {
             notice.setFileName(dto.getFileName());
             return true;
         } catch(Exception e) {
-            log.error("공지 수정 실패: {}", e.getMessage());
-            return false;
+            log.error("공지 생성 실패: {}", e.getMessage(), e);
+            throw e;
         }
     }
 
