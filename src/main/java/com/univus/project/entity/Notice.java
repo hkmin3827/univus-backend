@@ -22,10 +22,7 @@ public class Notice {
     @Lob
     @Column(nullable = false)
     private  String content;            // 공지 내용
-
-    @Column(name = "file_url", length = 2000)
     private String fileUrl;
-
     private String fileName;
 
     // 작성자 정보 -> User 연동

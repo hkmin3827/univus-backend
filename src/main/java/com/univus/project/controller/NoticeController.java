@@ -111,4 +111,6 @@ public class NoticeController {
         Page<NoticeResDto> notices = noticeService.getAllNotices(pageable);
         return ResponseEntity.ok(notices);
     }
+
 }
+
