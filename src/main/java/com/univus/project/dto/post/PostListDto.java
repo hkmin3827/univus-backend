@@ -22,6 +22,7 @@ public class PostListDto {
     private Long boardId;
     private Long teamId;
 
+
     public PostListDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();

@@ -19,6 +19,7 @@ public class NoticeResDto {
     private String fileUrl;
     private String fileName;
     private LocalDateTime createTime;
+    private Long professorId;
 
     public NoticeResDto(Notice notice) {
         this.id = notice.getId();
@@ -28,6 +29,7 @@ public class NoticeResDto {
             this.email = notice.getUser().getEmail();
             this.professorName = notice.getUser().getName();
             this.professorImage = notice.getUser().getImage();
+            this.professorId = notice.getUser().getId();
         }
         this.fileUrl = notice.getFileUrl();
         this.fileName = notice.getFileName();
