@@ -30,6 +30,17 @@ public class SecurityConfig {
                 .csrf().disable()
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+
+                        .antMatchers(
+                                "/",               // 루트
+                                "/index.html",
+                                "/static/**",
+                                "/favicon.ico",
+                                "/logo192.png",
+                                "/logo512.png",
+                                "/manifest.json",
+                                "/robots.txt"
+                        ).permitAll()
                         .antMatchers("/auth/signup", "/auth/login", "/auth/exists/**",
                                 "/h2-console/**",
                                 "/profile/students/**",

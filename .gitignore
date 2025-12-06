@@ -1,42 +1,53 @@
-HELP.md
+############################################################
+# Java / Spring Boot Build Output
+############################################################
+/build/
 .gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+out/
+target/
 
-### STS ###
+# Gradle wrapper exception
+!gradle/wrapper/gradle-wrapper.jar
+
+############################################################
+# React build가 복사되는 static 폴더의 내용은 제외 (중요!)
+############################################################
+src/main/resources/static/*
+# static 폴더 자체는 유지하려면 .gitkeep 사용
+!src/main/resources/static/.gitkeep
+
+############################################################
+# IDE / Development Tools
+############################################################
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VSCode
+.vscode/
+
+# Eclipse / Spring Tool Suite
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+############################################################
+# OS / System Files
+############################################################
+.DS_Store
+Thumbs.db
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.idea/
-.vscode/
-# OS, 로그, 캐시
+############################################################
+# Logs
+############################################################
 *.log
 *.tmp
 *.bak

@@ -1,5 +1,6 @@
 package com.univus.project.service;
 
+import com.univus.project.constant.Role;
 import com.univus.project.dto.activityLog.ActivityLogResDto;
 import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.dto.activityLog.BoardUserContributionDto;
@@ -8,6 +9,7 @@ import com.univus.project.entity.*;
 import com.univus.project.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,9 @@ public class ActivityLogService {
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+
+    // 🔥 공통 TOP5 Pageable (0페이지, 5개)
+    private static final Pageable TOP5_PAGEABLE = PageRequest.of(0, 5);
 
     /**
      * 1) 활동 로그 재계산 및 저장
@@ -133,13 +138,15 @@ public class ActivityLogService {
      * 4) 인사이트용 - 특정 보드의 팀원별 기여도 리스트
      *    - 보드 내 모든 ActivityLog를 가져와서 BoardUserContributionDto로 변환
      *    - contributionScore 기준 내림차순 정렬
+     *    - 🔥 교수(PROFESSOR)는 제외
      */
     public List<BoardUserContributionDto> getBoardUserContributions(Long boardId) {
         try {
-            // 🔥 board 엔티티 안 거치고, 바로 board_id 기준으로 조회
+            // board 엔티티 안 거치고, 바로 board_id 기준으로 조회
             List<ActivityLog> logs = activeLogRepository.findByBoardId(boardId);
 
             return logs.stream()
+                    .filter(log -> log.getUser().getRole() != Role.PROFESSOR) // 교수 제외
                     .map(log -> new BoardUserContributionDto(
                             log.getUser().getId(),
                             log.getUser().getName(),
@@ -250,7 +257,7 @@ public class ActivityLogService {
             Board board = boardRepository.findById(boardId)
                     .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다. boardId=" + boardId));
 
-            // 🔥 항상 최신 데이터가 필요하다면 재계산 한 번 돌려주기
+            // 항상 최신 데이터가 필요하다면 재계산 한 번 돌려주기
             ActivityLog log = recalcActivityLog(user.getId(), boardId);
             if (log == null) {
                 // 재계산이 실패한 경우를 대비한 fallback
@@ -291,13 +298,13 @@ public class ActivityLogService {
                 return;
             }
 
-            // 🔥 출석 엔티티 저장 (@PrePersist로 date = today 자동 세팅)
+            // 출석 엔티티 저장 (@PrePersist로 date = today 자동 세팅)
             Attendance attendance = new Attendance();
             attendance.setUser(user);
             attendance.setBoard(board);
             attendanceRepository.save(attendance);
 
-            // 🔥 출석까지 포함해서 활동로그 재계산
+            // 출석까지 포함해서 활동로그 재계산
             recalcActivityLog(userId, boardId);
 
         } catch (Exception e) {
@@ -306,29 +313,39 @@ public class ActivityLogService {
         }
     }
 
+    // 2) 게시글 TOP5 (교수 제외)
     public List<ActivityTop5Dto> getPostTop5(Long boardId) {
         try {
-            return postRepository.findPostTop5ByBoardId(boardId, Pageable.ofSize(5));
+            return postRepository.findPostTop5ByBoardId(boardId, TOP5_PAGEABLE)
+                    .stream()
+                    .filter(dto -> dto.getRole() != Role.PROFESSOR)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("게시글 TOP5 조회 실패: {}", e.getMessage());
             return List.of();
         }
     }
 
-    // 3) 댓글 TOP5
+    // 3) 댓글 TOP5 (교수 제외)
     public List<ActivityTop5Dto> getCommentTop5(Long boardId) {
         try {
-            return commentRepository.findCommentTop5ByBoardId(boardId, Pageable.ofSize(5));
+            return commentRepository.findCommentTop5ByBoardId(boardId, TOP5_PAGEABLE)
+                    .stream()
+                    .filter(dto -> dto.getRole() != Role.PROFESSOR)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("댓글 TOP5 조회 실패: {}", e.getMessage());
             return List.of();
         }
     }
 
-    // 4) 리액션 TOP5
+    // 4) 리액션 TOP5 (교수 제외)
     public List<ActivityTop5Dto> getReactionTop5(Long boardId) {
         try {
-            return reactionRepository.findReactionTop5ByBoardId(boardId, Pageable.ofSize(5));
+            return reactionRepository.findReactionTop5ByBoardId(boardId, TOP5_PAGEABLE)
+                    .stream()
+                    .filter(dto -> dto.getRole() != Role.PROFESSOR)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("리액션 TOP5 조회 실패: {}", e.getMessage());
             return List.of();

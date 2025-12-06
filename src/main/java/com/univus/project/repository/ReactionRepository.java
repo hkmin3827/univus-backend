@@ -34,20 +34,15 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
 
     @Query("""
     SELECT new com.univus.project.dto.activityLog.ActivityTop5Dto(
-        r.user.id,
-        r.user.name,
-        r.user.image,
-        COUNT(r)
+        r.user, COUNT(r)
     )
     FROM Reaction r
-    WHERE r.board.id = :boardId
-    GROUP BY r.user.id, r.user.name, r.user.image
+    WHERE r.post.board.id = :boardId
+    GROUP BY r.user
     ORDER BY COUNT(r) DESC
 """)
-    List<ActivityTop5Dto> findReactionTop5ByBoardId(
-            @Param("boardId") Long boardId,
-            Pageable pageable
-    );
+    List<ActivityTop5Dto> findReactionTop5ByBoardId(@Param("boardId") Long boardId,
+                                                    Pageable pageable);
 
 
 
