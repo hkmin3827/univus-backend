@@ -1,7 +1,6 @@
 package com.univus.project.controller;
 
-import com.univus.project.dto.auth.LoginReqDto;
-import com.univus.project.dto.auth.UserSignUpReqDto;
+import com.univus.project.dto.auth.*;
 import com.univus.project.dto.user.UserResDto;
 import com.univus.project.entity.User;
 import com.univus.project.config.CustomUserDetails;
@@ -9,6 +8,7 @@ import com.univus.project.exception.AuthException;
 import com.univus.project.repository.UserRepository;
 import com.univus.project.service.AuthService;
 
+import com.univus.project.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpHeaders;
@@ -32,6 +32,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final AuthService authService;
     private final UserRepository userRepository;
+    private final PasswordResetService passwordResetService;
 
     // ✅ 로그인
     @PostMapping("/login")
@@ -109,5 +110,25 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    // 1) 비밀번호 재설정 링크 요청
+    @PostMapping("/password-reset/request")
+    public ResponseEntity<ApiResponseDto> requestReset(@RequestBody PasswordResetRequestDto dto) {
+        ApiResponseDto res = passwordResetService.requestReset(dto);
+        return ResponseEntity.ok(res);
+    }
+
+    // 2) 토큰 유효성 체크
+    @GetMapping("/password-reset/validate")
+    public ResponseEntity<ApiResponseDto> validateToken(@RequestParam String token) {
+        ApiResponseDto res = passwordResetService.validateToken(token);
+        return ResponseEntity.ok(res);
+    }
+
+    // 3) 비밀번호 변경
+    @PostMapping("/password-reset/confirm")
+    public ResponseEntity<ApiResponseDto> resetPassword(@RequestBody PasswordResetConfirmDto dto) {
+        ApiResponseDto res = passwordResetService.resetPassword(dto);
+        return ResponseEntity.ok(res);
+    }
 
 }
