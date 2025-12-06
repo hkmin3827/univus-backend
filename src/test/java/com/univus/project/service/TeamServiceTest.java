@@ -9,6 +9,7 @@ import com.univus.project.entity.User;
 import com.univus.project.exception.CustomException;
 import com.univus.project.repository.TeamMemberRepository;
 import com.univus.project.repository.TeamRepository;
+import com.univus.project.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +34,9 @@ public class TeamServiceTest {
 
     @Mock
     TeamMemberRepository teamMemberRepository;
+
+    @Mock
+    UserRepository userRepository;
 
     private User leader;
     private Team team;
@@ -78,19 +83,6 @@ public class TeamServiceTest {
 
         assertEquals(ErrorCode.INVALID_INPUT_VALUE, ex.getErrorCode());
     }
-
-    @Test
-    void 팀_생성_실패_팀이름중복(){
-        TeamCreateReqDto dto = new TeamCreateReqDto();
-        dto.setTeamName("테스트팀이름");
-        when(teamRepository.existsByTeamName("테스트팀이름")).thenReturn(true);
-
-        CustomException ex = assertThrows(CustomException.class,
-                () -> teamService.createTeam(dto, leader));
-
-        assertEquals(ErrorCode.DUPLICATE_TEAM_NAME, ex.getErrorCode());
-    }
-
     @Test
     void 팀_조회_성공() {
         when(teamRepository.findById(100L)).thenReturn(Optional.of(team));
@@ -112,10 +104,13 @@ public class TeamServiceTest {
 
     @Test
     void 팀_삭제_성공() {
+        // given
         when(teamRepository.findById(100L)).thenReturn(Optional.of(team));
 
+        // when
         teamService.deleteTeam(100L, leader);
 
+        // then
         verify(teamRepository).delete(team);
     }
 

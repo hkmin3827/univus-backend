@@ -27,11 +27,19 @@ public class Team {
 
     // 팀에 속한 멤버들 목록 (TeamMember 엔티티 기준으로 매핑)
     @Builder.Default
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> members = new ArrayList<>();
 
     // 팀에 대한 초대 기록 목록 (TeamInvite 엔티티 기준으로 매핑)
     @Builder.Default
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamInvite> invites = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Board> boards = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notice> notices = new ArrayList<>();
 }

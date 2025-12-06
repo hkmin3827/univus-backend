@@ -8,6 +8,7 @@ import com.univus.project.entity.Team;
 import com.univus.project.entity.TeamMember;
 import com.univus.project.entity.User;
 import com.univus.project.exception.CustomException;
+import com.univus.project.repository.PostRepository;
 import com.univus.project.repository.TeamMemberRepository;
 import com.univus.project.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +36,6 @@ public class TeamService {
         if (dto.getTeamName() == null || dto.getTeamName().trim().isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
-        if (teamRepository.existsByTeamName(dto.getTeamName())) {
-            throw new CustomException(ErrorCode.DUPLICATE_TEAM_NAME);
-        }
-
         // 1) Team 엔티티 생성
         Team team = Team.builder()
                 .teamName(dto.getTeamName())
@@ -68,6 +65,7 @@ public class TeamService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_MEMBER);
         }
 
+        teamMemberRepository.deleteByTeamId(teamId); // 👈 먼저 삭제
         teamRepository.delete(team);
     }
 

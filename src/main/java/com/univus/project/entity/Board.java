@@ -36,4 +36,13 @@ public class Board {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attendance> attendances  = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ActivityLog> activityLogs  = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Todo> todos  = new ArrayList<>();
+
 }

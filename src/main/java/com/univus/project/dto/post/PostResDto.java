@@ -24,7 +24,7 @@ public class PostResDto {
 
     public PostResDto(Post post){
         this.postId = post.getId();
-        this.name = post.getUser().getName();
+        this.name = post.getUser() != null ? post.getUser().getName() : "";
         this.title = post.getTitle();
         this.content = post.getContent();
         this.fileUrl = post.getFileUrl();

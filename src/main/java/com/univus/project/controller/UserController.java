@@ -105,6 +105,9 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserResDto> getCurrentUser(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            return ResponseEntity.status(401).build(); // 비로그인
+        }
         // 인증된 사용자 정보 가져오기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
