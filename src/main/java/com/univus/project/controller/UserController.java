@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 // 공통 수행 기능
@@ -121,7 +122,7 @@ public class UserController {
 
     @PutMapping("/{email}")
     public ResponseEntity<Void> updateUserProfile(@PathVariable String email,
-                                                  @RequestBody UserModifyReqDto dto) {
+                                                  @Valid @RequestBody UserModifyReqDto dto) {
         log.info("공통 프로필 수정 요청 email={}, dto={}", email, dto);
         userService.updateUserProfile(email, dto);
         return ResponseEntity.ok().build();

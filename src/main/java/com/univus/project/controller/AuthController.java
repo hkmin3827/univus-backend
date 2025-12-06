@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -81,7 +82,7 @@ public class AuthController {
 
     // ✅ 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<Long> signup(@RequestBody UserSignUpReqDto dto) {
+    public ResponseEntity<Long> signup(@Valid @RequestBody UserSignUpReqDto dto) {
 
         Long id = authService.signup(dto);
         return ResponseEntity.ok(id);

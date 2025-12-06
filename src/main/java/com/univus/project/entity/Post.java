@@ -25,7 +25,10 @@ public class Post {
 
     @Lob
     private String content;
+
+    @Lob
     private String fileUrl;
+    @Lob
     private String fileName;
 
 
