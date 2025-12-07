@@ -16,6 +16,7 @@ public class NoticeResDto {
     private String email;    // 작성자 이메일
     private String professorName;
     private String professorImage;
+    private Long professorId;
     private String fileUrl;
     private String fileName;
     private LocalDateTime createTime;
