@@ -1,8 +1,10 @@
 package com.univus.project.service;
 
+import com.univus.project.constant.NotificationType;
 import com.univus.project.dto.comment.CommentReqDto;
 import com.univus.project.dto.comment.CommentResDto;
 import com.univus.project.entity.Comment;
+import com.univus.project.entity.Notification;
 import com.univus.project.entity.Post;
 import com.univus.project.entity.User;
 import com.univus.project.repository.CommentRepository;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +30,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
     // 🔥 추가: 활동 로그 서비스 주입
     private final ActivityLogService activityLogService;
@@ -54,6 +58,20 @@ public class CommentService {
                     writer.getId(), post.getId(), e.getMessage());
         }
 
+        if (!writer.getId().equals(post.getUser().getId())) {    // 자기자신 제외
+            Notification n = Notification.builder()
+                    .userId(post.getUser().getId())               // 게시글 작성자
+                    .teamId(post.getBoard().getTeam().getId())       // 팀 ID
+                    .boardId(post.getBoard().getId())                // 게시판 ID
+                    .postId(post.getId())
+                    .type(NotificationType.COMMENT)
+                    .message("'" + post.getTitle() + "' 리포트에 새로운 피드백이 달렸습니다.")
+                    .createdAt(LocalDateTime.now())
+                    .checked(false)
+                    .build();
+
+            notificationService.create(n);
+        }
         return comment.getId();
     }
 

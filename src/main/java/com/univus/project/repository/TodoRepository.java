@@ -30,4 +30,6 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
             "join fetch t.board b " +
             "where b.id = :boardId")
     List<Todo> findAllWithUserAndBoardByBoardId(@Param("boardId") Long boardId);
+
+    List<Todo> findByBoardAndUserOrderByCreateTimeDesc(Board board, User user);
 }

@@ -47,7 +47,8 @@ public class SecurityConfig {
                                 "/profile/professors/**",
                                 "/teams/**",
                                 "/activity/**",
-                                "/auth/password-reset/**") // 수정됨
+                                "/auth/password-reset/**",
+                                "/notifications/**") // 수정됨
                         .permitAll()
                         .anyRequest().authenticated()
                 )

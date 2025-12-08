@@ -105,4 +105,14 @@ public class TodoController {
             @PathVariable Long boardId) {
         return ResponseEntity.ok(todoService.getTodosByTeamAndBoard(teamId, boardId));
     }
+
+    // 로그인한 사용자 + 특정 게시판 기준 Todo 조회
+    @GetMapping("/board/{boardId}/mine")
+    public ResponseEntity<List<TodoResDto>> getMyTodosByBoard(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        User user = userDetails.getUser();
+        return ResponseEntity.ok(todoService.getTodosByUserAndBoard(user, boardId));
+    }
 }

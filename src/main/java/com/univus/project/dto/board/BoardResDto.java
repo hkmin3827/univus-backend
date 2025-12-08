@@ -13,6 +13,7 @@ public class BoardResDto {
     private String name;
     private String description;
     private String creatorName;
+    private Long creatorId;
 
 
     public BoardResDto(Board board) {
@@ -20,5 +21,6 @@ public class BoardResDto {
         this.name = board.getName();
         this.description = board.getDescription();
         this.creatorName = board.getCreator().getName();
+        this.creatorId = board.getCreator().getId();
     }
 }
