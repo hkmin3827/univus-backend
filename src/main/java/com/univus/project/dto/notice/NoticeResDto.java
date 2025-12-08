@@ -20,7 +20,6 @@ public class NoticeResDto {
     private String fileUrl;
     private String fileName;
     private LocalDateTime createTime;
-    private Long professorId;
 
     public NoticeResDto(Notice notice) {
         this.id = notice.getId();
