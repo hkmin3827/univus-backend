@@ -52,23 +52,20 @@ public class BoardController {
     }
 
     // 게시판 수정
-    @PutMapping("/{boardId}")
+    @PutMapping("/{boardId}/modify")
     public ResponseEntity<Long> modifyBoard(
-            @PathVariable Long teamId,
             @PathVariable Long boardId,
             @RequestBody BoardReqDto dto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         User user = userDetails.getUser();
-        dto.setTeamId(teamId);
         Long updatedId = boardService.modifyBoard(boardId, dto, user);
         return ResponseEntity.ok(updatedId);
     }
 
     // 게시판 삭제
-    @DeleteMapping("/{boardId}")
+    @DeleteMapping("/{boardId}/delete")
     public ResponseEntity<Void> deleteBoard(
-            @PathVariable Long teamId,
             @PathVariable Long boardId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -76,4 +73,5 @@ public class BoardController {
         boardService.deleteBoard(boardId, user);
         return ResponseEntity.noContent().build();
     }
+
 }

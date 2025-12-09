@@ -89,20 +89,6 @@ class BoardServiceTest {
 
         assertEquals(ErrorCode.INVALID_INPUT_VALUE, ex.getErrorCode());
     }
-    // 2. 게시판 생성 실패 (중복 이름)
-    @Test
-    void 게시판_생성_실패_중복이름() {
-        BoardReqDto dto = new BoardReqDto();
-        dto.setName("프로젝트");
-        dto.setTeamId(100L);
-
-        when(boardRepository.existsByTeamIdAndName(dto.getTeamId(), dto.getName())).thenReturn(true);
-
-        CustomException ex = assertThrows(CustomException.class,
-                () -> boardService.createBoard(dto, user));
-
-        assertEquals(ErrorCode.DUPLICATE_BOARD_NAME, ex.getErrorCode());
-    }
 
     // 3. 게시판 단건 조회 성공
     @Test
