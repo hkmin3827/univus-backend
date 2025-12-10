@@ -39,11 +39,11 @@ public class TodoService {
             throw new RuntimeException("사용자 정보가 필요합니다.");
         }
         if (dto.getBoardId() == null) {
-            throw new RuntimeException("게시판을 선택해야 합니다.");
+            throw new RuntimeException("프로젝트를 선택해야 합니다.");
         }
 
         Board board = boardRepository.findById(dto.getBoardId())
-                .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("프로젝트가 존재하지 않습니다."));
 
         Todo todo = new Todo();
         todo.setContent(dto.getContent());
@@ -76,7 +76,7 @@ public class TodoService {
     // 3) Board 기준 조회
     public List<TodoResDto> getTodosByBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("게시판이 없습니다."));
+                .orElseThrow(() -> new RuntimeException("프로젝트가 없습니다."));
 
         return todoRepository.findByBoard(board).stream()
                 .map(todo -> new TodoResDto(board.getName(), todo))
@@ -146,7 +146,7 @@ public class TodoService {
             String todoContent = todo.getContent();
 
             String message = String.format(
-                    "[%s]\n %s님이 '%s' 과제를 완료했습니다.",
+                    "[%s]\n %s님이 '%s' 할 일을 완료했습니다.",
                     projectName,
                     actor.getName(),
                     todoContent
@@ -231,7 +231,7 @@ public class TodoService {
     public List<TodoResDto> getTodosByUserAndBoard(User user, Long boardId) {
 
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("게시판이 존재하지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("프로젝트가 존재하지 않습니다."));
 
         return todoRepository.findByBoardAndUserOrderByCreateTimeDesc(board, user).stream()
                 .map(todo -> new TodoResDto(board.getName(), todo))
