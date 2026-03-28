@@ -15,9 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
-// 회원가입, 로그인
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,12 +26,10 @@ public class AuthService {
     private final ProfessorRepository professorRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 회원 가입 여부
     public boolean isUser(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    // 회원 가입
     public Long signup(UserSignUpReqDto dto) {
 
         User user = new User();
@@ -46,7 +42,6 @@ public class AuthService {
 
             Student s = new Student();
 
-            // 공통(User) 필드
             s.setEmail(dto.getEmail());
             s.setPwd(passwordEncoder.encode(dto.getPwd()));
             s.setName(dto.getName());
@@ -54,7 +49,6 @@ public class AuthService {
             s.setPhone(dto.getPhone());
             s.setRole(Role.STUDENT);
 
-            // 학생 전용 필드는 회원가입 단계에서 입력받지 않음 → null 저장
             s.setStudentNumber(null);
             s.setMajor(null);
             s.setGrade(null);
@@ -67,7 +61,6 @@ public class AuthService {
 
             Professor p = new Professor();
 
-            // 공통(User) 필드
             p.setEmail(dto.getEmail());
             p.setPwd(passwordEncoder.encode(dto.getPwd()));
             p.setName(dto.getName());
@@ -75,7 +68,6 @@ public class AuthService {
             p.setPhone(dto.getPhone());
             p.setRole(Role.PROFESSOR);
 
-            // 교수 전용 필드는 회원가입 때 입력받지 않음 → null 저장
             p.setDepartment(null);
             p.setPosition(null);
 
@@ -90,24 +82,10 @@ public class AuthService {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 이메일입니다."));
 
-        // 🔥 raw: dto.getPwd(), encoded: user.getPwd()
         if (!passwordEncoder.matches(dto.getPwd(), user.getPwd())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
         return user.getId();
-    }
-
-
-
-    private User convertDtoToEntity(UserSignUpReqDto userSignUpReqDto) {
-        User user = new User();
-        user.setEmail(userSignUpReqDto.getEmail());
-        user.setPwd(userSignUpReqDto.getPwd());
-        user.setName(userSignUpReqDto.getName());
-        user.setImage(userSignUpReqDto.getImage());
-        user.setRole(userSignUpReqDto.getRole());
-        return user;
-
     }
 }

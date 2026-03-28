@@ -1,4 +1,3 @@
-// com.univus.project.entity.Schedule.java
 package com.univus.project.entity;
 
 import lombok.Getter;
@@ -25,9 +24,9 @@ public class Schedule {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime; // 일정 날짜 (시간까지 필요하면 LocalDateTime으로 변경)
+    private LocalDateTime dateTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;   // 로그인한 사용자
+    private User user; // 로그인한 사용자
 }

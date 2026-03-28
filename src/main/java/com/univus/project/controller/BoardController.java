@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")  // 프론트 연결
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/team/{teamId}/board")
 @RequiredArgsConstructor
@@ -22,7 +22,6 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    // 게시판 생성 (팀 종속)
     @PostMapping("/create")
     public ResponseEntity<Long> createBoard(
             @PathVariable Long teamId,
@@ -30,7 +29,7 @@ public class BoardController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         User user = userDetails.getUser();
-        dto.setTeamId(teamId);  // DTO에 팀 id 세팅
+        dto.setTeamId(teamId);
         Long id = boardService.createBoard(dto, user);
         return ResponseEntity.ok(id);
     }

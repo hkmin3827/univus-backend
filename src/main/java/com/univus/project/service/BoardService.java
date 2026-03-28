@@ -23,9 +23,8 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final TeamRepository teamRepository;   // 팀 리포지토리 추가
+    private final TeamRepository teamRepository;
 
-    // 게시판 생성
     @Transactional
     public Long createBoard(BoardReqDto dto, User user) {
         if (dto.getName() == null || dto.getName().trim().isEmpty()) {
@@ -35,7 +34,6 @@ public class BoardService {
         if (boardRepository.existsByTeamIdAndName(dto.getTeamId(), dto.getName())) {
             throw new CustomException(ErrorCode.DUPLICATE_BOARD_NAME);
         }
-        // teamId 로 팀 조회
         Team team = teamRepository.findById(dto.getTeamId())
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
@@ -43,18 +41,10 @@ public class BoardService {
         board.setName(dto.getName());
         board.setDescription(dto.getDescription());
         board.setCreator(user);
-        board.setTeam(team);      // team 세팅 (중요)
+        board.setTeam(team);
 
         boardRepository.save(board);
         return board.getId();
-    }
-
-    @Transactional(readOnly = true)
-    public List<BoardResDto> getAllBoards() {
-        return boardRepository.findAll()
-                .stream()
-                .map(BoardResDto::new)
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

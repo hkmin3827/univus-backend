@@ -65,7 +65,7 @@ class PostServiceTest {
         when(teamMemberRepository.existsByTeamIdAndUserId(100L, 1L)).thenReturn(true);
         when(postRepository.save(any(Post.class))).thenAnswer(invocation -> {
                     Post p = invocation.getArgument(0);
-                    p.setId(999L);  // DB가 id 생성하는 것처럼 시뮬레이션
+                    p.setId(999L);
                     return p;
                 });
 

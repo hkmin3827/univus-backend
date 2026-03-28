@@ -32,10 +32,8 @@ public class CommentService {
     private final PostRepository postRepository;
     private final NotificationService notificationService;
 
-    // 🔥 추가: 활동 로그 서비스 주입
     private final ActivityLogService activityLogService;
 
-    // ✅ 댓글 작성
     public Long createComment(CommentReqDto dto, User writer) {
 
         Post post = postRepository.findById(dto.getPostId())
@@ -49,7 +47,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        // 🔥 댓글 생성 후 활동 로그 재계산
+        // 댓글 생성 후 활동 로그 재계산
         try {
             Long boardId = post.getBoard().getId();
             activityLogService.recalcActivityLog(writer.getId(), boardId);
@@ -58,11 +56,11 @@ public class CommentService {
                     writer.getId(), post.getId(), e.getMessage());
         }
 
-        if (!writer.getId().equals(post.getUser().getId())) {    // 자기자신 제외
+        if (!writer.getId().equals(post.getUser().getId())) {
             Notification n = Notification.builder()
-                    .userId(post.getUser().getId())               // 게시글 작성자
-                    .teamId(post.getBoard().getTeam().getId())       // 팀 ID
-                    .boardId(post.getBoard().getId())                // 게시판 ID
+                    .userId(post.getUser().getId())
+                    .teamId(post.getBoard().getTeam().getId())
+                    .boardId(post.getBoard().getId())
                     .postId(post.getId())
                     .type(NotificationType.COMMENT)
                     .message("'" + post.getTitle() + "' 리포트에 새로운 피드백이 달렸습니다.")
@@ -91,8 +89,6 @@ public class CommentService {
         return comments.map(CommentResDto::new);
     }
 
-    // ✅ 댓글 삭제
-    // 전체 게시글에서 키워드 기반 댓글 검색
     @Transactional(readOnly = true)
     public Page<CommentResDto> searchAllComments(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
@@ -109,7 +105,6 @@ public class CommentService {
             throw new RuntimeException("작성자만 삭제할 수 있습니다.");
         }
 
-        // 삭제 전에 boardId 뽑아두기
         Long boardId = null;
         try {
             boardId = comment.getPost().getBoard().getId();
@@ -119,7 +114,6 @@ public class CommentService {
 
         commentRepository.delete(comment);
 
-        // 🔥 댓글 삭제 후 활동 로그 재계산
         if (boardId != null) {
             try {
                 activityLogService.recalcActivityLog(user.getId(), boardId);
@@ -130,7 +124,6 @@ public class CommentService {
         }
     }
 
-    // ✅ 댓글 수정 (내용만 바뀌고 개수는 그대로라, 기여도 재계산은 안 해도 됨)
     public Long updateComment(Long commentId, CommentReqDto dto, User user) {
 
         Comment comment = commentRepository.findById(commentId)

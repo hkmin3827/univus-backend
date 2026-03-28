@@ -1,5 +1,4 @@
 package com.univus.project.dto.auth;
-// 게시물 수정
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

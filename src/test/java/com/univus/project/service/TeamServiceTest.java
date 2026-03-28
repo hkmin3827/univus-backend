@@ -104,13 +104,10 @@ public class TeamServiceTest {
 
     @Test
     void 팀_삭제_성공() {
-        // given
         when(teamRepository.findById(100L)).thenReturn(Optional.of(team));
 
-        // when
         teamService.deleteTeam(100L, leader);
 
-        // then
         verify(teamRepository).delete(team);
     }
 

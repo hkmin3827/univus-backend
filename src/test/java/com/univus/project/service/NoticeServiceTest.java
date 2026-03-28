@@ -2,7 +2,6 @@ package com.univus.project.service;
 
 import com.univus.project.constant.ErrorCode;
 import com.univus.project.constant.Role;
-import com.univus.project.dto.notice.FileResDto;
 import com.univus.project.dto.notice.NoticeModifyDto;
 import com.univus.project.dto.notice.NoticeResDto;
 import com.univus.project.dto.notice.NoticeWriteDto;
@@ -63,9 +62,6 @@ class NoticeServiceTest {
         notice.setUser(professor);
     }
 
-    // -------------------------------------------------------------
-    // 1) 공지 생성 테스트
-    // -------------------------------------------------------------
     @Test
     void createNotice_success_professor() {
         NoticeWriteDto dto = new NoticeWriteDto();
@@ -102,7 +98,7 @@ class NoticeServiceTest {
     @Test
     void createNotice_fail_emptyTitle() {
         NoticeWriteDto dto = new NoticeWriteDto();
-        dto.setTitle("  "); // invalid title
+        dto.setTitle("  ");
 
         NoticeResDto result = noticeService.createNotice(100L, dto, professor);
 
@@ -122,9 +118,6 @@ class NoticeServiceTest {
         assertThat(result).isNull();
     }
 
-    // -------------------------------------------------------------
-    // 2) 팀별 공지 목록 조회
-    // -------------------------------------------------------------
     @Test
     void getNoticesByTeam_success() {
         Pageable pageable = PageRequest.of(0, 10);
@@ -151,9 +144,6 @@ class NoticeServiceTest {
         assertThat(result.getTotalElements()).isEqualTo(0);
     }
 
-    // -------------------------------------------------------------
-    // 3) 공지 상세 조회
-    // -------------------------------------------------------------
     @Test
     void getNoticeById_success() {
         when(noticeRepository.findById(10L)).thenReturn(Optional.of(notice));
@@ -189,9 +179,6 @@ class NoticeServiceTest {
                 .hasMessageContaining(ErrorCode.UNAUTHORIZED_MEMBER.getMessage());
     }
 
-    // -------------------------------------------------------------
-    // 4) 공지 수정
-    // -------------------------------------------------------------
     @Test
     void modifyNotice_success() {
         NoticeModifyDto dto = new NoticeModifyDto();
@@ -220,9 +207,6 @@ class NoticeServiceTest {
         assertThat(result).isFalse();
     }
 
-    // -------------------------------------------------------------
-    // 5) 공지 삭제
-    // -------------------------------------------------------------
     @Test
     void deleteNotice_success() {
         when(noticeRepository.findById(10L)).thenReturn(Optional.of(notice));
@@ -242,9 +226,6 @@ class NoticeServiceTest {
         assertThat(result).isFalse();
     }
 
-    // -------------------------------------------------------------
-    // 6) 전체 공지 조회
-    // -------------------------------------------------------------
     @Test
     void getAllNotices_success() {
         Pageable pageable = PageRequest.of(0, 10);

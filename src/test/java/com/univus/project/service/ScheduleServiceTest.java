@@ -46,7 +46,6 @@ class ScheduleServiceTest {
         schedule.setDateTime(LocalDateTime.of(2025, 1, 1, 10, 0));
     }
 
-    // ====================== 일정 생성 ======================
     @Test
     void createSchedule_success() {
         ScheduleReqDto dto = new ScheduleReqDto();
@@ -67,7 +66,6 @@ class ScheduleServiceTest {
         verify(scheduleRepository, times(1)).save(any());
     }
 
-    // ====================== 일정 수정 ======================
     @Test
     void updateSchedule_success() {
         ScheduleReqDto dto = new ScheduleReqDto();
@@ -91,7 +89,6 @@ class ScheduleServiceTest {
                 () -> scheduleService.updateSchedule(100L, new ScheduleReqDto(), user));
     }
 
-    // ====================== 일정 삭제 ======================
     @Test
     void deleteSchedule_success() {
         when(scheduleRepository.findByIdAndUserId(100L, 1L)).thenReturn(Optional.of(schedule));
@@ -101,7 +98,6 @@ class ScheduleServiceTest {
         verify(scheduleRepository, times(1)).delete(schedule);
     }
 
-    // ====================== 기간 일정 조회 ======================
     @Test
     void getSchedulesBetween_success() {
         LocalDateTime start = LocalDateTime.now().minusDays(1);
@@ -116,7 +112,6 @@ class ScheduleServiceTest {
         assertEquals("스터디", result.get(0).getTitle());
     }
 
-    // ====================== 홈 일정 조회 ======================
     @Test
     void getHomeSchedules_success() {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
@@ -134,16 +129,13 @@ class ScheduleServiceTest {
 
         HomeScheduleResDto result = scheduleService.getHomeSchedules(user);
 
-        // Today
         assertEquals(1, result.getTodaySchedules().size());
         assertEquals("오늘 일정", result.getTodaySchedules().get(0).getTitle());
 
-        // Upcoming
         assertEquals(1, result.getUpcomingSchedules().size());
         assertEquals("다가오는 일정", result.getUpcomingSchedules().get(0).getTitle());
     }
 
-    // ====================== 전체 일정 조회 ======================
     @Test
     void getAllSchedules_success() {
         when(scheduleRepository.findByUserIdOrderByDateTimeAsc(1L))

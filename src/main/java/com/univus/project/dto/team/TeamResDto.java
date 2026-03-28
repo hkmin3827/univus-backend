@@ -4,19 +4,18 @@ import com.univus.project.entity.Team;
 import lombok.Builder;
 import lombok.Data;
 
-// 팀 상세/목록 응답용 DTO
 @Data
 @Builder
 public class TeamResDto {
-    private Long id;            // 팀 ID
-    private String teamName;    // 팀 이름
-    private String description; // 팀 소개
+    private Long id;
+    private String teamName;
+    private String description;
 
-    private Long leaderId;      // 팀장 ID
-    private String leaderName;  // 팀장 이름
-    private String leaderEmail; // 팀장 이메일
+    private Long leaderId;
+    private String leaderName;
+    private String leaderEmail;
 
-    private long memberCount;   // 팀 멤버 수
+    private long memberCount;
     public static TeamResDto fromEntity(Team team) {
         return TeamResDto.builder()
                 .id(team.getId())

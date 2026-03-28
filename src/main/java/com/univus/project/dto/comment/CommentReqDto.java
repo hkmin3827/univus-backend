@@ -1,6 +1,5 @@
 package com.univus.project.dto.comment;
 
-import com.univus.project.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

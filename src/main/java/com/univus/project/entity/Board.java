@@ -1,5 +1,4 @@
 package com.univus.project.entity;
-// 게시판
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,11 +23,10 @@ public class Board {
     private User creator;
 
     @Column(nullable = false, length = 128)
-    private String name;   // 게시판 이름
+    private String name;
 
     @Column(length = 256)
-    private String description;   // 게시판 설명
-
+    private String description;
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 

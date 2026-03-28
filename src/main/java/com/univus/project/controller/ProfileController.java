@@ -19,21 +19,18 @@ public class ProfileController {
     private final StudentService studentService;
     private final ProfessorService professorService;
 
-    // 학생 상세 정보 조회
     @GetMapping("/students/{email}")
     public ResponseEntity<StudentDetailResDto> getStudentDetail(@PathVariable String email) {
         StudentDetailResDto dto = studentService.getStudentDetailByEmail(email);
         return ResponseEntity.ok(dto);
     }
 
-    // 교수 상세 정보 조회
     @GetMapping("/professors/{email}")
     public ResponseEntity<ProfessorDetailResDto> getProfessorDetail(@PathVariable String email) {
         ProfessorDetailResDto dto = professorService.getProfessorDetailByEmail(email);
         return ResponseEntity.ok(dto);
     }
 
-    // 학생 정보 수정
     @PutMapping("/student/{email}")
     public ResponseEntity<Void> updateStudentProfile(
             @PathVariable String email,
@@ -43,7 +40,6 @@ public class ProfileController {
         return ResponseEntity.ok().build();
     }
 
-    // 교수 정보 수정
     @PutMapping("/professor/{email}")
     public ResponseEntity<Void> updateProfessorProfile(
             @PathVariable String email,

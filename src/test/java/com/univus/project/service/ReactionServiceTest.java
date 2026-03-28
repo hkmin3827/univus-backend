@@ -53,7 +53,6 @@ class ReactionServiceTest {
         reaction.setType(ReactionType.POSITIVE);
     }
 
-    // ===== 새 리액션 생성 =====
     @Test
     void toggleReaction_createNewReaction_success() {
         Long postId = 10L;
@@ -72,7 +71,6 @@ class ReactionServiceTest {
         verify(reactionRepository, times(1)).save(any());
     }
 
-    // ===== 기존 리액션이 같은 타입 =====
     @Test
     void toggleReaction_sameType_noChange() {
         Long postId = 10L;
@@ -86,7 +84,6 @@ class ReactionServiceTest {
         verify(reactionRepository, never()).save(any());
     }
 
-    // ===== 기존 리액션과 다른 타입 =====
     @Test
     void toggleReaction_changeType_success() {
         Long postId = 10L;
@@ -101,7 +98,6 @@ class ReactionServiceTest {
         verify(reactionRepository, never()).save(any());
     }
 
-    // ===== 게시글 없음 예외 =====
     @Test
     void toggleReaction_postNotFound_throwException() {
         when(postRepository.findById(999L)).thenReturn(Optional.empty());
@@ -110,7 +106,6 @@ class ReactionServiceTest {
                 () -> reactionService.toggleReaction(999L, user, ReactionType.POSITIVE));
     }
 
-    // ===== 공감 리스트 조회 =====
     @Test
     void getReactions_success() {
         when(postRepository.findById(10L)).thenReturn(Optional.of(post));
@@ -122,7 +117,6 @@ class ReactionServiceTest {
         assertEquals(ReactionType.POSITIVE, result.get(0).getType());
     }
 
-    // ===== 공감 수 조회 =====
     @Test
     void getReactionCount_success() {
         when(postRepository.findById(10L)).thenReturn(Optional.of(post));
@@ -133,7 +127,6 @@ class ReactionServiceTest {
         assertEquals(4L, count);
     }
 
-    // ===== 타입별 공감 수 조회 =====
     @Test
     void getReactionCountByType_success() {
         when(postRepository.findById(10L)).thenReturn(Optional.of(post));

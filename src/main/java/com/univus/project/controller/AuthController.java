@@ -35,17 +35,14 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordResetService passwordResetService;
 
-    // ✅ 로그인
     @PostMapping("/login")
     public ResponseEntity<UserResDto> login(@RequestBody LoginReqDto dto,
                                             HttpServletRequest request) {
 
 
-        // 1) 이메일 존재 여부 먼저 확인
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new AuthException("존재하지 않는 이메일입니다."));
 
-        // 2) Security 인증 시도
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPwd());
 
@@ -53,18 +50,14 @@ public class AuthController {
         try {
             authentication = authenticationManager.authenticate(token);
         } catch (BadCredentialsException e) {
-            // 비밀번호가 틀린 경우
             throw new AuthException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 3) 인증 정보 SecurityContext에 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 4) 세션에 SecurityContext 저장 (세션 기반 로그인 유지)
         HttpSession session = request.getSession(true);
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-        // 5) 인증된 사용자 정보 꺼내기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         User authUser = userDetails.getUser();
 
@@ -81,7 +74,6 @@ public class AuthController {
         return ResponseEntity.ok(exists);
     }
 
-    // ✅ 회원가입
     @PostMapping("/signup")
     public ResponseEntity<Long> signup(@Valid @RequestBody UserSignUpReqDto dto) {
 
@@ -89,21 +81,17 @@ public class AuthController {
         return ResponseEntity.ok(id);
     }
 
-    // ✅ 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request,
                                        HttpServletResponse response) {
-        // 1. 세션 무효화
         HttpSession session = request.getSession(false);
         if (session != null) {
-//            log.info("로그아웃: 세션 무효화, id={}", session.getId());
             session.invalidate();
         }
 
-        // 2. JSESSIONID 쿠키 삭제(선택이지만 해두면 깔끔)
         ResponseCookie cookie = ResponseCookie.from("JSESSIONID", "")
                 .path("/")
-                .maxAge(0) // 즉시 만료
+                .maxAge(0)
                 .httpOnly(true)
                 .build();
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -111,25 +99,21 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    // 1) 비밀번호 재설정 링크 요청
     @PostMapping("/password-reset/request")
     public ResponseEntity<ApiResponseDto> requestReset(@RequestBody PasswordResetRequestDto dto) {
         ApiResponseDto res = passwordResetService.requestReset(dto);
         return ResponseEntity.ok(res);
     }
 
-    // 2) 토큰 유효성 체크
     @GetMapping("/password-reset/validate")
     public ResponseEntity<ApiResponseDto> validateToken(@RequestParam String token) {
         ApiResponseDto res = passwordResetService.validateToken(token);
         return ResponseEntity.ok(res);
     }
 
-    // 3) 비밀번호 변경
     @PostMapping("/password-reset/confirm")
     public ResponseEntity<ApiResponseDto> resetPassword(@RequestBody PasswordResetConfirmDto dto) {
         ApiResponseDto res = passwordResetService.resetPassword(dto);
         return ResponseEntity.ok(res);
     }
-
 }

@@ -13,7 +13,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
-// http://localhost:8111/swagger-ui.html 접속 시 스웨거 확인 가능
+// http://localhost:8111/swagger-ui.html
 @Slf4j
 @Configuration
 @EnableSwagger2

@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-// 교수 전용
 public class ProfessorModifyReqDto {
     private String department;
     private String position;

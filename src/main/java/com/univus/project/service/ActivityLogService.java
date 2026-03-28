@@ -35,14 +35,8 @@ public class ActivityLogService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
-    // 🔥 공통 TOP5 Pageable (0페이지, 5개)
     private static final Pageable TOP5_PAGEABLE = PageRequest.of(0, 5);
 
-    /**
-     * 1) 활동 로그 재계산 및 저장
-     *  - (user, board) 기준으로 게시글/댓글/리액션/투두/출석 카운트 계산
-     *  - 가중치를 적용한 contributionScore 계산 후 ActivityLog 저장
-     */
     public ActivityLog recalcActivityLog(Long userId, Long boardId) {
         try {
             User user = userRepository.findById(userId)
@@ -54,16 +48,13 @@ public class ActivityLogService {
             ActivityLog log = activeLogRepository.findByUserAndBoard(user, board)
                     .orElseGet(() -> createNewLog(user, board));
 
-            // 게시글, 댓글, 공감 부분
             int postCount = postRepository.countByUserAndBoard(user, board);
             int commentCount = commentRepository.countByUserAndBoard(user, board);
             int reactionCount = reactionRepository.countByUserAndBoard(user, board);
 
-            // todolist 부분
             int todoDone = todoRepository.countByUserAndBoardAndDone(user, board, true);
             int todoNotDone = todoRepository.countByUserAndBoardAndDone(user, board, false);
 
-            // 출석 부분
             List<LocalDate> attendanceDates = attendanceRepository.findByUserAndBoard(user, board)
                     .stream()
                     .map(Attendance::getDate)
@@ -73,7 +64,6 @@ public class ActivityLogService {
             int streak = calcStreak(attendanceDates);
             int monthCount = calcMonth(attendanceDates);
 
-            // 기본 카운트 저장
             log.setPostCount(postCount);
             log.setCommentCount(commentCount);
             log.setReactionCount(reactionCount);
@@ -85,7 +75,6 @@ public class ActivityLogService {
             log.setAttendanceStreak(streak);
             log.setAttendanceThisMonth(monthCount);
 
-            // 🔥 기여도 점수 계산 (가중치는 팀에서 조정 가능)
             int score =
                     postCount       * 5 +   // 글 1개 = 5점
                             commentCount    * 2 +   // 댓글 1개 = 2점
@@ -106,9 +95,7 @@ public class ActivityLogService {
         }
     }
 
-    /**
-     * 2) 활동로그가 없으면 새로운 활동로그 객체 생성
-     */
+    // 활동로그가 없으면 새로운 활동로그 객체 생성
     private ActivityLog createNewLog(User user, Board board) {
         ActivityLog log = new ActivityLog();
         log.setUser(user);
@@ -116,9 +103,6 @@ public class ActivityLogService {
         return log;
     }
 
-    /**
-     * 3) 특정 사용자 활동 로그 조회
-     */
     public ActivityLog getUserLog(Long userId, Long boardId) {
         try {
             User user = userRepository.findById(userId)
@@ -135,18 +119,17 @@ public class ActivityLogService {
     }
 
     /**
-     * 4) 인사이트용 - 특정 보드의 팀원별 기여도 리스트
+     *  인사이트용 - 특정 보드의 팀원별 기여도 리스트
      *    - 보드 내 모든 ActivityLog를 가져와서 BoardUserContributionDto로 변환
      *    - contributionScore 기준 내림차순 정렬
-     *    - 🔥 교수(PROFESSOR)는 제외
+     *    - 교수(PROFESSOR)는 제외
      */
     public List<BoardUserContributionDto> getBoardUserContributions(Long boardId) {
         try {
-            // board 엔티티 안 거치고, 바로 board_id 기준으로 조회
             List<ActivityLog> logs = activeLogRepository.findByBoardId(boardId);
 
             return logs.stream()
-                    .filter(log -> log.getUser().getRole() != Role.PROFESSOR) // 교수 제외
+                    .filter(log -> log.getUser().getRole() != Role.PROFESSOR)
                     .map(log -> new BoardUserContributionDto(
                             log.getUser().getId(),
                             log.getUser().getName(),
@@ -162,11 +145,6 @@ public class ActivityLogService {
         }
     }
 
-    /**
-     * 5) 인사이트용 - 특정 사용자 상세 기여도 정보
-     *    - 하나의 (user, board)에 대한 ActivityLog를 DTO로 변환
-     *    - React 쪽에서 그래프/카드로 풀어 쓰기 좋게 구성
-     */
     public UserContributionDetailDto getUserContributionDetail(Long userId, Long boardId) {
         try {
             User user = userRepository.findById(userId)
@@ -202,9 +180,7 @@ public class ActivityLogService {
         }
     }
 
-    /**
-     * 6) 연속 출석일 계산
-     */
+    // 연속 출석일 계산
     public int calcStreak(List<LocalDate> dates) {
         try {
             if (dates == null || dates.isEmpty()) return 0;
@@ -229,9 +205,6 @@ public class ActivityLogService {
         }
     }
 
-    /**
-     * 7) 이번 달 출석 횟수
-     */
     public int calcMonth(List<LocalDate> dates) {
         try {
             if (dates == null || dates.isEmpty()) return 0;
@@ -247,20 +220,13 @@ public class ActivityLogService {
         }
     }
 
-    /**
-     * React용: (로그인한) User + Board 기준으로 ActivityLog를 DTO로 반환
-     *  - 출석 정보까지 포함해서 반환
-     *  - 필요하면 항상 최신 상태가 되도록 재계산 호출
-     */
     public ActivityLogResDto getActivityLogForUserAndBoard(User user, Long boardId) {
         try {
             Board board = boardRepository.findById(boardId)
                     .orElseThrow(() -> new RuntimeException("게시판을 찾을 수 없습니다. boardId=" + boardId));
 
-            // 항상 최신 데이터가 필요하다면 재계산 한 번 돌려주기
             ActivityLog log = recalcActivityLog(user.getId(), boardId);
             if (log == null) {
-                // 재계산이 실패한 경우를 대비한 fallback
                 log = activeLogRepository.findByUserAndBoard(user, board)
                         .orElseGet(() -> createNewLog(user, board));
             }
@@ -273,11 +239,6 @@ public class ActivityLogService {
         }
     }
 
-    /**
-     * ✅ 오늘 해당 보드에 출석 체크
-     *  - attendance 테이블에 기록 저장
-     *  - 그 다음 활동 로그 재계산(recalcActivityLog)까지 한 번에 처리
-     */
     public void checkIn(Long userId, Long boardId) {
         try {
             User user = userRepository.findById(userId)
@@ -288,7 +249,6 @@ public class ActivityLogService {
 
             LocalDate today = LocalDate.now();
 
-            // 이미 오늘 출석했으면 중복 저장 X
             boolean exists = attendanceRepository
                     .findByUserAndBoardAndDate(user, board, today)
                     .isPresent();
@@ -298,13 +258,11 @@ public class ActivityLogService {
                 return;
             }
 
-            // 출석 엔티티 저장 (@PrePersist로 date = today 자동 세팅)
             Attendance attendance = new Attendance();
             attendance.setUser(user);
             attendance.setBoard(board);
             attendanceRepository.save(attendance);
 
-            // 출석까지 포함해서 활동로그 재계산
             recalcActivityLog(userId, boardId);
 
         } catch (Exception e) {
@@ -313,7 +271,6 @@ public class ActivityLogService {
         }
     }
 
-    // 2) 게시글 TOP5 (교수 제외)
     public List<ActivityTop5Dto> getPostTop5(Long boardId) {
         try {
             return postRepository.findPostTop5ByBoardId(boardId, TOP5_PAGEABLE)
@@ -326,7 +283,6 @@ public class ActivityLogService {
         }
     }
 
-    // 3) 댓글 TOP5 (교수 제외)
     public List<ActivityTop5Dto> getCommentTop5(Long boardId) {
         try {
             return commentRepository.findCommentTop5ByBoardId(boardId, TOP5_PAGEABLE)
@@ -339,7 +295,6 @@ public class ActivityLogService {
         }
     }
 
-    // 4) 리액션 TOP5 (교수 제외)
     public List<ActivityTop5Dto> getReactionTop5(Long boardId) {
         try {
             return reactionRepository.findReactionTop5ByBoardId(boardId, TOP5_PAGEABLE)

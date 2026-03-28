@@ -1,4 +1,3 @@
-// src/main/java/com/univus/project/service/PasswordResetService.java
 package com.univus.project.service;
 
 import com.univus.project.dto.auth.ApiResponseDto;
@@ -26,10 +25,8 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
 
-    // React 기준으로 이 링크를 보낼거야
     private static final String FRONT_RESET_URL = "http://localhost:3000/auth/reset-password/";
 
-    // 1) 비밀번호 재설정 요청
     public ApiResponseDto requestReset(PasswordResetRequestDto dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
@@ -45,7 +42,6 @@ public class PasswordResetService {
         return new ApiResponseDto("비밀번호 재설정 링크를 이메일로 전송했습니다.");
     }
 
-    // 2) 토큰 유효성 체크 (프론트에서 페이지 열릴 때)
     public ApiResponseDto validateToken(String token) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
@@ -60,7 +56,6 @@ public class PasswordResetService {
         return new ApiResponseDto("유효한 토큰입니다.");
     }
 
-    // 3) 실제 비밀번호 변경
     public ApiResponseDto resetPassword(PasswordResetConfirmDto dto) {
         PasswordResetToken resetToken = tokenRepository.findByToken(dto.getToken())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
@@ -75,7 +70,7 @@ public class PasswordResetService {
         User user = resetToken.getUser();
         user.setPwd(passwordEncoder.encode(dto.getNewPassword()));
 
-        resetToken.setUsed(true); // 재사용 방지
+        resetToken.setUsed(true);
 
         // 굳이 delete는 안 해도 되지만, 정리하고 싶으면:
         // tokenRepository.delete(resetToken);

@@ -1,6 +1,5 @@
 package com.univus.project.dto.post;
 
-import com.univus.project.entity.Board;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

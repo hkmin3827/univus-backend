@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,6 +14,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -25,14 +26,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // 수정 부분
         http
                 .csrf().disable()
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
 
                         .antMatchers(
-                                "/",               // 루트
+                                "/",
                                 "/index.html",
                                 "/static/**",
                                 "/favicon.ico",
@@ -48,14 +48,12 @@ public class SecurityConfig {
                                 "/teams/**",
                                 "/activity/**",
                                 "/auth/password-reset/**",
-                                "/notifications/**") // 수정됨
+                                "/notifications/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
-                // ❗ formLogin 비활성화 (Spring Security 6 방식)
                 .formLogin(form -> form.disable())
                 .logout(logout -> logout.disable())
-                // ❗ 인증 실패 시 401로 보내기
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
@@ -74,7 +72,9 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+        ));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

@@ -6,19 +6,15 @@ import com.univus.project.dto.PageResponse;
 import com.univus.project.dto.post.PostDetailDto;
 import com.univus.project.dto.post.PostListDto;
 import com.univus.project.dto.post.PostReqDto;
-import com.univus.project.dto.post.PostResDto;
 import com.univus.project.entity.User;
-import com.univus.project.repository.PostRepository;
 import com.univus.project.repository.UserRepository;
 import com.univus.project.service.PostService;
-import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +29,6 @@ public class PostController {
     private final UserRepository userRepository;
     private final PostService postService;
 
-    // 게시글 생성
     @PostMapping("/create")
     public ResponseEntity<Long> createPost(
             @PathVariable Long teamId,
@@ -45,7 +40,6 @@ public class PostController {
         Long postId = postService.createPost(teamId, boardId, dto, user);
         return ResponseEntity.ok(postId);
     }
-    // 게시글 목록 + 검색 + 페이지네이션
     @GetMapping("/list")
     public ResponseEntity<PageResponse<PostListDto>> getPosts(
             @RequestParam Long boardId,
@@ -58,14 +52,12 @@ public class PostController {
         return ResponseEntity.ok(PageResponse.from(posts));
     }
 
-    // 게시글 상세 조회
     @GetMapping("/detail/{postId}")
     public ResponseEntity<PostDetailDto> getPostDetail(@PathVariable Long teamId, @PathVariable Long boardId, @PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(postService.getPostDetail(teamId, boardId, postId, userDetails.getUser().getId()));
     }
 
 
-    // 게시글 수정
     @PutMapping("/update/{postId}")
     public ResponseEntity<Long> updatePost(
             @PathVariable Long teamId,
@@ -79,7 +71,6 @@ public class PostController {
         return ResponseEntity.ok(id);
     }
 
-    // 게시글 삭제
     @DeleteMapping("/delete/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long teamId,

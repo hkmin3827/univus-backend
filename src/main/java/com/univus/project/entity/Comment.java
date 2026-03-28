@@ -8,7 +8,6 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-// 댓글
 @Entity
 @Getter @Setter @ToString
 @NoArgsConstructor
@@ -28,12 +27,10 @@ public class Comment {
         this.createTime = LocalDateTime.now();
     }
 
-    // 댓글 → 게시글(Post)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    // 작성자(User)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;

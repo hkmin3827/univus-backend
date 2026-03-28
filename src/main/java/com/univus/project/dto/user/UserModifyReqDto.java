@@ -13,8 +13,8 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 public class UserModifyReqDto {
     private String email;
-    private String name;    // 이름 수정
-    private String image;   // 프로필 이미지 수정
+    private String name;
+    private String image;
     private String profile;
 
     @Pattern(regexp = "^010\\d{8}$", message = "전화번호는 010으로 시작하고 11자리여야 합니다.")

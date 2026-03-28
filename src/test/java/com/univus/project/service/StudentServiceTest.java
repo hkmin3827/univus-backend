@@ -33,7 +33,6 @@ public class StudentServiceTest {
         student.setGrade(3);
     }
 
-    // 학생 조회 성공
     @Test
     void getStudentDetailByEmail_success() {
         when(studentRepository.findByEmail("test@test.com"))
@@ -47,7 +46,6 @@ public class StudentServiceTest {
         assertEquals(3, result.getGrade());
     }
 
-    // 학생 조회 실패
     @Test
     void getStudentDetailByEmail_notFound() {
         when(studentRepository.findByEmail("notfound@test.com"))
@@ -61,7 +59,6 @@ public class StudentServiceTest {
         assertEquals("학생 정보가 없습니다. email=notfound@test.com", ex.getMessage());
     }
 
-    // 학생 정보 수정 성공
     @Test
     void updateStudentProfile_success() {
         when(studentRepository.findByEmail("test@test.com"))
@@ -81,7 +78,6 @@ public class StudentServiceTest {
         verify(studentRepository, times(1)).findByEmail("test@test.com");
     }
 
-    // 학생 정보 수정 실패 (존재하지 않는 이메일)
     @Test
     void updateStudentProfile_fail() {
         when(studentRepository.findByEmail("unknown@test.com"))

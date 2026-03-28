@@ -48,7 +48,6 @@ class ActivityLogServiceTest {
         log.setBoard(board);
     }
 
-    // ======================= recalcActivityLog ==========================
     @Test
     void recalcActivityLog_success() {
         Long userId = 1L;
@@ -100,7 +99,6 @@ class ActivityLogServiceTest {
         assertNull(result);
     }
 
-    // ========================= calcStreak ===============================
     @Test
     void calcStreak_success() {
         List<LocalDate> dates = List.of(
@@ -120,7 +118,6 @@ class ActivityLogServiceTest {
         assertEquals(0, activityLogService.calcStreak(Collections.emptyList()));
     }
 
-    // ========================= calcMonth ================================
     @Test
     void calcMonth_success() {
         LocalDate now = LocalDate.now();
@@ -135,7 +132,6 @@ class ActivityLogServiceTest {
         assertEquals(2, monthCount);
     }
 
-    // ====================== getBoardUserContributions ====================
     @Test
     void getBoardUserContributions_success() {
         ActivityLog log1 = new ActivityLog();

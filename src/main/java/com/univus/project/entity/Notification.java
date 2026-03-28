@@ -16,17 +16,17 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;      // 알림 받을 유저
+    private Long userId; // 알림 받을 유저
     private Long teamId;
     private Long boardId;
     private Long postId;
 
     @Enumerated(EnumType.STRING)
-    private NotificationType type;  // COMMENT, TODO_DONE 등
+    private NotificationType type;  // COMMENT, TODO_DONE..
 
     private String message;
 
-    private boolean checked;       // 이미 확인했는지 여부
+    private boolean checked; // 확인했는지 여부
 
     private LocalDateTime createdAt;
 }

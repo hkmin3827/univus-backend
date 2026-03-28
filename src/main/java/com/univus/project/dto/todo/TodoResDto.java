@@ -1,4 +1,5 @@
 package com.univus.project.dto.todo;
+
 import com.univus.project.entity.Todo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,13 +10,13 @@ import java.time.LocalDateTime;
 
 @Getter @Setter @NoArgsConstructor @ToString
 public class TodoResDto {
-    private Long id;        // todolist id
-    private String email;   // 작성자 이메일
-    private String userName;    // 작성자 이름
-    private String content; // 할일 내용
-    private boolean done;   // 완료 여부
+    private Long id;
+    private String email;
+    private String userName;
+    private String content;
+    private boolean done;
     private LocalDateTime createTime;
-    private String boardName; // 프로젝트명(게시판 이름)
+    private String boardName;
     private Long boardId;
 
     public TodoResDto(String boardName, Todo todo) {

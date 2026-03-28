@@ -66,7 +66,6 @@ class SearchServiceTest {
 
     }
 
-    // ======================= 전체 검색 ========================
     @Test
     void searchAll_success() {
         Long teamId = 100L;

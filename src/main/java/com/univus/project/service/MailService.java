@@ -1,4 +1,3 @@
-// src/main/java/com/univus/project/service/MailService.java
 package com.univus.project.service;
 
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,7 @@ public class MailService {
                             "<p>감사합니다.<br>- UnivUs 팀</p>" +
                             "</div>";
 
-            helper.setText(htmlContent, true); // ★ HTML 사용 설정
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
 

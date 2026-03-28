@@ -8,5 +8,5 @@ import java.util.List;
 @AllArgsConstructor
 public class HomeScheduleResDto {
     private List<ScheduleResDto> todaySchedules;
-    private List<ScheduleResDto> upcomingSchedules; // 7일 이내
+    private List<ScheduleResDto> upcomingSchedules;
 }

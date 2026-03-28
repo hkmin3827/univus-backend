@@ -1,5 +1,4 @@
 package com.univus.project.entity;
-// 게시물
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

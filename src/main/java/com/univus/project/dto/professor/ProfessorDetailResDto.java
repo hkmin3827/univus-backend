@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter @Setter
 public class ProfessorDetailResDto {
 
-    private UserResDto user;   // 공통 정보
+    private UserResDto user;
 
-    // 교수 전용 필드
     private String department;
     private String position;
 }

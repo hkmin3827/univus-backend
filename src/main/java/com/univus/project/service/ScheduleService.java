@@ -84,5 +84,4 @@ public class ScheduleService {
                 .map(ScheduleResDto::fromEntity)
                 .collect(Collectors.toList());
     }
-
 }

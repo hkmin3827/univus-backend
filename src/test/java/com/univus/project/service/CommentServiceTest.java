@@ -1,6 +1,5 @@
 package com.univus.project.service;
 
-import com.univus.project.constant.NotificationType;
 import com.univus.project.dto.comment.CommentReqDto;
 import com.univus.project.dto.comment.CommentResDto;
 import com.univus.project.entity.*;
@@ -43,9 +42,8 @@ class CommentServiceTest {
         c.setId(id);
         c.setContent(content);
         c.setCreateTime(LocalDateTime.now());
-        c.setWriter(writer); // ⭐ writer 설정 중요
+        c.setWriter(writer);
 
-        // post 설정
         Board b = new Board();
         b.setId(100L);
         Team t = new Team();
@@ -84,9 +82,6 @@ class CommentServiceTest {
         post.setBoard(board);
     }
 
-    // -------------------------------------------------------
-    // 1) 댓글 작성 테스트
-    // -------------------------------------------------------
     @Test
     void createComment_success() {
         CommentReqDto dto = new CommentReqDto();
@@ -125,9 +120,6 @@ class CommentServiceTest {
                 .hasMessageContaining("게시글이 존재하지 않습니다.");
     }
 
-    // -------------------------------------------------------
-    // 2) 댓글 목록 조회
-    // -------------------------------------------------------
     @Test
     void getComments_success() {
         Comment c1 = createMockComment(1L, "댓글 1");
@@ -158,9 +150,6 @@ class CommentServiceTest {
         assertThat(result.getContent().get(0).getContent()).contains("키워드");
     }
 
-    // -------------------------------------------------------
-    // 3) 댓글 수정
-    // -------------------------------------------------------
     @Test
     void updateComment_success() {
         Comment comment = new Comment();
@@ -195,9 +184,6 @@ class CommentServiceTest {
                 .hasMessageContaining("수정 권한이 없습니다.");
     }
 
-    // -------------------------------------------------------
-    // 4) 댓글 삭제
-    // -------------------------------------------------------
     @Test
     void deleteComment_success() {
         Comment comment = new Comment();
@@ -226,9 +212,6 @@ class CommentServiceTest {
                 .hasMessageContaining("작성자만 삭제할 수 있습니다.");
     }
 
-    // -------------------------------------------------------
-    // 5) 전체 댓글 검색
-    // -------------------------------------------------------
     @Test
     void searchAllComments_success() {
         Comment c = createMockComment(1L, "검색됨");
@@ -243,9 +226,6 @@ class CommentServiceTest {
         assertThat(result.getContent().get(0).getContent()).contains("검색");
     }
 
-    // -------------------------------------------------------
-    // 6) 내 댓글 목록 조회
-    // -------------------------------------------------------
     @Test
     void getMyComments_success() {
         Comment c = createMockComment(1L, "내 댓글");

@@ -4,7 +4,6 @@ import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.team.TeamMemberResDto;
 import com.univus.project.entity.User;
 import com.univus.project.service.TeamMemberService;
-import com.univus.project.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

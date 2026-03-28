@@ -1,6 +1,5 @@
 package com.univus.project.dto.post;
 
-
 import com.univus.project.entity.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PostResDto {
     private Long postId;
-    private String name;  // 작성자 이름
+    private String name;
     private String title;
     private String content;
     private String fileUrl;

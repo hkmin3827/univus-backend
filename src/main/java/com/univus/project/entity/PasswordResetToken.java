@@ -1,4 +1,3 @@
-// src/main/java/com/univus/project/entity/PasswordResetToken.java
 package com.univus.project.entity;
 
 import lombok.Getter;

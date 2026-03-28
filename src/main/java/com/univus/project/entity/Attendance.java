@@ -1,5 +1,4 @@
 package com.univus.project.entity;
-// 출석 관리
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

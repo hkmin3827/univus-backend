@@ -25,7 +25,6 @@ public class ActivityLogController {
 
     private final ActivityLogService activityLogService;
 
-    // 1) 특정 사용자의 게시판 활동 로그 계산 및 조회
     @PostMapping("/recalc/{userId}/{boardId}")
     public ResponseEntity<ActivityLogResDto> recalcActivityLog(
             @PathVariable Long userId,
@@ -42,7 +41,6 @@ public class ActivityLogController {
         }
     }
 
-    // 2) 특정 사용자 활동 로그 조회
     @GetMapping("/user/{userId}/board/{boardId}")
     public ResponseEntity<ActivityLogResDto> getUserLog(
             @PathVariable Long userId,
@@ -90,7 +88,6 @@ public class ActivityLogController {
     }
 
     
-    // 출석 부분
     @GetMapping("/boards/{boardId}/me")
     public ActivityLogResDto getMyActivityLogOnBoard(
             @PathVariable Long boardId,
@@ -110,7 +107,6 @@ public class ActivityLogController {
         return ResponseEntity.ok().build();
     }
 
-    // 5) 게시글 TOP5
     @GetMapping("/board/{boardId}/top5/posts")
     public ResponseEntity<List<ActivityTop5Dto>> getPostTop5(
             @PathVariable Long boardId
@@ -119,7 +115,6 @@ public class ActivityLogController {
         return ResponseEntity.ok(list);
     }
 
-    // 6) 댓글 TOP5
     @GetMapping("/board/{boardId}/top5/comments")
     public ResponseEntity<List<ActivityTop5Dto>> getCommentTop5(
             @PathVariable Long boardId
@@ -128,7 +123,6 @@ public class ActivityLogController {
         return ResponseEntity.ok(list);
     }
 
-    // 7) 리액션 TOP5
     @GetMapping("/board/{boardId}/top5/reactions")
     public ResponseEntity<List<ActivityTop5Dto>> getReactionTop5(
             @PathVariable Long boardId
@@ -136,8 +130,5 @@ public class ActivityLogController {
         List<ActivityTop5Dto> list = activityLogService.getReactionTop5(boardId);
         return ResponseEntity.ok(list);
     }
-
-
-
 }
 

@@ -1,5 +1,4 @@
 package com.univus.project.entity;
-// User 상속 받은 하위 교수 엔티티
 
 import com.univus.project.constant.Role;
 import javax.persistence.*;
@@ -15,29 +14,27 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Professor extends User {
-    // 부가적으로 넣고 싶은 교수 정보 => 소속 학과 정보 or 연구실 번호 등 변수 생성 가능
 
     @Column(length = 50)
-    private String department;          // 소속 학과
+    private String department;
 
     @Column(length = 30)
-    private String position;        // 직위 (조교, 부교수, 교수 등)
+    private String position;
 
     @Column(name = "create_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt; // 생성 시간 updatable = false(변경 불가)
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;  // 마지막 수정 시간
+    private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;  // 삭제된 시간
+    private LocalDateTime deletedAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
 
-        //  기본 권한이 없으면 교수
         if (getRole() == null) {
             setRole(Role.PROFESSOR);
         }
@@ -47,5 +44,4 @@ public class Professor extends User {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }

@@ -1,6 +1,5 @@
 package com.univus.project.repository;
 
-
 import com.univus.project.constant.ReactionType;
 import com.univus.project.dto.activityLog.ActivityTop5Dto;
 import com.univus.project.entity.Board;
@@ -16,20 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReactionRepository extends JpaRepository<Reaction, Long> {
-    // 특정 게시글의 공감 수 확인
     long countByPost(Post post);
-    //유저의 공감 여부
     Optional<Reaction> findByUserAndPost(User user, Post post);
 
-    // 특정 게시글의 모든 공감
     List<Reaction> findByPost(Post post);
-    // 추가: 특정 유저가 특정 게시판에서 받은 공감 수
-    int countByPost_UserAndPost_Board(User user, Board board);
-
-    //내가 해당 보드에서 "직접 누른" 리액션 수
     int countByUserAndBoard(User user, Board board);
 
-    //타입별 개수
     long countByPostAndType(Post post, ReactionType type);
 
     @Query("""
@@ -40,10 +31,6 @@ public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     WHERE r.post.board.id = :boardId
     GROUP BY r.user
     ORDER BY COUNT(r) DESC
-""")
-    List<ActivityTop5Dto> findReactionTop5ByBoardId(@Param("boardId") Long boardId,
-                                                    Pageable pageable);
-
-
-
+    """)
+    List<ActivityTop5Dto> findReactionTop5ByBoardId(@Param("boardId") Long boardId, Pageable pageable);
 }

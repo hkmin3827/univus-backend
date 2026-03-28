@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// 게시글 상세 조회
 @Getter @Setter @NoArgsConstructor @ToString
 public class PostDetailDto {
     private Long id;

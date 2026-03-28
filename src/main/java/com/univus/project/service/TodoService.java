@@ -32,7 +32,6 @@ public class TodoService {
     private final TeamMemberRepository teamMemberRepository;
 
 
-    //1) Todo 생성
     public TodoResDto createTodo(TodoWriteDto dto, User user) {
 
         if (user == null) {
@@ -53,7 +52,6 @@ public class TodoService {
 
         todoRepository.save(todo);
 
-        // 활동 로그 업데이트
         try {
             activityLogService.recalcActivityLog(user.getId(), board.getId());
         } catch (Exception e) {
@@ -63,17 +61,12 @@ public class TodoService {
         return new TodoResDto(board.getName(), todo);
     }
 
-
-
-    // 2) Todo Id 조회
     public TodoResDto getTodoById(Long id) {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
         return new TodoResDto(todo.getBoard().getName(), todo);
     }
 
-
-    // 3) Board 기준 조회
     public List<TodoResDto> getTodosByBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("프로젝트가 없습니다."));
@@ -82,6 +75,7 @@ public class TodoService {
                 .map(todo -> new TodoResDto(board.getName(), todo))
                 .collect(Collectors.toList());
     }
+
     public List<TodoResDto> getTodosByBoardId(Long boardId) {
         List<Todo> todos = todoRepository.findAllWithUserAndBoardByBoardId(boardId);
 
@@ -90,7 +84,6 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
-
     public List<TodoResDto> getTodosByTeamAndBoard(Long teamId, Long boardId) {
         return todoRepository.findByBoard_Team_IdAndBoard_Id(teamId, boardId)
                 .stream()
@@ -98,9 +91,6 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
-
-
-    // 4) 완료 여부 기준 로그인 사용자 조회
     public List<TodoResDto> getTodoByDoneForUser(boolean done, User user) {
         if (user == null) {
             throw new RuntimeException("사용자 정보가 필요합니다.");
@@ -111,8 +101,6 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
-
-    // 5) 팀 기준 완료된 Todo 조회
     public List<TodoResDto> getCompletedTodosForTeam(Long teamId) {
         return todoRepository.findByBoard_Team_IdAndDoneOrderByCreateTimeDesc(teamId, true)
                 .stream()
@@ -120,8 +108,6 @@ public class TodoService {
                 .collect(Collectors.toList());
     }
 
-
-    // Todo 수정
     public Boolean modifyTodo(Long id, TodoModifyDto dto, User user) {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
@@ -136,13 +122,12 @@ public class TodoService {
         todo.setContent(dto.getContent());
         todo.setDone(dto.isDone());
 
-        // 완료된 순간에만 알림 생성
         if (!prevDone && nowDone) {
             User actor = userRepository.findById(user.getId())
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
             Long teamId = todo.getBoard().getTeam().getId();
-            String projectName = todo.getBoard().getName();   // 프로젝트명 = 게시판명이라고 가정
+            String projectName = todo.getBoard().getName();
             String todoContent = todo.getContent();
 
             String message = String.format(
@@ -158,13 +143,12 @@ public class TodoService {
             for (TeamMember member : members) {
                 Long targetUserId = member.getUser().getId();
 
-                // 본인에게도 알림 주고 싶으면 이 if 제거
                 if (targetUserId.equals(actor.getId())) {
                     continue;
                 }
 
                 Notification n = Notification.builder()
-                        .userId(targetUserId)                     // 🔵 알림 받는 사람
+                        .userId(targetUserId)
                         .teamId(teamId)
                         .boardId(todo.getBoard().getId())
                         .postId(null)
@@ -177,7 +161,7 @@ public class TodoService {
                 notificationService.create(n);
             }
         }
-        // 완료 여부 변경 → 활동 로그 업데이트
+
         if (todo.getBoard() != null && prevDone != dto.isDone()) {
             try {
                 activityLogService.recalcActivityLog(user.getId(), todo.getBoard().getId());
@@ -185,12 +169,9 @@ public class TodoService {
                 log.error("Todo 수정 후 활동 로그 계산 실패: {}", e.getMessage());
             }
         }
-
         return true;
     }
 
-
-    // 7) Todo 삭제
     public Boolean deleteTodo(Long id, User user) {
         Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TodoList가 없습니다!"));
@@ -203,7 +184,6 @@ public class TodoService {
 
         todoRepository.delete(todo);
 
-        // 활동 로그 업데이트
         if (boardId != null) {
             try {
                 activityLogService.recalcActivityLog(user.getId(), boardId);
@@ -216,7 +196,6 @@ public class TodoService {
     }
 
 
-    //8) 로그인 사용자 전체 Todo 최신순
     public List<TodoResDto> getAllTodoForUser(User user) {
         if (user == null) {
             throw new RuntimeException("사용자 정보가 필요합니다.");
@@ -226,7 +205,6 @@ public class TodoService {
                 .map(todo -> new TodoResDto(todo.getBoard().getName(), todo))
                 .collect(Collectors.toList());
     }
-
 
     public List<TodoResDto> getTodosByUserAndBoard(User user, Long boardId) {
 

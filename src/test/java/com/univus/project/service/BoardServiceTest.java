@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +56,6 @@ class BoardServiceTest {
         board.setTeam(team);
     }
 
-    // 1. 게시판 생성 성공
     @Test
     void 게시판_생성_성공() {
         BoardReqDto dto = new BoardReqDto();
@@ -68,8 +66,8 @@ class BoardServiceTest {
         when(boardRepository.existsByTeamIdAndName(dto.getTeamId(), dto.getName())).thenReturn(false);
         when(teamRepository.findById(100L)).thenReturn(Optional.of(team));
         when(boardRepository.save(any(Board.class))).thenAnswer(invocation -> {
-                    Board b = invocation.getArgument(0); // 실제 service에서 생성한 board 객체
-                    b.setId(10L);                         // DB가 생성하는 것처럼 id 설정
+                    Board b = invocation.getArgument(0);
+                    b.setId(10L);
                     return b;
                 });
         Long id = boardService.createBoard(dto, user);
@@ -77,7 +75,7 @@ class BoardServiceTest {
         assertEquals(10L, id);
         verify(boardRepository).save(any(Board.class));
     }
-    // 2. 게시판 생성 실패 - 이름 없음
+
     @Test
     void 게시판_생성_실패_이름없음() {
         BoardReqDto dto = new BoardReqDto();
@@ -90,7 +88,6 @@ class BoardServiceTest {
         assertEquals(ErrorCode.INVALID_INPUT_VALUE, ex.getErrorCode());
     }
 
-    // 3. 게시판 단건 조회 성공
     @Test
     void 게시판_조회_성공() {
         when(boardRepository.findById(10L)).thenReturn(Optional.of(board));
@@ -100,7 +97,6 @@ class BoardServiceTest {
         assertEquals("프로젝트", result.getName());
     }
 
-    // 4. 게시판 조회 실패
     @Test
     void 게시판_조회_실패_없음() {
         when(boardRepository.findById(10L)).thenReturn(Optional.empty());
@@ -111,7 +107,6 @@ class BoardServiceTest {
 
     }
 
-    // 5. 팀별 게시판 조회
     @Test
     void 팀별_게시판_조회() {
         when(boardRepository.findByTeamId(100L)).thenReturn(List.of(board));
@@ -122,7 +117,6 @@ class BoardServiceTest {
         assertEquals("프로젝트", result.get(0).getName());
     }
 
-    // 6. 게시판 수정 성공
     @Test
     void 게시판_수정_성공() {
         BoardReqDto dto = new BoardReqDto();
@@ -138,7 +132,6 @@ class BoardServiceTest {
         assertEquals("수정된 설명", board.getDescription());
     }
 
-    // 7. 게시판 수정 실패 (권한 없음)
     @Test
     void 게시판_수정_실패_권한없음() {
         User anotherUser = new User();
@@ -155,7 +148,6 @@ class BoardServiceTest {
         assertEquals(ErrorCode.UNAUTHORIZED_MEMBER, ex.getErrorCode());
     }
 
-    // 8. 게시판 삭제 성공
     @Test
     void 게시판_삭제_성공() {
         when(boardRepository.findById(10L)).thenReturn(Optional.of(board));
@@ -165,7 +157,6 @@ class BoardServiceTest {
         verify(boardRepository).delete(board);
     }
 
-    // 9. 게시판 삭제 실패 (권한 없음)
     @Test
     void 게시판_삭제_실패_권한없음() {
         User anotherUser = new User();

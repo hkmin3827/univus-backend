@@ -14,13 +14,8 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByBoard(Board board);
-    List<Post> findByUserEmail(String email);
-    List<Post> findByUserName(String name);
-    List<Post> findByTitleContaining(String title);
 
     Page<Post> findAll(Pageable pageable);
-
-    List<Post> findByBoardOrderByCreateTimeDesc(Board board);
 
     int countByUserAndBoard(User user, Board board);
 

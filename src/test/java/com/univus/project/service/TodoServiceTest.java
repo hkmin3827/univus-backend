@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class) // JUnit5에서 Mockito 사용
+@ExtendWith(MockitoExtension.class)
 class TodoServiceTest {
     @Mock
     private BoardRepository boardRepository;
@@ -30,10 +30,10 @@ class TodoServiceTest {
     private ActivityLogService activityLogService;
 
     @Mock
-    private TodoRepository todoRepository;   // DB 대신 가짜(mock) 객체
+    private TodoRepository todoRepository;
 
     @InjectMocks
-    private TodoService todoService;         // 테스트 대상(Service)
+    private TodoService todoService;
 
     private User user;
     private Board board;
@@ -61,7 +61,6 @@ class TodoServiceTest {
 
     @Test
     void TODO_생성_성공() {
-        // given
         TodoWriteDto dto = new TodoWriteDto();
         dto.setBoardId(100L);
         dto.setContent("새로운 할 일");
@@ -69,10 +68,8 @@ class TodoServiceTest {
         when(boardRepository.findById(100L)).thenReturn(Optional.of(board));
         when(todoRepository.save(any(Todo.class))).thenReturn(todo);
 
-        // when
         var result = todoService.createTodo(dto, user);
 
-        // then
         assertEquals("테스트 게시판", result.getBoardName());
         assertEquals("새로운 할 일", dto.getContent());
         verify(activityLogService).recalcActivityLog(1L, 100L);
@@ -82,24 +79,20 @@ class TodoServiceTest {
 
     @Test
     void TODO_완료_성공() {
-        // given
         TodoModifyDto dto = new TodoModifyDto();
         dto.setContent("할 일 1");
-        dto.setDone(true);  // 완료 처리 요청
+        dto.setDone(true);
 
         when(todoRepository.findById(10L)).thenReturn(Optional.of(todo));
 
-        // when
         boolean result = todoService.modifyTodo(10L, dto, user);
 
-        // then
         assertTrue(result);
-        assertTrue(todo.isDone()); // 상태 변경 확인
+        assertTrue(todo.isDone());
         assertEquals("할 일 1", todo.getContent());
-        verify(activityLogService).recalcActivityLog(1L, 100L); // 로그 호출
+        verify(activityLogService).recalcActivityLog(1L, 100L);
     }
 
-    // 2. Todo 생성 - 사용자 정보 없을 때 예외
     @Test
     void TODO_생성_실패_사용자정보없음() {
         TodoWriteDto dto = new TodoWriteDto();
@@ -110,7 +103,6 @@ class TodoServiceTest {
     }
 
 
-    // 3. Todo 조회 성공
     @Test
     void TODO_ID로_조회_성공() {
         when(todoRepository.findById(10L)).thenReturn(Optional.of(todo));
@@ -121,7 +113,6 @@ class TodoServiceTest {
         assertEquals("테스트 할 일", result.getContent());
     }
 
-    // 4. Todo 수정 성공
     @Test
     void TODO_수정_성공() {
         TodoModifyDto dto = new TodoModifyDto();
@@ -138,7 +129,6 @@ class TodoServiceTest {
         verify(activityLogService).recalcActivityLog(1L, 100L);
     }
 
-    // 5. 수정 권한 없음
     @Test
     void TODO_수정_실패_권한없음() {
         TodoModifyDto dto = new TodoModifyDto();
@@ -151,7 +141,6 @@ class TodoServiceTest {
                 () -> todoService.modifyTodo(10L, dto, anotherUser));
     }
 
-    // 6. Todo 삭제 성공
     @Test
     void TODO_삭제_성공() {
         when(todoRepository.findById(10L)).thenReturn(Optional.of(todo));
@@ -164,7 +153,6 @@ class TodoServiceTest {
     }
 
 
-    // 7. Todo 삭제 실패 - 권한 없음
     @Test
     void TODO_삭제_실패_권한없음() {
         User anotherUser = new User();
@@ -177,14 +165,12 @@ class TodoServiceTest {
     }
     @Test
     void TODO_없으면_예외발생() {
-        // given
         when(todoRepository.findById(1L)).thenReturn(Optional.empty());
 
         TodoModifyDto dto = new TodoModifyDto();
         dto.setContent("test");
         dto.setDone(true);
 
-        // when & then
         assertThrows(RuntimeException.class,
                 () -> todoService.modifyTodo(1L, dto, user));
     }

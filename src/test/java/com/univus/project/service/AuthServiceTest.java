@@ -54,17 +54,14 @@ class AuthServiceTest {
 
     @Test
     void 학생_회원가입_성공() {
-        // given
         Student savedStudent = new Student();
         savedStudent.setId(1L);
 
         when(passwordEncoder.encode(any())).thenReturn("encodedPw");
         when(studentRepository.save(any(Student.class))).thenReturn(savedStudent);
 
-        // when
         Long resultId = authService.signup(studentDto);
 
-        // then
         assertEquals(1L, resultId);
         verify(studentRepository).save(any(Student.class));
         verify(passwordEncoder, times(2)).encode(any()); // email + student case encode
@@ -72,17 +69,14 @@ class AuthServiceTest {
 
     @Test
     void 교수_회원가입_성공() {
-        // given
         Professor savedProfessor = new Professor();
         savedProfessor.setId(5L);
 
         when(passwordEncoder.encode(any())).thenReturn("encodedPw");
         when(professorRepository.save(any(Professor.class))).thenReturn(savedProfessor);
 
-        // when
         Long resultId = authService.signup(professorDto);
 
-        // then
         assertEquals(5L, resultId);
         verify(professorRepository).save(any(Professor.class));
     }
@@ -101,30 +95,24 @@ class AuthServiceTest {
 
     @Test
     void 중복_이메일_회원가입_실패() {
-        // given
         when(userRepository.existsByEmail("student@test.com")).thenReturn(true);
 
-        // when
         boolean result = authService.isUser("student@test.com");
 
-        // then
         assertTrue(result);
         verify(userRepository).existsByEmail("student@test.com");
     }
 
     @Test
     void 중복_이메일_회원가입_예외처리() {
-        // given
         when(userRepository.existsByEmail("student@test.com")).thenReturn(true);
 
-        // 회원가입 요청 DTO
         UserSignUpReqDto dto = new UserSignUpReqDto();
         dto.setName("학생A");
         dto.setEmail("student@test.com");
         dto.setPwd("1234");
         dto.setRole(Role.STUDENT);
 
-        // when & then
         assertThrows(RuntimeException.class,
                 () -> {
                     if (authService.isUser(dto.getEmail())) {
@@ -146,7 +134,6 @@ class AuthServiceTest {
 
     @Test
     void 로그인_성공() {
-        // given
         LoginReqDto dto = new LoginReqDto("student@test.com", "1234");
 
         User user = new User();
@@ -159,11 +146,9 @@ class AuthServiceTest {
         when(passwordEncoder.matches("1234", "encodedPw"))
                 .thenReturn(true);
 
-        // when
         Long result = authService.login(dto);
 
-        // then
-        assertEquals(10L, result); // 반환값 검증
+        assertEquals(10L, result);
     }
 
     @Test

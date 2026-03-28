@@ -9,13 +9,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-// TeamMember 엔티티용 레포지토리
 public interface TeamMemberRepository extends JpaRepository<TeamMember, Long> {
 
-    // 해당 팀에 이 유저가 이미 멤버인지 확인
     boolean existsByTeamAndUser(Team team, User user);
 
-    // 팀 멤버 수 카운트
     long countByTeam(Team team);
     List<TeamMember> findByUser(User user);
 

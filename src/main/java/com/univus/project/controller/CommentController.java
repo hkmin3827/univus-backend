@@ -1,4 +1,5 @@
 package com.univus.project.controller;
+
 import com.univus.project.config.CustomUserDetails;
 import com.univus.project.dto.PageResponse;
 import com.univus.project.dto.comment.CommentReqDto;
@@ -23,7 +24,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    // 댓글 생성
     @PostMapping("/create")
     public ResponseEntity<Long> createComment(
             @RequestBody CommentReqDto dto,
@@ -34,7 +34,6 @@ public class CommentController {
         return ResponseEntity.ok(commentId);
     }
 
-    // 댓글 목록 + 검색 + 페이징
     @GetMapping("/list")
     public ResponseEntity<PageResponse<CommentResDto>> getComments(
             @RequestParam Long postId,
@@ -46,7 +45,6 @@ public class CommentController {
         return ResponseEntity.ok(PageResponse.from(comments));
     }
 
-    // 댓글 수정
     @PutMapping("/update/{commentId}")
     public ResponseEntity<Long> updateComment(
             @PathVariable Long commentId,
@@ -58,7 +56,6 @@ public class CommentController {
         return ResponseEntity.ok(id);
     }
 
-    // 댓글 삭제
     @DeleteMapping("/delete/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long commentId,
@@ -69,7 +66,6 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    // 전체 게시글 댓글 검색 (topbar 검색용)
     @GetMapping("/search")
     public Page<CommentResDto> searchComments(
             @RequestParam String keyword,

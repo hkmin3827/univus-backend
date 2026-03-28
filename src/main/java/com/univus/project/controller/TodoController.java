@@ -25,7 +25,6 @@ public class TodoController {
     private final TodoService todoService;
     private final UserService userService;
 
-    // 1) Todo 생성
     @PostMapping("/create")
     public ResponseEntity<TodoResDto> createTodo(@RequestBody TodoWriteDto dto,
                                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -42,23 +41,21 @@ public class TodoController {
         }
     }
 
-    // 2) Todo 단일 조회
     @GetMapping("/{id}")
     public ResponseEntity<TodoResDto> getTodo(@PathVariable Long id) {
         return ResponseEntity.ok(todoService.getTodoById(id));
     }
 
-    // 3) 게시판 기준 Todo 조회
     @GetMapping("/board/{boardId}")
     public ResponseEntity<List<TodoResDto>> getTodosByBoard(@PathVariable Long boardId) {
         return ResponseEntity.ok(todoService.getTodosByBoard(boardId));
     }
+
     @GetMapping("/board/{boardId}/list")
     public ResponseEntity<List<TodoResDto>> getTodosByBoardId(@PathVariable Long boardId) {
         return ResponseEntity.ok(todoService.getTodosByBoardId(boardId));
     }
 
-    // 4) 완료 기준 조회
     @GetMapping("/done/{done}")
     public ResponseEntity<List<TodoResDto>> getTodoByDone(@PathVariable boolean done,
                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -66,7 +63,6 @@ public class TodoController {
         return ResponseEntity.ok(todoService.getTodoByDoneForUser(done, user));
     }
 
-    // 5) Todo 수정
     @PutMapping("/modify/{id}")
     public ResponseEntity<Boolean> modifyTodo(@PathVariable Long id,
                                               @RequestBody TodoModifyDto dto,
@@ -76,7 +72,6 @@ public class TodoController {
         return ResponseEntity.ok(result);
     }
 
-    // 6) Todo 삭제
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteTodo(@PathVariable Long id,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -85,20 +80,17 @@ public class TodoController {
         return ResponseEntity.ok(result);
     }
 
-    // 7) 로그인 유저 기준 전체 Todo 목록
     @GetMapping("/list")
     public ResponseEntity<List<TodoResDto>> getAllTodoForUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         return ResponseEntity.ok(todoService.getAllTodoForUser(user));
     }
 
-    // 8) 팀 기준 완료 Todo 조회
     @GetMapping("/team/{teamId}/completed")
     public ResponseEntity<List<TodoResDto>> getCompletedTodosForTeam(@PathVariable Long teamId) {
         return ResponseEntity.ok(todoService.getCompletedTodosForTeam(teamId));
     }
 
-    // 9) 팀 + 게시판 기준 Todo 조회
     @GetMapping("/team/{teamId}/board/{boardId}")
     public ResponseEntity<List<TodoResDto>> getTodosByTeamAndBoard(
             @PathVariable Long teamId,
@@ -106,7 +98,6 @@ public class TodoController {
         return ResponseEntity.ok(todoService.getTodosByTeamAndBoard(teamId, boardId));
     }
 
-    // 로그인한 사용자 + 특정 게시판 기준 Todo 조회
     @GetMapping("/board/{boardId}/mine")
     public ResponseEntity<List<TodoResDto>> getMyTodosByBoard(
             @PathVariable Long boardId,

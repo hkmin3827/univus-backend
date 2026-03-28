@@ -19,16 +19,13 @@ public class ProfessorService {
 
     private final ProfessorRepository professorRepository;
 
-    // 교수 정보 조회
     public ProfessorDetailResDto getProfessorDetailByEmail(String email) {
         Professor professor = professorRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("교수 정보가 없습니다. email=" + email));
 
-        // 공통 정보
         UserResDto userDto = new UserResDto(professor
         );
 
-        // 교수 전용 정보
         ProfessorDetailResDto dto = new ProfessorDetailResDto();
         dto.setUser(userDto);
         dto.setDepartment(professor.getDepartment());
@@ -37,7 +34,6 @@ public class ProfessorService {
         return dto;
     }
 
-    // 교수 정보 수정 (email 기준)
     public void updateProfessorProfile(String email, ProfessorModifyReqDto dto) {
         Professor professor = professorRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("교수 정보가 없습니다. email=" + email));

@@ -18,7 +18,6 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    // 일정 생성
     @PostMapping
     public ResponseEntity<Long> createSchedule(
             @RequestBody ScheduleReqDto dto,
@@ -29,7 +28,6 @@ public class ScheduleController {
         return ResponseEntity.ok(id);
     }
 
-    // 일정 수정
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateSchedule(
             @PathVariable Long id,
@@ -41,7 +39,6 @@ public class ScheduleController {
         return ResponseEntity.ok(updatedId);
     }
 
-    // 일정 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSchedule(
             @PathVariable Long id,
@@ -52,7 +49,6 @@ public class ScheduleController {
         return ResponseEntity.noContent().build();
     }
 
-    // /home 페이지용 : 오늘 + 7일 이내
     @GetMapping("/home")
     public ResponseEntity<HomeScheduleResDto> getHomeSchedules(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -61,7 +57,7 @@ public class ScheduleController {
         HomeScheduleResDto res = scheduleService.getHomeSchedules(user);
         return ResponseEntity.ok(res);
     }
-    // 일정 조회
+
     @GetMapping
     public ResponseEntity<List<ScheduleResDto>> getAllSchedules(
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -70,5 +66,4 @@ public class ScheduleController {
         List<ScheduleResDto> schedules = scheduleService.getAllSchedules(user.getId());
         return ResponseEntity.ok(schedules);
     }
-
 }

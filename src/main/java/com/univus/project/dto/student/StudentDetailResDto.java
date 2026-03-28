@@ -7,9 +7,8 @@ import lombok.Setter;
 @Getter @Setter
 public class StudentDetailResDto {
 
-    private UserResDto user;   // 공통 정보
+    private UserResDto user;
 
-    // 학생 전용 필드
     private String studentNumber;
     private String major;
     private Integer grade;

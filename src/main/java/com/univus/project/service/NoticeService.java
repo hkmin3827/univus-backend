@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 
 import javax.transaction.Transactional;
 
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +30,6 @@ public class NoticeService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
 
-    // 1) 공지 생성 (교수 권한 체크 진행)
     public NoticeResDto createNotice(Long teamId, NoticeWriteDto dto, User user) {
         try {
             if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
@@ -61,7 +59,6 @@ public class NoticeService {
         }
     }
 
-    // 2) 팀별 공지 목록 조회
     public Page<NoticeResDto> getNoticesByTeam(Long teamId, Pageable pageable, Long userId) {
         try {
             boolean isMember = teamMemberRepository.existsByTeamIdAndUserId(teamId, userId);
@@ -100,8 +97,6 @@ public class NoticeService {
         return new FileResDto(notice.getFileUrl(), notice.getFileName());
     }
 
-
-    // 3) 공지 수정
     public Boolean modifyNotice(Long teamId, Long noticeId, NoticeModifyDto dto, User user) {
         try {
             Notice notice = noticeRepository.findById(noticeId)
@@ -128,7 +123,6 @@ public class NoticeService {
         }
     }
 
-    // 4) 공지 삭제
     public Boolean deleteNotice(Long teamId, Long noticeId, User user) {
         try {
             Notice notice = noticeRepository.findById(noticeId)
@@ -146,7 +140,6 @@ public class NoticeService {
         }
     }
 
-    // 5) 최신순 공지 목록 조회
     public Page<NoticeResDto> getAllNotices(Pageable pageable) {
         try {
             return noticeRepository.findAllByOrderByCreateTimeDesc(pageable)
@@ -156,6 +149,4 @@ public class NoticeService {
             return Page.empty();
         }
     }
-
-
 }

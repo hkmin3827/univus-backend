@@ -1,5 +1,4 @@
 package com.univus.project.entity;
-// 회원
 
 import com.univus.project.constant.Role;
 import javax.persistence.*;
@@ -11,8 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-//@Table(name= "user")
-@Inheritance(strategy = InheritanceType.JOINED)   // 하위 엔티티 분리 테이블 방식 (교수 / 학생)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class User {
@@ -48,9 +46,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role role;        // 권한 (STUDENT, PROFESSOR 등)
+    private Role role;
 
 
     @Column(nullable = false)
-    private boolean active = true; // 회원 가입시 (활성)
+    private boolean active = true;
 }

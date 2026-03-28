@@ -15,20 +15,16 @@ import javax.transaction.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-
 public class StudentService {
     private final StudentRepository studentRepository;
 
-    // 학생 정보 조회
     public StudentDetailResDto getStudentDetailByEmail(String email) {
         Student student = studentRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("학생 정보가 없습니다. email=" + email));
 
-        // 공통 정보 세팅
         UserResDto userDto = new UserResDto(student
         );
 
-        // 학생 전용 정보 세팅
         StudentDetailResDto dto = new StudentDetailResDto();
         dto.setUser(userDto);
         dto.setStudentNumber(student.getStudentNumber());
@@ -38,12 +34,10 @@ public class StudentService {
         return dto;
     }
 
-    // 학생 정보 수정 (email 기준)
     public void updateStudentProfile(String email, StudentModifyReqDto dto) {
         Student student = studentRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("학생 정보가 없습니다. email=" + email));
 
-        // null이 아닌 값만 업데이트
         if (dto.getStudentNumber() != null && !dto.getStudentNumber().isBlank()) {
             student.setStudentNumber(dto.getStudentNumber());
         }
@@ -54,7 +48,6 @@ public class StudentService {
             student.setGrade(dto.getGrade());
         }
 
-        // @Transactional 때문에 따로 save() 안 해도 update 반영됨
         log.info("학생 정보 수정 완료 → email={}", email);
     }
 }

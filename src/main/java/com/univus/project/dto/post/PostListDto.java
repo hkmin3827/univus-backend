@@ -5,12 +5,10 @@ import com.univus.project.entity.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter @Setter @NoArgsConstructor
-// 게시글 목록 화면용
 public class PostListDto {
     private Long id;
     private String title;
